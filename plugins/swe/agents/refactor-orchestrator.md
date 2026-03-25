@@ -81,7 +81,11 @@ git commit -m "refactor: <what was changed>"
 4. Note CLAUDE.md suggestions
 5. Commit
 
-## Step 8: Open PR
+## Step 8: Version bump
+
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (no behavior change). Skip if no version manifest is found.
+
+## Step 9: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `refactor: <short description>`

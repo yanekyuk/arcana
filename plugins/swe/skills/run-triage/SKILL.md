@@ -77,6 +77,7 @@ trigger: "<original user request>"
 type: <feat|fix|refactor|docs>
 branch: <type>/<short-description>
 created: <YYYY-MM-DD>
+version-bump: <major|minor|patch|none>  # optional — overrides the orchestrator's default semver bump
 ---
 
 ## Related Files

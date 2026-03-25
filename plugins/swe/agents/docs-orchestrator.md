@@ -66,7 +66,11 @@ Check if `CLAUDE.md` needs updating. Do NOT modify it — note suggestions for t
 
 Commit any additional changes.
 
-## Step 6: Open PR
+## Step 6: Version bump
+
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
+
+## Step 7: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `docs: <short description>`

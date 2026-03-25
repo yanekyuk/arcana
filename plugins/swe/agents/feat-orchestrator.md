@@ -87,7 +87,7 @@ git commit -m "feat: <what this unit does>"
 **Failure handling:** If a test won't pass after 3 attempts for a single unit:
 1. Stop the TDD cycle
 2. `git add -A && git commit -m "chore(wip): <what was attempted>"`
-3. Skip to Step 8 (Open PR) and create a draft PR with `[WIP]` prefix
+3. Skip to Step 9 (Open PR) and create a draft PR with `[WIP]` prefix
 
 ## Step 6: Self-review
 
@@ -99,7 +99,7 @@ git commit -m "feat: <what this unit does>"
    - Domain rule compliance — no violations
    - Test coverage — all behavior changes tested
    - Code quality — no debug code, no stale TODOs
-4. If blocking issues found: attempt to fix. If fix fails after 1 retry, proceed to Step 8 as draft PR.
+4. If blocking issues found: attempt to fix. If fix fails after 1 retry, proceed to Step 9 as draft PR.
 
 ## Step 7: Sync docs
 
@@ -116,7 +116,11 @@ git commit -m "feat: <what this unit does>"
 4. Check if `CLAUDE.md` might need updating. Do NOT modify it. Note any suggestions for the PR description.
 5. Commit only the specific doc files that were created or updated: `git add <specific-doc-files> && git commit -m "docs: sync knowledge docs"`
 
-## Step 8: Open PR
+## Step 8: Version bump
+
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: MINOR** (new backward-compatible functionality). Skip if no version manifest is found.
+
+## Step 9: Open PR
 
 1. Push: `git push -u origin HEAD`
 2. Build PR title: `feat: <short description from handoff>`

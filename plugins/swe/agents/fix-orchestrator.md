@@ -76,7 +76,7 @@ git commit -m "fix: <what was fixed>"
 2. Form a new hypothesis and retry the TDD cycle
 3. If the second investigation also fails to produce a passing fix:
    - `git add -A && git commit -m "chore(wip): attempted fix for <bug>"`
-   - Skip to Step 8 (Open PR) as draft
+   - Skip to Step 9 (Open PR) as draft
 
 ## Step 6: Self-review
 
@@ -96,7 +96,11 @@ git commit -m "fix: <what was fixed>"
 4. Note any CLAUDE.md suggestions
 5. Commit doc changes if any
 
-## Step 8: Open PR
+## Step 8: Version bump
+
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (backward-compatible bug fix). Skip if no version manifest is found.
+
+## Step 9: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `fix: <short description>`
