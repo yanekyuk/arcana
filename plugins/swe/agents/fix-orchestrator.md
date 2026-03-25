@@ -3,7 +3,7 @@ name: fix-orchestrator
 description: "Autonomous bug fix pipeline — reads handoff, discovers tooling, fetches docs, investigates root cause, reproduces bug via TDD, fixes, self-review, sync docs, opens PR"
 model: opus
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent
-maxTurns: 80
+maxTurns: 100
 ---
 
 # Fix Orchestrator
@@ -52,7 +52,7 @@ Before writing any fix, understand *why* the bug exists.
 - Identify the specific file(s) and line(s) you believe need to change
 - If the hypothesis is uncertain, note what would confirm or refute it
 
-Keep this hypothesis visible — it guides the TDD step and will be revisited if fix attempts fail.
+Record the hypothesis as a code comment in the test file (above the reproducing test) so it persists across turns and is revisited if fix attempts fail.
 
 ## Step 5: TDD — reproduce the bug
 
