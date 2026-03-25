@@ -59,6 +59,15 @@ Check every commit message in the PR. Valid types: `feat`, `fix`, `refactor`, `d
 - If the PR adds or changes behavior, check that corresponding test files are included
 - For pure-config repos (no test runner), skip this check
 
+### 3e. Version staleness
+If the PR touches version files (e.g., `marketplace.json`, `plugin.json`), compare the base version in the PR diff against the current version on main:
+
+```bash
+git show main:marketplace.json 2>/dev/null | head -20
+```
+
+If the PR's base version (the `-` side of the diff) does not match main's current version, the branch needs a rebase before merging. Flag this as "needs rebase" and **stop** — do not approve or merge.
+
 ## Step 4: Deliver verdict
 
 ### If changes are needed:
@@ -94,16 +103,16 @@ Tell the user the PR passes review, then proceed to Step 5.
 Ask the user for merge strategy preference (merge commit or squash). If the user has already expressed a preference, use it. Default to squash if not specified.
 
 ```bash
-gh pr merge <number> --squash --delete-branch
+gh pr merge <number> --squash
 ```
 
 Or with merge commit:
 
 ```bash
-gh pr merge <number> --merge --delete-branch
+gh pr merge <number> --merge
 ```
 
-The `--delete-branch` flag removes the remote branch automatically.
+Do **not** pass `--delete-branch` — the worktree still holds the branch at this point, so `gh` would exit with code 1. Remote and local branch cleanup is handled in Step 6.
 
 ## Step 6: Clean up local resources
 
@@ -129,7 +138,15 @@ Find the worktree matching the merged branch and remove it:
 git worktree remove .worktrees/<folder>
 ```
 
-### 6c. Delete the local branch
+### 6c. Delete the remote branch
+
+```bash
+git push origin --delete <branch-name>
+```
+
+If the remote branch was already deleted, this may warn — that is fine.
+
+### 6d. Delete the local branch
 
 ```bash
 git branch -d <branch-name>
