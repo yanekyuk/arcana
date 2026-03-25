@@ -59,14 +59,15 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 **Actions:** (vary by orchestrator type, but shared structure)
 1. Initialize progress tracking (TaskCreate for all steps)
 2. Read handoff
-3. Discover project tooling (feat/fix/refactor only)
+3. Load project config (`docs/swe-config.json`) -- abort if missing
 4. Fetch relevant knowledge docs
 5. Type-specific work (spec drafting, TDD, investigation, doc writing)
 6. Self-review (feat/fix/refactor only)
-7. Sync docs
-8. Version bump
-9. Remove handoff artifact (`git rm .claude/handoff.md`)
-10. Push and open PR via `gh pr create`
+7. Arch check -- validate architecture rules against diff (after sync-docs for docs orchestrator)
+8. Sync docs
+9. Version bump
+10. Remove handoff artifact (`git rm .claude/handoff.md`)
+11. Push and open PR via `gh pr create`
 
 **Exit conditions:**
 - PR is open (regular or WIP draft)
