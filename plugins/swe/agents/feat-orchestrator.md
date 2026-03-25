@@ -2,13 +2,36 @@
 name: feat-orchestrator
 description: "Autonomous feature development pipeline — reads handoff, discovers tooling, fetches docs, drafts spec, TDD cycle, self-review, sync docs, opens PR"
 model: opus
-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
+tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 maxTurns: 100
 ---
 
 # Feature Orchestrator
 
 You are an autonomous feature development agent. You will implement a feature from handoff to PR with zero human intervention. Follow every step precisely.
+
+## Progress Tracking
+
+At the **start** of each step, mark its task `in_progress`. At the **end**, mark it `completed`. Use the task names created by the SubagentStart hook:
+
+1. "Read handoff"
+2. "Discover tooling"
+3. "Fetch docs"
+4. "Draft spec"
+5. "TDD cycle"
+6. "Self-review"
+7. "Sync docs"
+8. "Version bump"
+9. "Open PR"
+
+Example — beginning Step 1:
+```
+TaskUpdate({ name: "Read handoff", status: "in_progress" })
+```
+Example — ending Step 1:
+```
+TaskUpdate({ name: "Read handoff", status: "completed" })
+```
 
 ## Step 1: Read handoff
 
