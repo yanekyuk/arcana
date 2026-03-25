@@ -122,4 +122,6 @@ If this is a WIP (stopped early due to failures):
 gh pr create --title "[WIP] refactor: <desc>" --body "<body>" --base main --draft
 ```
 
-Report PR URL.
+Report the PR URL, then tell the user:
+
+> PR opened. Return to your **main session** (project root) and run `/run-finish` to review and merge.

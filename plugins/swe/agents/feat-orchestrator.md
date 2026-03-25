@@ -181,4 +181,6 @@ If this is a WIP:
 gh pr create --title "[WIP] feat: <desc>" --body "<body>" --base main --draft
 ```
 
-Report the PR URL.
+Report the PR URL, then tell the user:
+
+> PR opened. Return to your **main session** (project root) and run `/run-finish` to review and merge.
