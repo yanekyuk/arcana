@@ -76,7 +76,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 
 ### run-open-pr
 
-- **Input:** Committed changes on a feature branch, handoff artifact
+- **Input:** Committed changes on a feature branch; optionally handoff artifact (falls back to git log/diff if missing)
 - **Output:** PR URL
 - **Tools:** Read, Bash, Grep
 - **Invocation:** User-invoked or dispatched by orchestrators
