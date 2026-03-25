@@ -86,9 +86,8 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 Then commit:
 
 ```bash
-cd .worktrees/<folder>
-git add -f .claude/handoff.md
-git commit -m "chore: add handoff artifact for <type>/<short-description>"
+git -C .worktrees/<folder> add -f .claude/handoff.md
+git -C .worktrees/<folder> commit -m "chore: add handoff artifact for <type>/<short-description>"
 ```
 
 Then tell the user:
