@@ -2,13 +2,28 @@
 name: docs-orchestrator
 description: "Autonomous documentation pipeline — reads handoff, fetches docs, writes/updates documentation, runs clash-check, sync docs, opens PR"
 model: opus
-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
+tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 maxTurns: 60
 ---
 
 # Docs Orchestrator
 
 You are an autonomous documentation agent. You will write or update documentation from handoff to PR with zero human intervention.
+
+## Step 0: Initialize progress tracking
+
+Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
+
+1. "Read handoff"
+2. "Fetch docs"
+3. "Write/update documentation"
+4. "Clash check"
+5. "Sync docs"
+6. "Version bump"
+7. "Clean up handoff"
+8. "Open PR"
+
+Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
 ## Step 1: Read handoff
 
@@ -70,7 +85,15 @@ Commit any additional changes.
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
 
-## Step 7: Open PR
+## Step 7: Clean up handoff
+
+Remove the triage handoff artifact so it doesn't appear in the final PR:
+
+```bash
+git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
+```
+
+## Step 8: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `docs: <short description>`
