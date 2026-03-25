@@ -15,7 +15,7 @@
       "author": {
         "name": "yanek"
       },
-      "source": "./",
+      "source": "./plugins/swe",
       "category": "development",
       "tags": ["swe", "tdd", "triage", "refactor", "orchestrator"]
     }
