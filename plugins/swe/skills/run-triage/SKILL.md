@@ -62,7 +62,7 @@ git worktree add .worktrees/<type>-<short-description> <type>/<short-description
 
 ## Step 7: Write handoff artifact, commit, and instruct
 
-Write the handoff directly into the worktree at `.worktrees/<folder>/.claude/handoff.md`:
+Write the handoff directly into the worktree at `.worktrees/<folder>/.claude/handoff.md` using the Write tool. Do **not** run `mkdir -p` for the `.claude/` directory — the Write tool creates parent directories automatically:
 
 ```yaml
 ---
