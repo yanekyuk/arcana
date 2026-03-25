@@ -44,14 +44,18 @@ For each unit of work:
 
 ### 4. Commit
 
+Use [Conventional Commits](https://www.conventionalcommits.org/) format. Valid types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`, `perf`, `style`, `build`.
+
 ```bash
 git add <test-file> <implementation-file>
 git commit -m "<type>: <what this unit does>"
 ```
 
+The `<type>` must match the work classification from the handoff (e.g., `feat` for features, `fix` for bug fixes). Use `test` only for test-only commits with no implementation changes.
+
 ## Failure handling
 
 If a test won't pass after 3 attempts for a single unit of work:
 1. Stop the TDD cycle
-2. Commit what you have with message: `wip: <what was attempted>`
+2. Commit what you have with message: `chore(wip): <what was attempted>`
 3. Report what failed and why

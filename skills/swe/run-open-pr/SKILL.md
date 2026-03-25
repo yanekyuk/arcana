@@ -22,6 +22,8 @@ git add <specific-changed-files>
 git commit -m "<type>: <final changes description>"
 ```
 
+Use [Conventional Commits](https://www.conventionalcommits.org/) format. Valid types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`, `perf`, `style`, `build`. The `<type>` should match the handoff classification.
+
 ## Step 2: Push
 
 ```bash

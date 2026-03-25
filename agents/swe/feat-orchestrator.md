@@ -86,7 +86,7 @@ git commit -m "feat: <what this unit does>"
 
 **Failure handling:** If a test won't pass after 3 attempts for a single unit:
 1. Stop the TDD cycle
-2. `git add -A && git commit -m "wip: <what was attempted>"`
+2. `git add -A && git commit -m "chore(wip): <what was attempted>"`
 3. Skip to Step 8 (Open PR) and create a draft PR with `[WIP]` prefix
 
 ## Step 6: Self-review

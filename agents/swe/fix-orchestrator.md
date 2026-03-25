@@ -50,7 +50,7 @@ git commit -m "fix: <what was fixed>"
 ```
 
 **Failure handling:** If the fix won't pass after 3 attempts:
-1. `git add -A && git commit -m "wip: attempted fix for <bug>"`
+1. `git add -A && git commit -m "chore(wip): attempted fix for <bug>"`
 2. Skip to Step 7 (Open PR) as draft
 
 ## Step 5: Self-review

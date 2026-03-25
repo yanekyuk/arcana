@@ -54,7 +54,7 @@ For each refactoring change:
 ```
 - All tests MUST stay green
 - If a test fails: revert the change, try a different approach
-- If still failing after 3 attempts: stop, commit what you have
+- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`
 
 ### 5c. Commit
 ```bash
