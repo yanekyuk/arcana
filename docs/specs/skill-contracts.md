@@ -17,7 +17,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** User-provided ticket, idea, or bug report
 - **Output:** Branch, worktree, committed handoff artifact (`.claude/handoff.md`)
 - **Tools:** Read, Grep, Glob, Bash, Write, Agent
-- **Invocation:** User-invoked in main session
+- **Invocation:** User-invoked or model-invoked in main session
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
 
 ### run-resume

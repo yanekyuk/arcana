@@ -2,7 +2,6 @@
 name: run-triage
 description: "Use when starting new work — explores codebase, classifies as feat/fix/refactor/docs, creates branch + worktree + handoff artifact"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent
 ---
 
