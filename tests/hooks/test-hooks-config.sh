@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Tests for hooks.json configuration and plugin.json integration
+#
+# Hypothesis: hooks.json fails validation because Claude Code expects a record
+# keyed by event name (e.g. {"hooks": {"PreToolUse": [...]}}), not an array
+# (e.g. {"hooks": [...]}).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -32,46 +36,75 @@ assert_eq() {
   fi
 }
 
-# hooks.json is valid JSON
-assert_true "hooks.json is valid JSON" jq empty "$HOOKS_JSON"
+# --- Basic validity ---
 
-# plugin.json is valid JSON
+assert_true "hooks.json is valid JSON" jq empty "$HOOKS_JSON"
 assert_true "plugin.json is valid JSON" jq empty "$PLUGIN_JSON"
 
-# plugin.json has hooks field
 HOOKS_PATH="$(jq -r '.hooks' "$PLUGIN_JSON")"
 assert_eq "plugin.json has hooks field" "./hooks/hooks.json" "$HOOKS_PATH"
 
-# hooks.json has 7 hooks total
-HOOK_COUNT="$(jq '.hooks | length' "$HOOKS_JSON")"
-assert_eq "hooks.json has 7 hooks" "7" "$HOOK_COUNT"
+# --- Record-based format validation ---
 
-# Check each hook has required fields
-for i in $(seq 0 6); do
-  EVENT="$(jq -r ".hooks[$i].event" "$HOOKS_JSON")"
-  TYPE="$(jq -r ".hooks[$i].type" "$HOOKS_JSON")"
-  COMMAND="$(jq -r ".hooks[$i].command" "$HOOKS_JSON")"
+# .hooks must be an object (record), not an array
+HOOKS_TYPE="$(jq -r '.hooks | type' "$HOOKS_JSON")"
+assert_eq "hooks is a record (object), not array" "object" "$HOOKS_TYPE"
 
-  assert_true "hook $i has event" [ -n "$EVENT" ]
-  assert_true "hook $i has type=command" [ "$TYPE" = "command" ]
-  assert_true "hook $i has command" [ -n "$COMMAND" ]
-
-  # Check that the script file exists
-  SCRIPT_PATH="$ROOT/plugins/swe/hooks/$COMMAND"
-  assert_true "hook $i script exists: $COMMAND" [ -f "$SCRIPT_PATH" ]
-  assert_true "hook $i script is executable: $COMMAND" [ -x "$SCRIPT_PATH" ]
+# Expected event keys
+for EVENT in PreToolUse PostToolUse SubagentStop SessionEnd; do
+  HAS_KEY="$(jq --arg e "$EVENT" 'has("hooks") and (.hooks | has($e))' "$HOOKS_JSON")"
+  assert_eq "hooks has event key '$EVENT'" "true" "$HAS_KEY"
 done
 
-# Verify specific hook events
-assert_eq "hook 0 event" "PreToolUse" "$(jq -r '.hooks[0].event' "$HOOKS_JSON")"
-assert_eq "hook 3 event" "SubagentStop" "$(jq -r '.hooks[3].event' "$HOOKS_JSON")"
-assert_eq "hook 5 event" "PostToolUse" "$(jq -r '.hooks[5].event' "$HOOKS_JSON")"
-assert_eq "hook 6 event" "SessionEnd" "$(jq -r '.hooks[6].event' "$HOOKS_JSON")"
+# Each event key maps to an array of rule objects
+for EVENT in PreToolUse PostToolUse SubagentStop SessionEnd; do
+  EVENT_TYPE="$(jq -r --arg e "$EVENT" '.hooks[$e] | type' "$HOOKS_JSON")"
+  assert_eq "hooks.$EVENT is an array" "array" "$EVENT_TYPE"
+done
 
-# Verify matchers
-assert_eq "sensitive-file-blocker matcher" "Bash" "$(jq -r '.hooks[0].matcher' "$HOOKS_JSON")"
-assert_eq "worktree-boundary matcher includes multiple tools" "Bash|EnterWorktree|ExitWorktree" "$(jq -r '.hooks[2].matcher' "$HOOKS_JSON")"
-assert_eq "tdd-test-first matcher" "Write|Edit" "$(jq -r '.hooks[4].matcher' "$HOOKS_JSON")"
+# Each rule object has a nested hooks array with type+command entries
+TOTAL_COMMANDS=0
+for EVENT in PreToolUse PostToolUse SubagentStop SessionEnd; do
+  RULE_COUNT="$(jq --arg e "$EVENT" '.hooks[$e] | length' "$HOOKS_JSON")"
+  for i in $(seq 0 $((RULE_COUNT - 1))); do
+    # Rule must have a hooks array
+    INNER_TYPE="$(jq -r --arg e "$EVENT" --argjson i "$i" '.hooks[$e][$i].hooks | type' "$HOOKS_JSON")"
+    assert_eq "hooks.$EVENT[$i].hooks is an array" "array" "$INNER_TYPE"
+
+    # Each inner hook must have type=command and a command field
+    INNER_COUNT="$(jq --arg e "$EVENT" --argjson i "$i" '.hooks[$e][$i].hooks | length' "$HOOKS_JSON")"
+    for j in $(seq 0 $((INNER_COUNT - 1))); do
+      H_TYPE="$(jq -r --arg e "$EVENT" --argjson i "$i" --argjson j "$j" '.hooks[$e][$i].hooks[$j].type' "$HOOKS_JSON")"
+      H_CMD="$(jq -r --arg e "$EVENT" --argjson i "$i" --argjson j "$j" '.hooks[$e][$i].hooks[$j].command' "$HOOKS_JSON")"
+
+      assert_eq "hooks.$EVENT[$i].hooks[$j].type is command" "command" "$H_TYPE"
+      assert_true "hooks.$EVENT[$i].hooks[$j].command is non-empty" [ -n "$H_CMD" ]
+
+      # Script file exists and is executable
+      SCRIPT_PATH="$ROOT/plugins/swe/hooks/$H_CMD"
+      assert_true "script exists: $H_CMD" [ -f "$SCRIPT_PATH" ]
+      assert_true "script is executable: $H_CMD" [ -x "$SCRIPT_PATH" ]
+
+      TOTAL_COMMANDS=$((TOTAL_COMMANDS + 1))
+    done
+  done
+done
+
+assert_eq "total hook commands across all events" "7" "$TOTAL_COMMANDS"
+
+# --- Matcher validation ---
+
+# PreToolUse rules: sensitive-file-blocker(Bash), commit-msg-validator(Bash),
+#   worktree-boundary(Bash|EnterWorktree|ExitWorktree), tdd-test-first(Write|Edit)
+HAS_BASH_MATCHER="$(jq '[.hooks.PreToolUse[].matcher] | any(. == "Bash")' "$HOOKS_JSON")"
+assert_eq "PreToolUse has Bash matcher" "true" "$HAS_BASH_MATCHER"
+
+HAS_WRITE_EDIT_MATCHER="$(jq '[.hooks.PreToolUse[].matcher] | any(. == "Write|Edit")' "$HOOKS_JSON")"
+assert_eq "PreToolUse has Write|Edit matcher" "true" "$HAS_WRITE_EDIT_MATCHER"
+
+# SessionEnd has no matcher (applies to all)
+SESSION_MATCHER="$(jq -r '.hooks.SessionEnd[0].matcher // "null"' "$HOOKS_JSON")"
+assert_eq "SessionEnd rule has no matcher" "null" "$SESSION_MATCHER"
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
