@@ -16,9 +16,9 @@ You are scanning knowledge documents for contradictions, overlaps, and misalignm
 ## Input
 
 You will be given a target — one or more tiers to scan:
-- `.claude/docs/domain/`
-- `.claude/docs/decisions/`
-- `.claude/docs/specs/`
+- `docs/domain/`
+- `docs/decisions/`
+- `docs/specs/`
 
 If no specific target is provided, scan all tiers.
 
@@ -26,7 +26,7 @@ If no specific target is provided, scan all tiers.
 
 1. Read ALL documents in the targeted tier(s):
    ```bash
-   find .claude/docs/<tier>/ -name "*.md" -type f
+   find docs/<tier>/ -name "*.md" -type f
    ```
    Read each file.
 

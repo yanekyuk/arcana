@@ -1,6 +1,6 @@
 ---
 name: run-domain-knowledge
-description: "Use to create or update domain knowledge docs (business rules, invariants, constraints) in .claude/docs/domain/ — triggers clash-check on decisions and specs"
+description: "Use to create or update domain knowledge docs (business rules, invariants, constraints) in docs/domain/ — triggers clash-check on decisions and specs"
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
@@ -13,7 +13,7 @@ You are creating or updating a domain knowledge document — business rules, inv
 ## Creating a new domain doc
 
 1. Determine the topic from context or user request
-2. Write to `.claude/docs/domain/<kebab-case-title>.md`:
+2. Write to `docs/domain/<kebab-case-title>.md`:
 
 ```yaml
 ---
@@ -31,7 +31,7 @@ Include rationale where known.>
 
 3. Commit:
 ```bash
-git add .claude/docs/domain/<filename>.md
+git add docs/domain/<filename>.md
 git commit -m "docs: add domain knowledge — <title>"
 ```
 
@@ -42,7 +42,7 @@ git commit -m "docs: add domain knowledge — <title>"
 3. Update the `updated` date
 4. Commit:
 ```bash
-git add .claude/docs/domain/<filename>.md
+git add docs/domain/<filename>.md
 git commit -m "docs: update domain knowledge — <title>"
 ```
 
@@ -50,7 +50,7 @@ git commit -m "docs: update domain knowledge — <title>"
 
 Domain knowledge is the highest tier. Changes here can invalidate design decisions and specs.
 
-Dispatch `run-clash-check` as a subagent (via the Agent tool) targeting both `.claude/docs/decisions/` and `.claude/docs/specs/`. This is a depth-1 cascade — `run-clash-check` must NOT trigger further cascades.
+Dispatch `run-clash-check` as a subagent (via the Agent tool) targeting both `docs/decisions/` and `docs/specs/`. This is a depth-1 cascade — `run-clash-check` must NOT trigger further cascades.
 
 Report:
 - What was created/updated
