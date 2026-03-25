@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+.claude
+docs/claude-code-extensions-reference.md
+docs/specs/
+docs/plans/
