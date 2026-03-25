@@ -1,0 +1,30 @@
+{
+  "stack": {
+    "language": "markdown/json",
+    "runtime": "none",
+    "packageManager": "none",
+    "test": "none",
+    "lint": "none",
+    "format": "none",
+    "typecheck": "none"
+  },
+  "sourceRoot": ".",
+  "integrations": {
+    "coderabbit": false,
+    "linear": false,
+    "githubIssues": true,
+    "autoDocs": true
+  },
+  "architecture": {
+    "rules": [
+      "Marketplace manifest (.claude-plugin/marketplace.json) version must match each plugin's own plugin.json version",
+      "Skills must live at plugins/<name>/skills/<skill-name>/SKILL.md with valid YAML frontmatter (name, description, user-invocable, allowed-tools)",
+      "Agents must live at plugins/<name>/agents/<agent-name>.md with valid YAML frontmatter (name, description, model, tools, maxTurns)",
+      "Plugin manifest (plugin.json) must use './skills' with ./ prefix for the skills path — bare names cause validation errors",
+      "Knowledge docs must live in docs/ with YAML frontmatter (title, type, tags, created, updated) and follow the tier hierarchy: domain > decisions > specs",
+      "Skills and agents must not contain executable code — they are pure markdown instructions with YAML frontmatter",
+      "Each plugin is self-contained under plugins/<name>/ — no cross-plugin imports or shared files between plugins"
+    ]
+  },
+  "directives": []
+}
