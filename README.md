@@ -27,19 +27,22 @@ Autonomous pipelines that take work from triage to PR.
 
 | Agent | Pipeline |
 |---|---|
-| `feat-orchestrator` | handoff → spec → TDD → self-review → docs → PR |
-| `fix-orchestrator` | handoff → reproduce bug → TDD fix → self-review → docs → PR |
-| `refactor-orchestrator` | handoff → test guard → incremental refactor → self-review → docs → PR |
-| `docs-orchestrator` | handoff → write/update docs → clash-check → PR |
+| `feat-orchestrator` | handoff → config → spec → TDD → self-review → arch check → docs → PR |
+| `fix-orchestrator` | handoff → config → investigate → TDD fix → self-review → arch check → docs → PR |
+| `refactor-orchestrator` | handoff → config → test guard → incremental refactor → self-review → arch check → docs → PR |
+| `docs-orchestrator` | handoff → config → write/update docs → clash-check → arch check → PR |
 
 **Skills** — standalone or orchestrator-invoked:
 
 | Skill | What it does |
 |---|---|
+| `/run-setup` | Interactive project config wizard — tech stack, architecture rules, integrations |
 | `/run-triage` | Explore codebase, classify work, create branch + worktree + handoff |
 | `/run-resume` | Read handoff, dispatch the right orchestrator |
+| `/run-finish` | Review PR, merge, clean up worktree and branches |
 | `/run-tdd` | Red → green → refactor → commit cycle |
 | `/run-self-review` | Diff-based review against spec, domain rules, code quality |
+| `/run-arch-check` | Validate architecture rules against diff — hard gate before PR |
 | `/run-open-pr` | Safe staging, conventional commit, PR with template |
 | `/run-sync-docs` | Detect implicit knowledge in diffs, update `docs/` |
 | `/run-spec` | Create/update specs, check alignment with parent docs |
@@ -55,6 +58,43 @@ Autonomous pipelines that take work from triage to PR.
 
 *Coming soon.*
 
+## Getting Started
+
+### 1. Configure your project
+
+```
+/run-setup
+```
+
+Interactive wizard that auto-detects your tech stack, lets you pick architecture presets (Layered, Hexagonal, Vertical Slices, or custom), toggle integrations, and add custom directives. Writes `docs/swe-config.json` — required before any other skill will run.
+
+### 2. Start work
+
+```
+/run-triage
+```
+
+Describe what you want to build or fix. Triage classifies it (feat/fix/refactor/docs), creates a branch + worktree, and writes a handoff artifact.
+
+### 3. Run the pipeline
+
+```
+cd .worktrees/<branch-folder>
+# start a new Claude session
+/run-resume
+```
+
+The correct orchestrator picks up the handoff and runs autonomously: spec → TDD → self-review → arch check → docs → PR.
+
+### 4. Review and merge
+
+```
+# back in your main session (project root)
+/run-finish
+```
+
+Reviews the PR (commits, diff quality, scope, version staleness), merges, and cleans up the worktree.
+
 ## How It Works
 
 ```
@@ -68,22 +108,30 @@ You: "Fix the auth bug in session handling"
     │  worktree + handoff artifact  │
     └───────────────┬───────────────┘
                     │
-            /run-resume
+            /run-resume (in worktree)
                     │
     ┌───────────────┴───────────────┐
     │  fix-orchestrator             │
     │                               │
     │  1. Read handoff              │
-    │  2. Discover tooling          │
+    │  2. Load project config       │
     │  3. Fetch knowledge docs      │
-    │  4. TDD: reproduce → fix      │
-    │  5. Self-review               │
-    │  6. Sync docs                 │
-    │  7. Open PR                   │
+    │  4. Investigate root cause    │
+    │  5. TDD: reproduce → fix     │
+    │  6. Self-review              │
+    │  7. Arch check               │
+    │  8. Sync docs                │
+    │  9. Open PR                  │
+    └───────────────┬───────────────┘
+                    │
+            /run-finish (in main session)
+                    │
+    ┌───────────────┴───────────────┐
+    │  Review → merge → cleanup    │
     └───────────────────────────────┘
 ```
 
-Two-session model: **Session 1** (project root) triages and creates the workspace. **Session 2** (in worktree) runs the full autonomous pipeline.
+Two-session model: **Session 1** (project root) runs `/run-setup` (once), `/run-triage`, and `/run-finish`. **Session 2** (in worktree) runs `/run-resume` which dispatches the autonomous pipeline.
 
 ## Knowledge Hierarchy
 
