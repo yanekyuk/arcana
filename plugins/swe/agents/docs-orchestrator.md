@@ -31,7 +31,7 @@ Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
 ## Step 2: Fetch relevant knowledge docs
 
-If `.claude/docs/` exists:
+If `docs/` exists:
 
 1. Extract keywords from handoff
 2. Exclude noise, normalize
@@ -42,7 +42,7 @@ If `.claude/docs/` exists:
 
 Based on the handoff scope:
 
-- Create or update the appropriate docs in `.claude/docs/`
+- Create or update the appropriate docs in `docs/`
 - Use proper frontmatter format:
 
 ```yaml
@@ -59,7 +59,7 @@ updated: <today>
 
 Commit each doc:
 ```bash
-git add .claude/docs/<tier>/<file>.md
+git add docs/<tier>/<file>.md
 git commit -m "docs: <create|update> <type> — <title>"
 ```
 

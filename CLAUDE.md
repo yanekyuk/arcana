@@ -65,7 +65,7 @@ Two-session model:
 1. **Session 1** (project root): `/run-triage` classifies work, creates branch + worktree + handoff artifact (`.claude/handoff.md`)
 2. **Session 2** (worktree): `/run-resume` reads handoff and dispatches the correct orchestrator
 
-Knowledge hierarchy in target projects (`.claude/docs/`):
+Knowledge hierarchy in target projects (`docs/`):
 - `domain/` — Business rules (highest authority, cascades to decisions + specs)
 - `decisions/` — Architecture choices (cascades to specs)
 - `specs/` — Feature/fix specifications (no cascade)

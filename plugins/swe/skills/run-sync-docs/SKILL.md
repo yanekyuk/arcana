@@ -1,6 +1,6 @@
 ---
 name: run-sync-docs
-description: "Use after implementation to detect if .claude/docs/ need updating based on changes made — updates docs, triggers clash-check"
+description: "Use after implementation to detect if docs/ need updating based on changes made — updates docs, triggers clash-check"
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 
 # Sync Docs
 
-You are checking whether the implementation work introduced knowledge that should be captured in `.claude/docs/`.
+You are checking whether the implementation work introduced knowledge that should be captured in `docs/`.
 
 ## Step 1: Understand what changed
 
@@ -22,9 +22,9 @@ git diff $BASE...HEAD
 
 Review the diff for:
 
-1. **New domain rules** — business logic, validation rules, constraints that were implemented but not documented in `.claude/docs/domain/`
-2. **Design decisions** — architectural choices, pattern selections, trade-offs that were made but not captured in `.claude/docs/decisions/`
-3. **Spec gaps** — behavior that was implemented but differs from or extends existing specs in `.claude/docs/specs/`
+1. **New domain rules** — business logic, validation rules, constraints that were implemented but not documented in `docs/domain/`
+2. **Design decisions** — architectural choices, pattern selections, trade-offs that were made but not captured in `docs/decisions/`
+3. **Spec gaps** — behavior that was implemented but differs from or extends existing specs in `docs/specs/`
 
 ## Step 3: Update docs
 

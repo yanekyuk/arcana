@@ -39,12 +39,12 @@ Detect test runner and build tools:
 
 ## Step 3: Fetch relevant knowledge docs
 
-If `.claude/docs/` exists:
+If `docs/` exists:
 
 1. Extract keywords from handoff (file paths → module names, trigger → domain terms)
 2. Exclude noise: src, lib, utils, helpers, index, test, tests, __tests__, dist, build
 3. Normalize: lowercase, split on hyphens and camelCase
-4. Grep `.claude/docs/` frontmatter `tags` for matches
+4. Grep `docs/` frontmatter `tags` for matches
 5. Read top 5 matches. If more than 5 match, log skipped doc paths for transparency.
 
 Fixes don't draft new specs — the bug is a deviation from existing expected behavior.
@@ -108,7 +108,7 @@ git commit -m "fix: <what was fixed>"
 ## Step 7: Sync docs
 
 1. Review diff for implicit knowledge changes
-2. Update `.claude/docs/` if needed
+2. Update `docs/` if needed
 3. Dispatch clash-check subagent if docs changed
 4. Note any CLAUDE.md suggestions
 5. Commit doc changes if any

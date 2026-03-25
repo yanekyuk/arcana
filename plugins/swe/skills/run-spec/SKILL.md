@@ -1,6 +1,6 @@
 ---
 name: run-spec
-description: "Use to create or update specification docs in .claude/docs/specs/ — checks alignment with parent domain knowledge and design decisions"
+description: "Use to create or update specification docs in docs/specs/ — checks alignment with parent domain knowledge and design decisions"
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
@@ -14,9 +14,9 @@ You are creating or updating a specification document.
 
 1. Determine the spec topic from context (handoff artifact, user request, or current work)
 2. Read relevant parent docs:
-   - Grep `.claude/docs/domain/` and `.claude/docs/decisions/` for related tags
+   - Grep `docs/domain/` and `docs/decisions/` for related tags
    - Read the top matches to understand constraints
-3. Write the spec to `.claude/docs/specs/<kebab-case-title>.md`:
+3. Write the spec to `docs/specs/<kebab-case-title>.md`:
 
 ```yaml
 ---
@@ -51,6 +51,6 @@ updated: <YYYY-MM-DD>
 
 Commit the spec:
 ```bash
-git add .claude/docs/specs/<filename>.md
+git add docs/specs/<filename>.md
 git commit -m "docs: add/update spec — <title>"
 ```

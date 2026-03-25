@@ -37,11 +37,11 @@ Detect test runner and build tools.
 
 ## Step 3: Fetch relevant knowledge docs
 
-If `.claude/docs/` exists:
+If `docs/` exists:
 
 1. Extract keywords, exclude noise, normalize
-2. Grep `.claude/docs/` frontmatter `tags` for matches
-3. Read top 5 — focus on design decisions (`.claude/docs/decisions/`). If more than 5 match, log skipped doc paths for transparency.
+2. Grep `docs/` frontmatter `tags` for matches
+3. Read top 5 — focus on design decisions (`docs/decisions/`). If more than 5 match, log skipped doc paths for transparency.
 
 Refactors don't write new tests or draft specs — they preserve existing behavior under existing tests.
 
@@ -93,7 +93,7 @@ git commit -m "refactor: <what was changed>"
 ## Step 7: Sync docs
 
 1. Review diff for implicit knowledge
-2. Update `.claude/docs/` if needed (refactors often produce design decision docs)
+2. Update `docs/` if needed (refactors often produce design decision docs)
 3. Dispatch clash-check subagent if docs changed
 4. Note CLAUDE.md suggestions
 5. Commit

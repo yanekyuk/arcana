@@ -22,12 +22,12 @@ The user has provided a ticket, idea, or bug report. Read it carefully. Ask NO c
 
 ## Step 3: Fetch relevant knowledge docs
 
-If `.claude/docs/` exists, scan for relevant docs:
+If `docs/` exists, scan for relevant docs:
 
 1. Extract keywords from the trigger and related file paths
 2. Exclude noise: src, lib, utils, helpers, index, test, tests, __tests__, dist, build
 3. Normalize: lowercase, split on hyphens and camelCase
-4. Grep `.claude/docs/` frontmatter `tags` for matches
+4. Grep `docs/` frontmatter `tags` for matches
 5. Read the top 5 matching docs. If more than 5 match, log the skipped doc paths for transparency.
 
 ## Step 4: Propose classification
@@ -77,7 +77,7 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 <list of files discovered in step 2>
 
 ## Relevant Docs
-<list of matched .claude/docs/ paths, or "None — knowledge base does not cover this area yet.">
+<list of matched docs/ paths, or "None — knowledge base does not cover this area yet.">
 
 ## Scope
 <summary of what needs to be done and why>
