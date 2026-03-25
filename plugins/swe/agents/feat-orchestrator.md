@@ -201,39 +201,16 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 
 ## Step 11: Open PR
 
-1. Push: `git push -u origin HEAD`
-2. Build PR title: `feat: <short description from handoff>`
-3. Build PR body:
+Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-```markdown
-## Summary
-<From handoff scope>
+Since the handoff artifact was removed in Step 10, the skill will derive PR context from `git log` and `git diff` instead.
 
-## Changes
-<Bulleted list of key changes>
+**Fallback:** If the skill dispatch is not available, run these commands directly:
 
-## Test Plan
-<Test files and what they cover>
+1. `git push -u origin HEAD`
+2. `gh pr create --title "feat: <short description>" --body "<body>" --base main`
 
-## Knowledge Warnings
-<Clash-check warnings, or "None">
-```
-
-If `CLAUDE.md` updates were recommended, add:
-```markdown
-## Recommended CLAUDE.md Updates
-<Suggestions>
-```
-
-4. Create PR:
-```bash
-gh pr create --title "<title>" --body "<body>" --base main
-```
-
-If this is a WIP:
-```bash
-gh pr create --title "[WIP] feat: <desc>" --body "<body>" --base main --draft
-```
+If this is a WIP: `gh pr create --title "[WIP] feat: <desc>" --body "<body>" --base main --draft`
 
 Report the PR URL, then tell the user:
 

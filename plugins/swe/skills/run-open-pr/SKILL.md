@@ -36,7 +36,13 @@ If push fails, retry once. If still failing, report the error and stop.
 
 Read `.claude/handoff.md` for trigger and scope context.
 
-**Title format:** `<type>: <short description>` where type comes from the handoff `type` field.
+**If `.claude/handoff.md` does not exist** (e.g., it was already `git rm`'d by the orchestrator pipeline), derive context from git instead:
+- Run `git log --oneline main..HEAD` to understand the commit history
+- Run `git diff main...HEAD --stat` to see which files changed
+- Infer the work type from commit prefixes (feat/fix/refactor/docs)
+- Build the PR title and body from the commit messages and diff summary
+
+**Title format:** `<type>: <short description>` where type comes from the handoff `type` field (or inferred from commits if handoff is missing).
 
 **Body:** Use this template:
 
