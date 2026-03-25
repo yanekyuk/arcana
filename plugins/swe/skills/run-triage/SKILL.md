@@ -54,7 +54,15 @@ After user confirms the classification:
 
 ## Step 6: Write handoff artifact
 
-Write the handoff to the **project root** so it can be reviewed before the worktree exists:
+Write the handoff to the **project root** so it can be reviewed before the worktree exists.
+
+First, check for a leftover handoff from a previous triage:
+
+```bash
+test -f .claude/handoff.md && echo "EXISTS" || echo "OK"
+```
+
+If EXISTS, warn the user: "A `.claude/handoff.md` already exists in the project root (likely from an interrupted triage). Overwrite it?" Wait for confirmation before proceeding.
 
 ```bash
 mkdir -p .claude
@@ -88,6 +96,8 @@ git branch <type>/<short-description>
 mkdir -p .worktrees
 git worktree add .worktrees/<type>-<short-description> <type>/<short-description>
 ```
+
+**Note:** `.claude/handoff.md` in the project root is transient — it exists only until Step 8 moves it into the worktree. If Step 7 fails, clean up manually: `rm .claude/handoff.md`.
 
 ## Step 8: Move handoff into worktree, commit, and instruct
 
