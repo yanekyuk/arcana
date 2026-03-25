@@ -13,12 +13,12 @@ COMMAND="$(echo "$INPUT" | jq -r '.tool_input.command // empty')"
 [ -n "$COMMAND" ] || exit 0
 
 # Only inspect git add commands
-if ! echo "$COMMAND" | grep -qE '^\s*git\s+add\b'; then
+if ! echo "$COMMAND" | grep -qE '\bgit\s+add\b'; then
   exit 0
 fi
 
 # Block broad adds that could sweep in sensitive files
-if echo "$COMMAND" | grep -qE '^\s*git\s+add\s+(-A|--all|\.|-)(\s|$)'; then
+if echo "$COMMAND" | grep -qE '\bgit\s+add\s+(-A|--all|\.|-)(\s|$)'; then
   echo "Blocked: 'git add' with broad patterns (-A, --all, .) may include sensitive files. Add specific files by name instead." >&2
   exit 2
 fi

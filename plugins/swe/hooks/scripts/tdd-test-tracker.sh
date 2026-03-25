@@ -12,7 +12,8 @@ INPUT="$(cat)"
 TOOL_NAME="$(echo "$INPUT" | jq -r '.tool_name // empty')"
 [ "$TOOL_NAME" = "Bash" ] || exit 0
 
-STATE_FILE="${CLAUDE_PLUGIN_DATA:-/tmp}/tdd-state"
+STATE_DIR="${CLAUDE_PLUGIN_DATA:-/tmp}"
+STATE_FILE="$STATE_DIR/tdd-state-${CLAUDE_SESSION_ID:-$$}"
 
 # Only act if we're in test-written state
 [ -f "$STATE_FILE" ] || exit 0

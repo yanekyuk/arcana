@@ -21,7 +21,8 @@ case "$TOOL_NAME" in
   *) exit 0 ;;
 esac
 
-STATE_FILE="${CLAUDE_PLUGIN_DATA:-/tmp}/tdd-state"
+STATE_DIR="${CLAUDE_PLUGIN_DATA:-/tmp}"
+STATE_FILE="$STATE_DIR/tdd-state-${CLAUDE_SESSION_ID:-$$}"
 
 # Determine the file path being written/edited
 FILE_PATH="$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')"

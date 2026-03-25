@@ -8,8 +8,9 @@ POST_HOOK="$SCRIPT_DIR/../../plugins/swe/hooks/scripts/tdd-test-tracker.sh"
 PASS=0
 FAIL=0
 
-# Use a temp dir for CLAUDE_PLUGIN_DATA
+# Use a temp dir for CLAUDE_PLUGIN_DATA and a fixed session ID for deterministic state files
 export CLAUDE_PLUGIN_DATA="$(mktemp -d)"
+export CLAUDE_SESSION_ID="test-session"
 trap 'rm -rf "$CLAUDE_PLUGIN_DATA"' EXIT
 
 assert_blocks() {
@@ -47,7 +48,7 @@ run_post_hook() {
 }
 
 reset_state() {
-  rm -f "$CLAUDE_PLUGIN_DATA/tdd-state"
+  rm -f "$CLAUDE_PLUGIN_DATA/tdd-state-$CLAUDE_SESSION_ID"
 }
 
 # --- Test Sequence 1: Clean state allows implementation writes ---

@@ -84,6 +84,13 @@ assert_blocks "blocks git add with .env among multiple files" \
 assert_blocks "blocks git add credentials.yaml" \
   '{"tool_name":"Bash","tool_input":{"command":"git add credentials.yaml"}}'
 
+# Should block git add in chained commands (issue #1 bypass)
+assert_blocks "blocks chained cd && git add .env" \
+  '{"tool_name":"Bash","tool_input":{"command":"cd foo && git add .env"}}'
+
+assert_blocks "blocks chained cd && git add -A" \
+  '{"tool_name":"Bash","tool_input":{"command":"cd foo && git add -A"}}'
+
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1

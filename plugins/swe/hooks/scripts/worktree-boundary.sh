@@ -20,8 +20,8 @@ fi
 COMMAND="$(echo "$INPUT" | jq -r '.tool_input.command // empty')"
 [ -n "$COMMAND" ] || exit 0
 
-# Block cd into .worktrees/ paths
-if echo "$COMMAND" | grep -qE '\bcd\s+[^;|&]*\.worktrees/'; then
+# Block cd/pushd into .worktrees/ paths
+if echo "$COMMAND" | grep -qE '\b(cd|pushd)\s+[^;|&]*\.worktrees/'; then
   echo "Worktree navigation is a user action. Stop and instruct the user to open a new terminal session in the worktree." >&2
   exit 2
 fi

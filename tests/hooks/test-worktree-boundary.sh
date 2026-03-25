@@ -63,6 +63,10 @@ assert_allows "allows cd into src" \
 assert_allows "allows non-Bash tool" \
   '{"tool_name":"Read","tool_input":{"file_path":"foo.txt"}}'
 
+# Should block pushd into .worktrees/ paths
+assert_blocks "blocks pushd .worktrees/feat-branch" \
+  '{"tool_name":"Bash","tool_input":{"command":"pushd .worktrees/feat-branch"}}'
+
 # Should allow commands that mention worktrees but don't cd into them
 assert_allows "allows git worktree list" \
   '{"tool_name":"Bash","tool_input":{"command":"git worktree list"}}'

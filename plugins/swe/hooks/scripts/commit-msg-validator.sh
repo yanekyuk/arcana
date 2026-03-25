@@ -24,12 +24,8 @@ MSG=""
 
 # Try to extract from HEREDOC pattern first
 if echo "$COMMAND" | grep -q 'cat <<'; then
-  # Extract the line after the HEREDOC delimiter
-  MSG="$(echo "$COMMAND" | sed -n '/cat <</{n;s/^[[:space:]]*//;s/\\n.*//;p;}')"
-  # If sed-based extraction fails, try another approach
-  if [ -z "$MSG" ]; then
-    MSG="$(echo -e "$COMMAND" | sed -n '/cat <</{n;p;}' | head -1 | sed 's/^[[:space:]]*//')"
-  fi
+  # Commands arrive JSON-escaped with literal \n — expand them before parsing
+  MSG="$(echo -e "$COMMAND" | sed -n '/cat <</{n;s/^[[:space:]]*//;p;}' | head -1)"
 fi
 
 # Fall back to direct -m "message" extraction
