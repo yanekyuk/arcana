@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "yanek-plugins",
+  "name": "arcana",
   "metadata": {
-    "description": "Personal Claude Code marketplace — custom skills, MCP servers, and agents for SWE workflows."
+    "description": "Personal Claude Code marketplace — custom skills, MCP servers, and agents across SWE, game development, and research domains."
   },
   "owner": {
     "name": "yanek"
