@@ -1,0 +1,39 @@
+---
+title: "Autonomous Orchestrators"
+type: decision
+tags: [orchestrator, agent, autonomous, pipeline, progress-tracking]
+created: 2026-03-26
+updated: 2026-03-26
+---
+
+## Decision
+
+Orchestrator agents run autonomously from handoff to PR with zero human intervention. Progress is tracked via TaskCreate/TaskUpdate so users can monitor status.
+
+## Context
+
+The plugin's goal is to automate the full software engineering workflow. Human intervention at each step (write test, run test, implement, review, etc.) defeats the purpose. The agent needs to execute the entire pipeline independently.
+
+## Rationale
+
+- **End-to-end automation** -- The agent handles every phase: reading the handoff, discovering tooling, fetching docs, implementing (via TDD), self-reviewing, syncing docs, bumping versions, cleaning up, and opening the PR.
+- **Progress visibility** -- TaskCreate/TaskUpdate provide real-time status updates. Users see which step is in progress, which are complete, and which are pending via the task list (Ctrl+T).
+- **Graceful degradation** -- When the agent cannot complete a step (tests fail after retries, blocking self-review issues), it falls back to a WIP draft PR rather than hanging or crashing silently.
+- **Deterministic pipeline** -- Every orchestrator follows a numbered step sequence. This makes behavior predictable and debuggable.
+
+## Orchestrator Variants
+
+Four orchestrators exist, each tailored to a work type:
+
+| Orchestrator | Type | Default Version Bump | Max Turns | Unique Steps |
+|---|---|---|---|---|
+| feat-orchestrator | feat | MINOR | 100 | Draft spec, TDD cycle |
+| fix-orchestrator | fix | PATCH | 100 | Root cause investigation, TDD reproduce |
+| refactor-orchestrator | refactor | PATCH | 80 | TDD guard (pre-check), incremental refactor |
+| docs-orchestrator | docs | none | 60 | Write/update docs, clash check |
+
+## Constraints
+
+- Orchestrators must not ask the user questions or wait for input
+- All orchestrators must remove the handoff artifact before opening the PR
+- WIP draft PRs are the fallback for any unrecoverable failure
