@@ -17,15 +17,18 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 **Entry conditions:**
 - User provides a ticket, idea, or bug report
 - Working tree is clean on the main branch
+- `docs/swe-config.json` exists (checked at step 2 -- aborts if missing)
 
 **Actions:**
-1. Read the user's request (no clarifying questions)
-2. Explore related code via Grep/Glob (read max 5 files)
-3. Fetch relevant knowledge docs from `docs/` if they exist (top 5 by tag match)
-4. Propose classification: feat, fix, refactor, or docs
-5. Wait for user confirmation or override
-6. Create branch (`<type>/<short-description>`) and worktree (`.worktrees/<type>-<short-description>`)
-7. Write `.claude/handoff.md` into the worktree and commit
+1. Validate context (must be main repo, not a worktree)
+2. Load project config (`docs/swe-config.json`) -- abort if missing
+3. Read the user's request (no clarifying questions)
+4. Explore related code via Grep/Glob (read max 5 files)
+5. Fetch relevant knowledge docs from `docs/` if they exist (top 5 by tag match)
+6. Propose classification: feat, fix, refactor, or docs
+7. Wait for user confirmation or override
+8. Create branch (`<type>/<short-description>`) and worktree (`.worktrees/<type>-<short-description>`)
+9. Write `.claude/handoff.md` into the worktree and commit
 
 **Exit conditions:**
 - Branch and worktree exist

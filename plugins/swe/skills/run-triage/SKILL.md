@@ -19,17 +19,31 @@ test -f .git && echo "WORKTREE — wrong context" || echo "MAIN REPO — correct
 
 If in a worktree, tell the user: "This skill must run from the project root (main session), not from inside a worktree."
 
-## Step 2: Understand the trigger
+## Step 2: Load project config
+
+Check that the target project has been configured:
+
+```bash
+test -f docs/swe-config.json && echo "CONFIG FOUND" || echo "CONFIG MISSING"
+```
+
+If `docs/swe-config.json` does not exist, stop immediately and tell the user:
+
+> No project config found. Run `/run-setup` in the target project first.
+
+Do NOT proceed with any further steps.
+
+## Step 3: Understand the trigger
 
 The user has provided a ticket, idea, or bug report. Read it carefully. Ask NO clarifying questions — work with what you have.
 
-## Step 3: Explore related code
+## Step 4: Explore related code
 
 - Use Grep and Glob to find files related to the trigger
 - Read the most relevant files (max 5)
 - Check recent git history: `git log --oneline -20`
 
-## Step 4: Fetch relevant knowledge docs
+## Step 5: Fetch relevant knowledge docs
 
 If `docs/` exists, scan for relevant docs:
 
@@ -39,7 +53,7 @@ If `docs/` exists, scan for relevant docs:
 4. Grep `docs/` frontmatter `tags` for matches
 5. Read the top 5 matching docs. If more than 5 match, log the skipped doc paths for transparency.
 
-## Step 5: Propose classification
+## Step 6: Propose classification
 
 Based on your exploration, propose one of:
 - **feat** — new functionality
@@ -49,7 +63,7 @@ Based on your exploration, propose one of:
 
 Present your reasoning and **wait for the user to confirm or override**.
 
-## Step 6: Determine branch name
+## Step 7: Determine branch name
 
 After user confirms the classification:
 
@@ -61,7 +75,7 @@ After user confirms the classification:
    ```
    If branch or worktree already exists, offer the user two options: resume the existing worktree, or create with a numeric suffix (e.g., `feat/user-auth-2`).
 
-## Step 7: Create branch and worktree
+## Step 8: Create branch and worktree
 
 ```bash
 git branch <type>/<short-description>
@@ -69,7 +83,7 @@ mkdir -p .worktrees
 git worktree add .worktrees/<type>-<short-description> <type>/<short-description>
 ```
 
-## Step 8: Write handoff artifact, commit, and instruct
+## Step 9: Write handoff artifact, commit, and instruct
 
 Write the handoff directly into the worktree at `.worktrees/<folder>/.claude/handoff.md` using the Write tool. Do **not** run `mkdir -p` for the `.claude/` directory — the Write tool creates parent directories automatically:
 
