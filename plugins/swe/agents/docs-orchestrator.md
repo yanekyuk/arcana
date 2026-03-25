@@ -1,6 +1,6 @@
 ---
 name: docs-orchestrator
-description: "Autonomous documentation pipeline — reads handoff, fetches docs, writes/updates documentation, runs clash-check, sync docs, opens PR"
+description: "Autonomous documentation pipeline — reads handoff, loads project config, fetches docs, writes/updates documentation, runs clash-check, arch check, sync docs, opens PR"
 model: opus
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 maxTurns: 60
@@ -15,13 +15,15 @@ You are an autonomous documentation agent. You will write or update documentatio
 Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
 
 1. "Read handoff"
-2. "Fetch docs"
-3. "Write/update documentation"
-4. "Clash check"
-5. "Sync docs"
-6. "Version bump"
-7. "Clean up handoff"
-8. "Open PR"
+2. "Load project config"
+3. "Fetch docs"
+4. "Write/update documentation"
+5. "Clash check"
+6. "Sync docs"
+7. "Arch check"
+8. "Version bump"
+9. "Clean up handoff"
+10. "Open PR"
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
@@ -29,7 +31,21 @@ Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_prog
 
 Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
-## Step 2: Fetch relevant knowledge docs
+## Step 2: Load project config
+
+Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
+
+**If the file does not exist:** Stop the pipeline immediately. Report to the user:
+
+> No project config found. Run `/run-setup` in the target project first.
+
+Do NOT proceed with any further steps. Mark all remaining tasks as completed and exit.
+
+**If the file exists:** Parse it and store the values for later use:
+- `architecture.rules` → enforced by arch-check gate
+- `directives` → soft guidance to follow during documentation work
+
+## Step 3: Fetch relevant knowledge docs
 
 If `docs/` exists:
 
@@ -38,7 +54,7 @@ If `docs/` exists:
 3. Grep all tiers (domain, decisions, specs) for tag matches
 4. Rank by match count, read top 5 total across all tiers (not per tier — cap prevents token bloat). If more than 5 match, log skipped doc paths for transparency.
 
-## Step 3: Write/update documentation
+## Step 4: Write/update documentation
 
 Based on the handoff scope:
 
@@ -63,13 +79,13 @@ git add docs/<tier>/<file>.md
 git commit -m "docs: <create|update> <type> — <title>"
 ```
 
-## Step 4: Clash check
+## Step 5: Clash check
 
 Dispatch a clash-check subagent (via Agent tool) targeting the tiers that were modified. This runs in an isolated context.
 
 If clashes found, note them for the PR description.
 
-## Step 5: Sync docs
+## Step 6: Sync docs
 
 Check if the documentation changes affect other tiers:
 - A new domain doc may require corresponding decisions or specs
@@ -81,11 +97,23 @@ Check if `CLAUDE.md` needs updating. Do NOT modify it — note suggestions for t
 
 Commit any additional changes.
 
-## Step 6: Version bump
+## Step 7: Arch check
+
+Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
+
+If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
+
+If violations are found:
+1. Attempt to fix each violation
+2. Re-run the arch check to confirm fixes
+3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "docs: resolve architecture violations"`
+4. If fixes fail after 1 retry, proceed to Step 10 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+
+## Step 8: Version bump
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
 
-## Step 7: Clean up handoff
+## Step 9: Clean up handoff
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -93,7 +121,7 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 8: Open PR
+## Step 10: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `docs: <short description>`

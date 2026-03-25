@@ -1,7 +1,7 @@
 ---
 title: "Skill Contracts"
 type: spec
-tags: [skill, contract, triage, resume, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec]
+tags: [skill, contract, triage, resume, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -9,6 +9,25 @@ updated: 2026-03-26
 ## Behavior
 
 Each skill is a composable building block with defined inputs, outputs, and tool requirements. Skills are invoked via slash commands or dispatched by orchestrator agents.
+
+## Configuration Skills
+
+### run-setup
+
+- **Input:** Project files for auto-detection; user responses for overrides and selections
+- **Output:** `docs/swe-config.json` written to the target project
+- **Tools:** Read, Write, Edit, Bash, Grep, Glob
+- **Invocation:** User-invoked in the target project (interactive -- asks questions and waits for responses)
+- **Side effects:** Creates `docs/swe-config.json` with tech stack, architecture rules, integration toggles, and custom directives
+- **Note:** This is the only interactive skill -- all others are non-interactive when dispatched by orchestrators
+
+### run-arch-check
+
+- **Input:** `docs/swe-config.json` architecture rules, diff against base branch
+- **Output:** Pass/fail report with violation details
+- **Tools:** Read, Bash, Grep, Glob
+- **Invocation:** User-invoked or dispatched by orchestrators after self-review (or after sync-docs for docs orchestrator)
+- **Constraint:** Hard gate -- violations must be fixed before PR creation. When dispatched by an orchestrator, a fail result triggers fix attempts; unresolved violations result in a draft PR.
 
 ## Lifecycle Skills
 

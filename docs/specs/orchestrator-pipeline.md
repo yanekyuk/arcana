@@ -1,7 +1,7 @@
 ---
 title: "Orchestrator Pipeline"
 type: spec
-tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent]
+tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -18,14 +18,26 @@ Every orchestrator executes these phases in order:
 |---|---|---|
 | Setup | Initialize progress tracking | Create all pipeline tasks via TaskCreate |
 | Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
-| Context | Discover tooling | Detect test runner and build tools (skipped by docs) |
+| Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
 | Work | Type-specific implementation | See per-type sections below |
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
+| Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
 | Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check |
 | Release | Version bump | Apply semver bump per orchestrator default |
 | Cleanup | Remove handoff | `git rm .claude/handoff.md` |
 | Delivery | Open PR | Push, create PR via `gh pr create` |
+
+## Config Gate
+
+All orchestrators require `docs/swe-config.json` to exist. This file is created by the `/run-setup` skill and contains:
+
+- **`stack.*`** -- Tech stack configuration (language, runtime, test command, lint/format/typecheck commands). Replaces dynamic tooling discovery.
+- **`architecture.rules`** -- Flat list of architecture rules enforced by `run-arch-check` as a hard gate.
+- **`directives`** -- Soft guidance strings read by orchestrators during implementation.
+- **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs).
+
+If the config file is missing, the orchestrator stops immediately with: "No project config found. Run `/run-setup` in the target project first."
 
 ## Per-Type Variations
 

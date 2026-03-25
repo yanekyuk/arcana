@@ -1,0 +1,82 @@
+---
+title: "Project Setup and Architecture Enforcement"
+type: spec
+tags: [setup, architecture, config, orchestrator, skill]
+created: 2026-03-26
+updated: 2026-03-26
+---
+
+## Behavior
+
+### run-setup skill
+
+Interactive project configuration wizard that:
+1. Auto-detects tech stack (language, runtime, package manager, test runner, linter/formatter) from project files
+2. Presents detected values and lets the user confirm or override
+3. Offers architecture presets (Layered, Hexagonal, Vertical Slices, Custom) that expand into flat rule lists at setup time -- presets are not a runtime concept
+4. Allows custom directives (style preferences, patterns to favor)
+5. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs
+6. Writes config to `docs/swe-config.json` in the target project
+
+### run-arch-check skill
+
+Architecture enforcement gate that:
+1. Reads `docs/swe-config.json` architecture rules
+2. Reads the diff about to be PR'd
+3. Validates each rule against the changes
+4. Returns pass/fail with violation details
+5. Acts as a hard gate -- violations must be fixed before PR creation
+
+### Orchestrator modifications
+
+All four orchestrators gain:
+1. **Config gate** after "Read handoff": reads `docs/swe-config.json`. If missing, aborts with: "No project config found. Run `/run-setup` in the target project first."
+2. **Config-driven tooling** replaces dynamic tooling discovery with `stack.*` values from config
+3. **Arch check step** after self-review (after sync-docs for docs orchestrator): dispatches `run-arch-check`. Violations trigger fix attempt; failed fix proceeds as draft PR.
+
+## Constraints
+
+- Architecture rules are flat strings at runtime -- no preset taxonomy
+- `architecture.rules` are hard-enforced by `run-arch-check`; `directives` are soft guidance
+- Config lives in `docs/` (version controlled, human-editable, visible in PRs)
+- No config = orchestrator aborts immediately (hard requirement)
+- Skill format must follow existing YAML frontmatter conventions
+- Orchestrators must remain autonomous (no human prompts mid-pipeline) except for `run-setup` which is interactive by nature
+
+## Config Schema
+
+```json
+{
+  "stack": {
+    "language": "string",
+    "runtime": "string",
+    "packageManager": "string",
+    "test": "string",
+    "lint": "string",
+    "format": "string",
+    "typecheck": "string"
+  },
+  "sourceRoot": "string",
+  "integrations": {
+    "coderabbit": "boolean",
+    "linear": "boolean",
+    "githubIssues": "boolean",
+    "autoDocs": "boolean"
+  },
+  "architecture": {
+    "rules": ["string"]
+  },
+  "directives": ["string"]
+}
+```
+
+## Acceptance Criteria
+
+1. `run-setup` SKILL.md exists at `plugins/swe/skills/run-setup/SKILL.md` with correct frontmatter
+2. `run-arch-check` SKILL.md exists at `plugins/swe/skills/run-arch-check/SKILL.md` with correct frontmatter
+3. All four orchestrators include a config gate step after reading the handoff
+4. All four orchestrators use config values for tooling instead of dynamic discovery
+5. feat, fix, refactor orchestrators include arch-check step after self-review
+6. docs orchestrator includes arch-check step after sync-docs
+7. Skill contracts spec is updated with run-setup and run-arch-check entries
+8. Orchestrator pipeline spec is updated with new steps

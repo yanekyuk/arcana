@@ -12,10 +12,10 @@ You are doing test-driven development. Follow this cycle strictly.
 
 ## Prerequisites
 
-Before starting, discover the test runner:
-- Check `package.json` scripts for `test` command
-- Check for `Makefile`, `Cargo.toml`, `pyproject.toml`, `go.mod`
-- If unclear and used standalone, ask the user. Within a pipeline (orchestrator context), infer the best available option — check for common test runner binaries on PATH.
+Determine the test command:
+1. Check if `docs/swe-config.json` exists — if so, use `stack.test` from the config
+2. If no config, fall back to auto-detection: check `package.json` scripts for `test` command, check for `Makefile`, `Cargo.toml`, `pyproject.toml`, `go.mod`
+3. If still unclear and used standalone, ask the user. Within a pipeline (orchestrator context), the config is always available — the orchestrator aborts if it is missing.
 
 ## The Cycle
 
