@@ -112,7 +112,6 @@ After merge completes:
 ### 6a. Update main
 
 ```bash
-git checkout main
 git pull origin main
 ```
 
