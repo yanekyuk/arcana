@@ -98,45 +98,7 @@ git commit -m "fix: <what was fixed>"
 
 ## Step 8: Version bump
 
-Before opening the PR, bump the project version if the project uses semantic versioning.
-
-### 8a. Detect version manifest
-
-Search the project root for a version manifest, checking in order:
-- `package.json` — look for `"version": "X.Y.Z"`
-- `Cargo.toml` — look for `version = "X.Y.Z"` under `[package]`
-- `pyproject.toml` — look for `version = "X.Y.Z"` under `[project]` or `[tool.poetry]`
-- `version.txt` — entire file content is the version string
-- Any other common manifest with a version field
-
-If no version manifest is found, skip this step entirely.
-
-### 8b. Determine bump type
-
-Apply Semantic Versioning 2.0.0 rules (https://semver.org):
-
-1. **Check handoff for explicit version directive** — if the handoff frontmatter or scope contains a `version-bump: major|minor|patch|none` directive, use that.
-2. **Otherwise use the default for this orchestrator: PATCH** (backward-compatible bug fix).
-3. **Adjust for pre-1.0** — if the current version is `0.x.y`:
-   - MAJOR changes become MINOR bumps (`0.x.0 → 0.(x+1).0`)
-   - MINOR and PATCH stay as-is
-4. **Adjust for breaking changes** — if the fix changes public API behavior in an incompatible way, escalate to MAJOR.
-
-Bump categories:
-- **MAJOR** (`X.0.0`) — incompatible API changes
-- **MINOR** (`x.Y.0`) — backward-compatible new functionality
-- **PATCH** (`x.y.Z`) — backward-compatible bug fixes
-
-### 8c. Apply the bump
-
-Edit the version string in the manifest file. Reset the lower version components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
-
-### 8d. Commit
-
-```bash
-git add <manifest-file>
-git commit -m "chore: bump version to <new-version>"
-```
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (backward-compatible bug fix). Skip if no version manifest is found.
 
 ## Step 9: Open PR
 

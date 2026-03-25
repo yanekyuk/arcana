@@ -4,7 +4,6 @@ dist/
 .env
 .env.local
 .claude/*
-!.claude/handoff.md
 !.claude/settings.json
 docs/claude-code-extensions-reference.md
 docs/specs/

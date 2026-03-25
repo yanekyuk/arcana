@@ -68,47 +68,7 @@ Commit any additional changes.
 
 ## Step 6: Version bump
 
-Before opening the PR, check whether a version bump is warranted.
-
-**Default behavior: no bump.** Documentation changes typically do not affect the published package version. However, if the documentation ships as part of a versioned package (e.g., API docs bundled in a library release), a bump may be appropriate.
-
-### 6a. Detect version manifest
-
-Search the project root for a version manifest, checking in order:
-- `package.json` — look for `"version": "X.Y.Z"`
-- `Cargo.toml` — look for `version = "X.Y.Z"` under `[package]`
-- `pyproject.toml` — look for `version = "X.Y.Z"` under `[project]` or `[tool.poetry]`
-- `version.txt` — entire file content is the version string
-- Any other common manifest with a version field
-
-If no version manifest is found, skip this step entirely.
-
-### 6b. Determine bump type
-
-Apply Semantic Versioning 2.0.0 rules (https://semver.org):
-
-1. **Check handoff for explicit version directive** — if the handoff frontmatter or scope contains a `version-bump: major|minor|patch|none` directive, use that.
-2. **Otherwise: skip the bump** (docs-only changes default to no version change).
-3. If a bump is requested:
-   - **Adjust for pre-1.0** — if the current version is `0.x.y`:
-     - MAJOR changes become MINOR bumps (`0.x.0 → 0.(x+1).0`)
-     - MINOR and PATCH stay as-is
-
-Bump categories (when applicable):
-- **MAJOR** (`X.0.0`) — incompatible API changes
-- **MINOR** (`x.Y.0`) — backward-compatible new functionality
-- **PATCH** (`x.y.Z`) — backward-compatible bug fixes
-
-### 6c. Apply the bump
-
-Edit the version string in the manifest file. Reset the lower version components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
-
-### 6d. Commit
-
-```bash
-git add <manifest-file>
-git commit -m "chore: bump version to <new-version>"
-```
+Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
 
 ## Step 7: Open PR
 
