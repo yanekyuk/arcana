@@ -22,7 +22,8 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 6. "Self-review"
 7. "Sync docs"
 8. "Version bump"
-9. "Open PR"
+9. "Clean up handoff"
+10. "Open PR"
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
@@ -87,7 +88,7 @@ git commit -m "refactor: <what was changed>"
    - No behavior changes (only structural improvements)
    - Alignment with design decisions
    - All tests still pass
-3. If blocking issues: attempt fix, if fails → draft PR
+3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 10)
 
 ## Step 7: Sync docs
 
@@ -101,7 +102,15 @@ git commit -m "refactor: <what was changed>"
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (no behavior change). Skip if no version manifest is found.
 
-## Step 9: Open PR
+## Step 9: Clean up handoff
+
+Remove the triage handoff artifact so it doesn't appear in the final PR:
+
+```bash
+git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
+```
+
+## Step 10: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `refactor: <short description>`

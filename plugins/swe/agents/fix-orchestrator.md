@@ -22,7 +22,8 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 6. "Self-review"
 7. "Sync docs"
 8. "Version bump"
-9. "Open PR"
+9. "Clean up handoff"
+10. "Open PR"
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
@@ -92,7 +93,7 @@ git commit -m "fix: <what was fixed>"
 2. Form a new hypothesis and retry the TDD cycle
 3. If the second investigation also fails to produce a passing fix:
    - `git add -A && git commit -m "chore(wip): attempted fix for <bug>"`
-   - Skip to Step 9 (Open PR) as draft
+   - Skip to Step 10 (Open PR) as draft
 
 ## Step 6: Self-review
 
@@ -102,7 +103,7 @@ git commit -m "fix: <what was fixed>"
    - No domain rule violations
    - No regressions (full test suite green)
    - No scope creep
-3. If blocking issues: attempt fix, if fails after 1 retry → draft PR
+3. If blocking issues: attempt fix, if fails after 1 retry → draft PR (skip to Step 10)
 
 ## Step 7: Sync docs
 
@@ -116,7 +117,15 @@ git commit -m "fix: <what was fixed>"
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (backward-compatible bug fix). Skip if no version manifest is found.
 
-## Step 9: Open PR
+## Step 9: Clean up handoff
+
+Remove the triage handoff artifact so it doesn't appear in the final PR:
+
+```bash
+git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
+```
+
+## Step 10: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `fix: <short description>`
