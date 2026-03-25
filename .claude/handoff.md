@@ -1,20 +1,16 @@
 ---
-trigger: "Hook scripts fail with 'PreToolUse:Bash hook error' because they use relative paths (./scripts/) that resolve against user CWD, not the plugin directory"
-type: fix
-branch: fix/hook-relative-paths
+trigger: "Add visualization to agents and tasks — user cannot tell which agent is running or what the plan is"
+type: feat
+branch: feat/orchestrator-progress
 created: 2026-03-25
-version-bump: patch
+version-bump: minor
 ---
 
 ## Related Files
-- plugins/swe/hooks/hooks.json
-- plugins/swe/hooks/scripts/sensitive-file-blocker.sh
-- plugins/swe/hooks/scripts/commit-msg-validator.sh
-- plugins/swe/hooks/scripts/worktree-boundary.sh
-- plugins/swe/hooks/scripts/tdd-test-first.sh
-- plugins/swe/hooks/scripts/tdd-test-tracker.sh
-- plugins/swe/hooks/scripts/orchestrator-completion-check.sh
-- plugins/swe/hooks/scripts/session-feedback-extractor.sh
+- plugins/swe/agents/feat-orchestrator.md
+- plugins/swe/agents/fix-orchestrator.md
+- plugins/swe/agents/refactor-orchestrator.md
+- plugins/swe/agents/docs-orchestrator.md
 - plugins/swe/.claude-plugin/plugin.json
 - .claude-plugin/marketplace.json
 
@@ -24,15 +20,21 @@ None — knowledge base does not cover this area yet.
 ## Scope
 
 ### Problem
-All hook commands in `hooks.json` use relative paths (`./scripts/foo.sh`). Claude Code runs hook commands with the user's project directory as CWD, not the plugin directory. This means every hook fails with "no such file or directory" when invoked from any project that installs the plugin.
+Users cannot tell which orchestrator agent is running or what step it's on during execution.
 
-### Root Cause
-The `command` field in hooks.json resolves relative to CWD. The plugin hook execution model provides `${CLAUDE_PLUGIN_ROOT}` as an environment variable pointing to the plugin's installation directory.
+### Solution
+Each orchestrator self-seeds its pipeline tasks via TaskCreate in Step 0, then updates progress via TaskUpdate throughout execution. Visible in the Claude Code task list panel (Ctrl+T).
 
-### Fix
-Replace all `./scripts/` prefixes in `hooks.json` with `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/`. The plugin root is `plugins/swe/`, and hooks live at `plugins/swe/hooks/`, so the full path from root is `hooks/scripts/`.
+### Implementation
 
-### Files to Change
-1. `plugins/swe/hooks/hooks.json` — Update all 7 command paths from `./scripts/` to `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/`
-2. `plugins/swe/.claude-plugin/plugin.json` — Bump version (patch)
-3. `.claude-plugin/marketplace.json` — Bump version to match
+1. **Step 0 in each orchestrator**: Agent creates all pipeline tasks as `pending` via TaskCreate on startup.
+
+2. **TaskUpdate calls in agent instructions**: Each orchestrator marks tasks `in_progress` when starting a step and `completed` when done.
+
+3. **Tool list updates**: Add `TaskCreate, TaskUpdate` to the `tools` frontmatter of each orchestrator agent.
+
+### Orchestrator step maps
+- **feat**: read handoff → discover tooling → fetch docs → draft spec → TDD cycle → self-review → sync docs → version bump → open PR (9 steps)
+- **fix**: read handoff → discover tooling → fetch docs → investigate root cause → TDD reproduce → self-review → sync docs → version bump → open PR (9 steps)
+- **refactor**: read handoff → discover tooling → fetch docs → TDD guard → refactor incrementally → self-review → sync docs → version bump → open PR (9 steps)
+- **docs**: read handoff → fetch docs → write/update documentation → clash check → sync docs → version bump → open PR (7 steps)
