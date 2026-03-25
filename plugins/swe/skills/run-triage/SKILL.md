@@ -40,7 +40,7 @@ Based on your exploration, propose one of:
 
 Present your reasoning and **wait for the user to confirm or override**.
 
-## Step 5: Create branch and worktree
+## Step 5: Determine branch name
 
 After user confirms the classification:
 
@@ -51,25 +51,24 @@ After user confirms the classification:
    test -d .worktrees/<type>-<short-description>
    ```
    If branch or worktree already exists, offer the user two options: resume the existing worktree, or create with a numeric suffix (e.g., `feat/user-auth-2`).
-3. Create the branch:
-   ```bash
-   git branch <type>/<short-description>
-   ```
-4. Create worktree:
-   ```bash
-   mkdir -p .worktrees
-   git worktree add .worktrees/<type>-<short-description> <type>/<short-description>
-   ```
 
 ## Step 6: Write handoff artifact
 
-Create the `.claude/` directory in the worktree and write the handoff:
+Write the handoff to the **project root** so it can be reviewed before the worktree exists.
+
+First, check for a leftover handoff from a previous triage:
 
 ```bash
-mkdir -p .worktrees/<folder>/.claude
+test -f .claude/handoff.md && echo "EXISTS" || echo "OK"
 ```
 
-Write to `.worktrees/<folder>/.claude/handoff.md`:
+If EXISTS, warn the user: "A `.claude/handoff.md` already exists in the project root (likely from an interrupted triage). Overwrite it?" Wait for confirmation before proceeding.
+
+```bash
+mkdir -p .claude
+```
+
+Write to `.claude/handoff.md`:
 
 ```yaml
 ---
@@ -90,9 +89,23 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 <summary of what needs to be done and why>
 ```
 
-## Step 7: Commit and instruct
+## Step 7: Create branch and worktree
 
 ```bash
+git branch <type>/<short-description>
+mkdir -p .worktrees
+git worktree add .worktrees/<type>-<short-description> <type>/<short-description>
+```
+
+**Note:** `.claude/handoff.md` in the project root is transient — it exists only until Step 8 moves it into the worktree. If Step 7 fails, clean up manually: `rm .claude/handoff.md`.
+
+## Step 8: Move handoff into worktree, commit, and instruct
+
+Move the handoff artifact from the project root into the worktree and clean up:
+
+```bash
+mkdir -p .worktrees/<folder>/.claude
+mv .claude/handoff.md .worktrees/<folder>/.claude/handoff.md
 cd .worktrees/<folder>
 git add .claude/handoff.md
 git commit -m "chore: add handoff artifact for <type>/<short-description>"
