@@ -168,15 +168,16 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 
 ## Step 11: Open PR
 
-1. `git push -u origin HEAD`
-2. Title: `refactor: <short description>`
-3. Body: standard template
-4. `gh pr create --title "<title>" --body "<body>" --base main`
+Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-If this is a WIP (stopped early due to failures):
-```bash
-gh pr create --title "[WIP] refactor: <desc>" --body "<body>" --base main --draft
-```
+Since the handoff artifact was removed in Step 10, the skill will derive PR context from `git log` and `git diff` instead.
+
+**Fallback:** If the skill dispatch is not available, run these commands directly:
+
+1. `git push -u origin HEAD`
+2. `gh pr create --title "refactor: <short description>" --body "<body>" --base main`
+
+If WIP: `gh pr create --title "[WIP] refactor: <desc>" --body "<body>" --base main --draft`
 
 Report the PR URL, then tell the user:
 
