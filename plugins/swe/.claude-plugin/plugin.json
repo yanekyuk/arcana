@@ -1,11 +1,10 @@
 {
   "name": "swe",
   "description": "Software engineering workflow — triage, TDD, self-review, docs sync, and orchestrators for feat/fix/refactor/docs pipelines.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": {
     "name": "yanek"
   },
   "skills": "./skills",
-  "hooks": "./hooks/hooks.json",
   "keywords": ["swe", "tdd", "triage", "refactor", "orchestrator", "hooks"]
 }
