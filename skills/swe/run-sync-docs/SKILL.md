@@ -13,8 +13,9 @@ You are checking whether the implementation work introduced knowledge that shoul
 ## Step 1: Understand what changed
 
 ```bash
-git diff main...HEAD --stat
-git diff main...HEAD
+BASE=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+git diff $BASE...HEAD --stat
+git diff $BASE...HEAD
 ```
 
 ## Step 2: Scan for implicit knowledge

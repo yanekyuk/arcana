@@ -3,7 +3,7 @@ name: run-design-decision
 description: "Use to create or update design decision docs (architecture, patterns, rationale) in .claude/docs/decisions/ — checks alignment with domain knowledge, triggers clash-check on specs"
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Grep, Glob, Agent
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---
 
 # Design Decision Management

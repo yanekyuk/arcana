@@ -4,7 +4,7 @@ description: "Use to scan knowledge docs for contradictions, overlaps, and misal
 user-invocable: true
 disable-model-invocation: true
 context: fork
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Bash, Grep, Glob
 ---
 
 # Clash Check

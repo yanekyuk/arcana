@@ -3,7 +3,7 @@ name: run-spec
 description: "Use to create or update specification docs in .claude/docs/specs/ — checks alignment with parent domain knowledge and design decisions"
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Grep, Glob, Agent
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---
 
 # Spec Management

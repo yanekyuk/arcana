@@ -88,4 +88,9 @@ git commit -m "refactor: <what was changed>"
 3. Body: standard template
 4. `gh pr create --title "<title>" --body "<body>" --base main`
 
+If this is a WIP (stopped early due to failures):
+```bash
+gh pr create --title "[WIP] refactor: <desc>" --body "<body>" --base main --draft
+```
+
 Report PR URL.
