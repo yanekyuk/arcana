@@ -6,12 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/sensitive-file-blocker.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/sensitive-file-blocker.sh",
             "description": "Blocks git add of sensitive files (.env, credentials, *.key, *.pem)"
           },
           {
             "type": "command",
-            "command": "./scripts/commit-msg-validator.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/commit-msg-validator.sh",
             "description": "Validates conventional commit format on git commit -m"
           }
         ]
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/worktree-boundary.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/worktree-boundary.sh",
             "description": "Prevents agent from navigating between worktrees"
           }
         ]
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/tdd-test-first.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/tdd-test-first.sh",
             "description": "Enforces test-first TDD — blocks implementation writes until test is run"
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/tdd-test-tracker.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/tdd-test-tracker.sh",
             "description": "Tracks test execution to update TDD state machine"
           }
         ]
@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/orchestrator-completion-check.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/orchestrator-completion-check.sh",
             "description": "Ensures orchestrators create a PR before finishing"
           }
         ]
@@ -66,7 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/session-feedback-extractor.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-feedback-extractor.sh",
             "description": "Extracts user corrections and learnings from session transcript"
           }
         ]
