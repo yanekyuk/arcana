@@ -40,19 +40,19 @@ Detect the test runner and build tools:
 
 ## Step 3: Fetch relevant knowledge docs
 
-If `.claude/docs/` exists:
+If `docs/` exists:
 
 1. Extract keywords from the handoff: file paths → module/directory names, trigger text → nouns and domain terms
 2. Exclude noise: src, lib, utils, helpers, index, test, tests, __tests__, dist, build
 3. Normalize: lowercase, split on hyphens and camelCase
-4. Grep `.claude/docs/` frontmatter `tags` for matches
+4. Grep `docs/` frontmatter `tags` for matches
 5. Rank by match count, read top 5. If more than 5 match, log the skipped doc paths for transparency.
 
 Remember the content of these docs — they inform your implementation.
 
 ## Step 4: Draft spec (if needed)
 
-Check if a relevant spec already exists in `.claude/docs/specs/`.
+Check if a relevant spec already exists in `docs/specs/`.
 
 If not, create one:
 
@@ -77,7 +77,7 @@ updated: <today>
 
 Verify the spec doesn't contradict domain knowledge or design decisions.
 
-Commit: `git add .claude/docs/specs/<file>.md && git commit -m "docs: add spec — <title>"`
+Commit: `git add docs/specs/<file>.md && git commit -m "docs: add spec — <title>"`
 
 ## Step 5: TDD cycle
 
@@ -124,7 +124,7 @@ git commit -m "feat: <what this unit does>"
    - New domain rules not documented
    - Design decisions not captured
    - Spec gaps
-2. Create or update docs in `.claude/docs/` as needed
+2. Create or update docs in `docs/` as needed
 3. If any docs changed, dispatch a clash-check subagent:
    - Use the Agent tool
    - Tell it which tiers to scan
