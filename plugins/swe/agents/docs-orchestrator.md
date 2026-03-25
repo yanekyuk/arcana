@@ -100,4 +100,6 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 3. Body: standard template
 4. `gh pr create --title "<title>" --body "<body>" --base main`
 
-Report PR URL.
+Report the PR URL, then tell the user:
+
+> PR opened. Return to your **main session** (project root) and run `/run-finish` to review and merge.
