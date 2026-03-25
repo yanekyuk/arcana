@@ -1,40 +1,47 @@
 ---
-trigger: "Add visualization to agents and tasks — user cannot tell which agent is running or what the plan is"
+trigger: "Add a /run-finish skill for post-PR lifecycle: review open PR, suggest changes or merge to main, then clean up worktree and branches"
 type: feat
-branch: feat/orchestrator-progress
-created: 2026-03-25
+branch: feat/run-finish
+created: 2026-03-26
 version-bump: minor
 ---
 
 ## Related Files
-- plugins/swe/agents/feat-orchestrator.md
-- plugins/swe/agents/fix-orchestrator.md
-- plugins/swe/agents/refactor-orchestrator.md
-- plugins/swe/agents/docs-orchestrator.md
-- plugins/swe/.claude-plugin/plugin.json
-- .claude-plugin/marketplace.json
+- plugins/swe/skills/run-triage/SKILL.md — creates worktree + branch (the setup side)
+- plugins/swe/skills/run-open-pr/SKILL.md — opens PR (the step before finish)
+- plugins/swe/skills/run-resume/SKILL.md — dispatches orchestrator (for format reference)
+- plugins/swe/agents/feat-orchestrator.md — final step needs updating to mention /run-finish
+- plugins/swe/agents/fix-orchestrator.md — same
+- plugins/swe/agents/refactor-orchestrator.md — same
+- plugins/swe/agents/docs-orchestrator.md — same
+- plugins/swe/.claude-plugin/plugin.json — version bump
+- .claude-plugin/marketplace.json — version bump
 
 ## Relevant Docs
 None — knowledge base does not cover this area yet.
 
 ## Scope
 
-### Problem
-Users cannot tell which orchestrator agent is running or what step it's on during execution.
+### New skill: `/run-finish`
+Create `plugins/swe/skills/run-finish/SKILL.md` — a user-invocable skill run from the **main session** (project root, not worktree) after an orchestrator opens a PR.
 
-### Solution
-Each orchestrator self-seeds its pipeline tasks via TaskCreate in Step 0, then updates progress via TaskUpdate throughout execution. Visible in the Claude Code task list panel (Ctrl+T).
+**Flow:**
+1. List open PRs on the repo (or let user specify which)
+2. Review the PR: diff, commit messages, test coverage, conventional commits compliance
+3. If changes are needed:
+   - Describe what needs fixing
+   - Provide a ready-to-paste prompt the user can send to the orchestrator agent session in the worktree
+   - Stop and wait — user will re-run `/run-finish` after fixes are applied
+4. If PR looks good:
+   - Merge to main (`gh pr merge --merge` or `--squash` based on preference)
+   - Delete remote branch (`gh pr merge` handles this via `--delete-branch`)
+   - Delete local branch (`git branch -d <branch>`)
+   - Remove worktree (`git worktree remove .worktrees/<folder>`)
+   - Report completion
 
-### Implementation
+### Update orchestrators
+All four orchestrators' final step (Open PR) should append a message after reporting the PR URL:
 
-1. **Step 0 in each orchestrator**: Agent creates all pipeline tasks as `pending` via TaskCreate on startup.
+> PR opened. Return to your **main session** (project root) and run `/run-finish` to review and merge.
 
-2. **TaskUpdate calls in agent instructions**: Each orchestrator marks tasks `in_progress` when starting a step and `completed` when done.
-
-3. **Tool list updates**: Add `TaskCreate, TaskUpdate` to the `tools` frontmatter of each orchestrator agent.
-
-### Orchestrator step maps
-- **feat**: read handoff → discover tooling → fetch docs → draft spec → TDD cycle → self-review → sync docs → version bump → open PR (9 steps)
-- **fix**: read handoff → discover tooling → fetch docs → investigate root cause → TDD reproduce → self-review → sync docs → version bump → open PR (9 steps)
-- **refactor**: read handoff → discover tooling → fetch docs → TDD guard → refactor incrementally → self-review → sync docs → version bump → open PR (9 steps)
-- **docs**: read handoff → fetch docs → write/update documentation → clash check → sync docs → version bump → open PR (7 steps)
+This closes the triage → resume → orchestrate → finish lifecycle loop.
