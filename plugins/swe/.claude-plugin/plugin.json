@@ -6,5 +6,6 @@
     "name": "yanek"
   },
   "skills": "./skills",
-  "keywords": ["swe", "tdd", "triage", "refactor", "orchestrator"]
+  "hooks": "./hooks/hooks.json",
+  "keywords": ["swe", "tdd", "triage", "refactor", "orchestrator", "hooks"]
 }

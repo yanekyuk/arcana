@@ -1,0 +1,52 @@
+{
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "type": "command",
+      "command": "./scripts/sensitive-file-blocker.sh",
+      "description": "Blocks git add of sensitive files (.env, credentials, *.key, *.pem)"
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "type": "command",
+      "command": "./scripts/commit-msg-validator.sh",
+      "description": "Validates conventional commit format on git commit -m"
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash|EnterWorktree|ExitWorktree",
+      "type": "command",
+      "command": "./scripts/worktree-boundary.sh",
+      "description": "Prevents agent from navigating between worktrees"
+    },
+    {
+      "event": "SubagentStop",
+      "matcher": "feat-orchestrator|fix-orchestrator|refactor-orchestrator|docs-orchestrator",
+      "type": "command",
+      "command": "./scripts/orchestrator-completion-check.sh",
+      "description": "Ensures orchestrators create a PR before finishing"
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit",
+      "type": "command",
+      "command": "./scripts/tdd-test-first.sh",
+      "description": "Enforces test-first TDD — blocks implementation writes until test is run"
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Bash",
+      "type": "command",
+      "command": "./scripts/tdd-test-tracker.sh",
+      "description": "Tracks test execution to update TDD state machine"
+    },
+    {
+      "event": "SessionEnd",
+      "type": "command",
+      "command": "./scripts/session-feedback-extractor.sh",
+      "description": "Extracts user corrections and learnings from session transcript"
+    }
+  ]
+}
