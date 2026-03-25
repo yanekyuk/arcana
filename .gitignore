@@ -6,6 +6,5 @@ dist/
 .claude/*
 !.claude/settings.json
 docs/claude-code-extensions-reference.md
-docs/specs/
 docs/plans/
 .worktrees
