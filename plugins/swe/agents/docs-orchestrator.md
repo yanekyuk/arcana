@@ -14,16 +14,45 @@ You are an autonomous documentation agent. You will write or update documentatio
 
 Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
 
-1. "Read handoff"
-2. "Load project config"
-3. "Fetch docs"
-4. "Write/update documentation"
-5. "Clash check"
-6. "Sync docs"
-7. "Arch check"
-8. "Version bump"
-9. "Clean up handoff"
-10. "Open PR"
+1. **Read handoff**
+   - `activeForm`: "Reading handoff artifact"
+   - `description`: "Parse .claude/handoff.md frontmatter and all sections — source of truth for what to document."
+
+2. **Load project config**
+   - `activeForm`: "Loading project config"
+   - `description`: "Read docs/swe-config.json for architecture rules and custom directives."
+
+3. **Fetch docs**
+   - `activeForm`: "Fetching knowledge docs"
+   - `description`: "Extract keywords from handoff, grep all tiers (domain, decisions, specs) for tag matches, read top 5."
+
+4. **Write/update documentation**
+   - `activeForm`: "Writing documentation"
+   - `description`: "Create or update docs across tiers with proper frontmatter. Commit each doc individually."
+
+5. **Clash check**
+   - `activeForm`: "Running clash check"
+   - `description`: "Dispatch clash-check subagent on modified tiers to detect contradictions across the knowledge base."
+
+6. **Sync docs**
+   - `activeForm`: "Syncing knowledge docs"
+   - `description`: "Check if documentation changes affect other tiers. Update affected docs and run another clash-check if needed."
+
+7. **Arch check**
+   - `activeForm`: "Running arch check"
+   - `description`: "Dispatch run-arch-check skill to validate architecture rules against the current diff."
+
+8. **Version bump**
+   - `activeForm`: "Bumping version"
+   - `description`: "Apply semver bump only if handoff has explicit version-bump directive or docs ship as part of a versioned package."
+
+9. **Clean up handoff**
+   - `activeForm`: "Cleaning up handoff"
+   - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
+
+10. **Open PR**
+    - `activeForm`: "Opening pull request"
+    - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 

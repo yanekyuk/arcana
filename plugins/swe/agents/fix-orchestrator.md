@@ -14,17 +14,49 @@ You are an autonomous bug fix agent. You will fix a bug from handoff to PR with 
 
 Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
 
-1. "Read handoff"
-2. "Load project config"
-3. "Fetch docs"
-4. "Investigate root cause"
-5. "TDD reproduce"
-6. "Self-review"
-7. "Arch check"
-8. "Sync docs"
-9. "Version bump"
-10. "Clean up handoff"
-11. "Open PR"
+1. **Read handoff**
+   - `activeForm`: "Reading handoff artifact"
+   - `description`: "Parse .claude/handoff.md frontmatter and all sections — source of truth for what to fix."
+
+2. **Load project config**
+   - `activeForm`: "Loading project config"
+   - `description`: "Read docs/swe-config.json for tech stack, architecture rules, and custom directives."
+
+3. **Fetch docs**
+   - `activeForm`: "Fetching knowledge docs"
+   - `description`: "Extract keywords from handoff, grep docs/ frontmatter tags for matches, read top 5 relevant docs."
+
+4. **Investigate root cause**
+   - `activeForm`: "Investigating root cause"
+   - `description`: "Trace backward from symptoms through code paths. Form a written hypothesis about why the bug exists."
+
+5. **TDD reproduce**
+   - `activeForm`: "Reproducing bug via TDD"
+   - `description`: "Write a failing test that reproduces the bug, then implement the minimum fix to make it pass."
+
+6. **Self-review**
+   - `activeForm`: "Running self-review"
+   - `description`: "Diff against main. Verify fix addresses the reported bug with no regressions or scope creep."
+
+7. **Arch check**
+   - `activeForm`: "Running arch check"
+   - `description`: "Dispatch run-arch-check skill to validate architecture rules against the current diff."
+
+8. **Sync docs**
+   - `activeForm`: "Syncing knowledge docs"
+   - `description`: "Review diff for undocumented domain rules, design decisions, or spec gaps. Update docs/ and run clash-check if changed."
+
+9. **Version bump**
+   - `activeForm`: "Bumping version"
+   - `description`: "Apply semver PATCH bump following the semver bump procedure. Skip if no version manifest found."
+
+10. **Clean up handoff**
+    - `activeForm`: "Cleaning up handoff"
+    - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
+
+11. **Open PR**
+    - `activeForm`: "Opening pull request"
+    - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
