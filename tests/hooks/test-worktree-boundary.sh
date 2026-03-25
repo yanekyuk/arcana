@@ -74,6 +74,15 @@ assert_allows "allows git worktree list" \
 assert_allows "allows ls .worktrees" \
   '{"tool_name":"Bash","tool_input":{"command":"ls .worktrees/"}}'
 
+# Should allow git -C .worktrees/ (operates on worktree without cd)
+# Hypothesis: run-triage Step 7 used cd into worktree which was blocked;
+# git -C is the correct alternative that the hook should allow.
+assert_allows "allows git -C .worktrees/feat-branch add" \
+  '{"tool_name":"Bash","tool_input":{"command":"git -C .worktrees/feat-branch add -f .claude/handoff.md"}}'
+
+assert_allows "allows git -C .worktrees/feat-branch commit" \
+  '{"tool_name":"Bash","tool_input":{"command":"git -C .worktrees/feat-branch commit -m \"chore: add handoff\""}}'
+
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1
