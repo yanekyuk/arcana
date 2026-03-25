@@ -1,6 +1,6 @@
 ---
 name: refactor-orchestrator
-description: "Autonomous refactoring pipeline — reads handoff, discovers tooling, fetches docs, guards with existing tests, refactors incrementally, self-review, sync docs, opens PR"
+description: "Autonomous refactoring pipeline — reads handoff, loads project config, fetches docs, guards with existing tests, refactors incrementally, self-review, arch check, sync docs, opens PR"
 model: opus
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 maxTurns: 80
@@ -15,15 +15,16 @@ You are an autonomous refactoring agent. You will refactor code from handoff to 
 Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
 
 1. "Read handoff"
-2. "Discover tooling"
+2. "Load project config"
 3. "Fetch docs"
 4. "TDD guard"
 5. "Refactor incrementally"
 6. "Self-review"
-7. "Sync docs"
-8. "Version bump"
-9. "Clean up handoff"
-10. "Open PR"
+7. "Arch check"
+8. "Sync docs"
+9. "Version bump"
+10. "Clean up handoff"
+11. "Open PR"
 
 Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
@@ -31,9 +32,20 @@ Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_prog
 
 Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
-## Step 2: Discover project tooling
+## Step 2: Load project config
 
-Detect test runner and build tools.
+Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
+
+**If the file does not exist:** Stop the pipeline immediately. Report to the user:
+
+> No project config found. Run `/run-setup` in the target project first.
+
+Do NOT proceed with any further steps. Mark all remaining tasks as completed and exit.
+
+**If the file exists:** Parse it and store the values for later use:
+- `stack.test` → test command for TDD guard and incremental refactoring
+- `architecture.rules` → enforced by arch-check gate
+- `directives` → soft guidance to follow during refactoring
 
 ## Step 3: Fetch relevant knowledge docs
 
@@ -71,7 +83,7 @@ For each refactoring change:
 ```
 - All tests MUST stay green
 - If a test fails: revert the change, try a different approach
-- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`
+- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`, skip to Step 11
 
 ### 5c. Commit
 ```bash
@@ -88,9 +100,21 @@ git commit -m "refactor: <what was changed>"
    - No behavior changes (only structural improvements)
    - Alignment with design decisions
    - All tests still pass
-3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 10)
+3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 11)
 
-## Step 7: Sync docs
+## Step 7: Arch check
+
+Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
+
+If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
+
+If violations are found:
+1. Attempt to fix each violation
+2. Re-run the arch check to confirm fixes
+3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "refactor: resolve architecture violations"`
+4. If fixes fail after 1 retry, proceed to Step 11 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+
+## Step 8: Sync docs
 
 1. Review diff for implicit knowledge
 2. Update `docs/` if needed (refactors often produce design decision docs)
@@ -98,11 +122,11 @@ git commit -m "refactor: <what was changed>"
 4. Note CLAUDE.md suggestions
 5. Commit
 
-## Step 8: Version bump
+## Step 9: Version bump
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (no behavior change). Skip if no version manifest is found.
 
-## Step 9: Clean up handoff
+## Step 10: Clean up handoff
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -110,7 +134,7 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 10: Open PR
+## Step 11: Open PR
 
 1. `git push -u origin HEAD`
 2. Title: `refactor: <short description>`
