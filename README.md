@@ -41,7 +41,7 @@ Autonomous pipelines that take work from triage to PR.
 | `/run-tdd` | Red → green → refactor → commit cycle |
 | `/run-self-review` | Diff-based review against spec, domain rules, code quality |
 | `/run-open-pr` | Safe staging, conventional commit, PR with template |
-| `/run-sync-docs` | Detect implicit knowledge in diffs, update `.claude/docs/` |
+| `/run-sync-docs` | Detect implicit knowledge in diffs, update `docs/` |
 | `/run-spec` | Create/update specs, check alignment with parent docs |
 | `/run-domain-knowledge` | Create/update domain rules, cascade clash-check |
 | `/run-design-decision` | Create/update architecture decisions, check alignment |
@@ -87,7 +87,7 @@ Two-session model: **Session 1** (project root) triages and creates the workspac
 
 ## Knowledge Hierarchy
 
-The SWE domain maintains a three-tier knowledge base in `.claude/docs/`:
+The SWE domain maintains a three-tier knowledge base in `docs/`:
 
 ```
 domain/     ← business rules, invariants (highest authority)
