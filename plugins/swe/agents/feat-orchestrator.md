@@ -87,7 +87,7 @@ git commit -m "feat: <what this unit does>"
 **Failure handling:** If a test won't pass after 3 attempts for a single unit:
 1. Stop the TDD cycle
 2. `git add -A && git commit -m "chore(wip): <what was attempted>"`
-3. Skip to Step 8 (Open PR) and create a draft PR with `[WIP]` prefix
+3. Skip to Step 9 (Open PR) and create a draft PR with `[WIP]` prefix
 
 ## Step 6: Self-review
 
@@ -99,7 +99,7 @@ git commit -m "feat: <what this unit does>"
    - Domain rule compliance — no violations
    - Test coverage — all behavior changes tested
    - Code quality — no debug code, no stale TODOs
-4. If blocking issues found: attempt to fix. If fix fails after 1 retry, proceed to Step 8 as draft PR.
+4. If blocking issues found: attempt to fix. If fix fails after 1 retry, proceed to Step 9 as draft PR.
 
 ## Step 7: Sync docs
 
@@ -116,7 +116,49 @@ git commit -m "feat: <what this unit does>"
 4. Check if `CLAUDE.md` might need updating. Do NOT modify it. Note any suggestions for the PR description.
 5. Commit only the specific doc files that were created or updated: `git add <specific-doc-files> && git commit -m "docs: sync knowledge docs"`
 
-## Step 8: Open PR
+## Step 8: Version bump
+
+Before opening the PR, bump the project version if the project uses semantic versioning.
+
+### 8a. Detect version manifest
+
+Search the project root for a version manifest, checking in order:
+- `package.json` — look for `"version": "X.Y.Z"`
+- `Cargo.toml` — look for `version = "X.Y.Z"` under `[package]`
+- `pyproject.toml` — look for `version = "X.Y.Z"` under `[project]` or `[tool.poetry]`
+- `version.txt` — entire file content is the version string
+- Any other common manifest with a version field
+
+If no version manifest is found, skip this step entirely.
+
+### 8b. Determine bump type
+
+Apply Semantic Versioning 2.0.0 rules (https://semver.org):
+
+1. **Check handoff for explicit version directive** — if the handoff frontmatter or scope contains a `version-bump: major|minor|patch|none` directive, use that.
+2. **Otherwise use the default for this orchestrator: MINOR** (new backward-compatible functionality).
+3. **Adjust for pre-1.0** — if the current version is `0.x.y`:
+   - MAJOR changes become MINOR bumps (`0.x.0 → 0.(x+1).0`)
+   - MINOR and PATCH stay as-is
+4. **Adjust for breaking changes** — if the diff introduces incompatible API changes (removed public functions, changed signatures, renamed exports), escalate to MAJOR regardless of the default.
+
+Bump categories:
+- **MAJOR** (`X.0.0`) — incompatible API changes
+- **MINOR** (`x.Y.0`) — backward-compatible new functionality
+- **PATCH** (`x.y.Z`) — backward-compatible bug fixes
+
+### 8c. Apply the bump
+
+Edit the version string in the manifest file. Reset the lower version components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
+
+### 8d. Commit
+
+```bash
+git add <manifest-file>
+git commit -m "chore: bump version to <new-version>"
+```
+
+## Step 9: Open PR
 
 1. Push: `git push -u origin HEAD`
 2. Build PR title: `feat: <short description from handoff>`
