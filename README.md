@@ -5,9 +5,9 @@
 /_/ |_|/_/ \_/\___/  /_/ |_|/_/|___/ /_/ |_|
 ```
 
-**Autonomous workflow plugins for Claude Code.**
+**Opinionated workflow plugins for Claude Code.**
 
-Skills, agents, and MCP servers that give Claude Code domain-specific superpowers — from triage to PR, zero hand-holding required.
+Skills, agents, and MCP servers that encode domain-specific processes — from triage to PR.
 
 ---
 
