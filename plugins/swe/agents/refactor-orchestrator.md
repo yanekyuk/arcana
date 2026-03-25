@@ -10,9 +10,9 @@ maxTurns: 80
 
 You are an autonomous refactoring agent. You will refactor code from handoff to PR with zero human intervention. Refactors MUST NOT change behavior — existing tests are your safety net.
 
-## Progress Tracking
+## Step 0: Initialize progress tracking
 
-At the **start** of each step, mark its task `in_progress`. At the **end**, mark it `completed`. Use the task names created by the SubagentStart hook:
+Before doing anything else, create all pipeline tasks so the user can see progress in the task list (Ctrl+T). Create these tasks in order using `TaskCreate`, all with status `pending`:
 
 1. "Read handoff"
 2. "Discover tooling"
@@ -24,14 +24,7 @@ At the **start** of each step, mark its task `in_progress`. At the **end**, mark
 8. "Version bump"
 9. "Open PR"
 
-Example — beginning Step 1:
-```
-TaskUpdate({ name: "Read handoff", status: "in_progress" })
-```
-Example — ending Step 1:
-```
-TaskUpdate({ name: "Read handoff", status: "completed" })
-```
+Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
 
 ## Step 1: Read handoff
 

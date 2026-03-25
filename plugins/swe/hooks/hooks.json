@@ -49,18 +49,6 @@
         ]
       }
     ],
-    "SubagentStart": [
-      {
-        "matcher": "feat-orchestrator|fix-orchestrator|refactor-orchestrator|docs-orchestrator",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./scripts/orchestrator-progress-init.sh",
-            "description": "Creates task list for orchestrator pipeline progress visualization"
-          }
-        ]
-      }
-    ],
     "SubagentStop": [
       {
         "matcher": "feat-orchestrator|fix-orchestrator|refactor-orchestrator|docs-orchestrator",
