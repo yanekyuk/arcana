@@ -3,7 +3,9 @@ dist/
 *.tsbuildinfo
 .env
 .env.local
-.claude
+.claude/*
+!.claude/handoff.md
 docs/claude-code-extensions-reference.md
 docs/specs/
 docs/plans/
+.worktrees
