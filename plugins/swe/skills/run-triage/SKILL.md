@@ -98,26 +98,19 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 <summary of what needs to be done and why>
 ```
 
-Then pipe the handoff content into the setup-worktree script via a single Bash call. The script creates the branch, worktree, writes the handoff, and commits it in one operation.
+Then pipe the handoff content into the setup-worktree script via a **single Bash call**. The script creates the branch, worktree, writes the handoff, and commits it in one operation. This reduces 3 permission prompts (branch, write, commit) to 1.
 
-Resolve the script path — check the local repo path first, fall back to the plugin cache:
+Combine path resolution and invocation into one command:
 
 ```bash
 SCRIPT="./plugins/swe/scripts/setup-worktree.sh"
 if [ ! -f "$SCRIPT" ]; then
   SCRIPT="$(find ~/.claude/plugins/cache/arcana/swe -name setup-worktree.sh 2>/dev/null | head -1)"
 fi
-```
-
-Then invoke:
-
-```bash
 cat <<'HANDOFF' | bash "$SCRIPT" "<type>/<short-description>" "<type>-<short-description>" "chore: add handoff artifact for <type>/<short-description>"
 <handoff content here>
 HANDOFF
 ```
-
-This reduces 3 permission prompts (branch, write, commit) to 1.
 
 ## Step 9: Instruct the user
 
