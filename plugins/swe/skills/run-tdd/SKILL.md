@@ -1,7 +1,6 @@
 ---
 name: run-tdd
 description: "Use for test-driven development — write failing test, implement until green, repeat per unit of work"
-user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 

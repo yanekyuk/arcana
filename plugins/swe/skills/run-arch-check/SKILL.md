@@ -1,7 +1,6 @@
 ---
 name: run-arch-check
 description: "Use to validate architecture rules against a diff -- hard gate that blocks PR creation on violations"
-user-invocable: true
 allowed-tools: Read, Bash, Grep, Glob
 ---
 
