@@ -1,7 +1,7 @@
 ---
 title: "Orchestrator Pipeline"
 type: spec
-tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup]
+tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup, knowledge-alignment]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -20,6 +20,7 @@ Every orchestrator executes these phases in order:
 | Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
 | Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
+| Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming on conflict (skipped by docs) |
 | Work | Type-specific implementation | See per-type sections below |
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
@@ -43,6 +44,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 ### Feat Orchestrator
 
+- **Knowledge alignment** -- Domain: CAN ADD, Decisions: CAN CREATE/ALIGN, Specs: CAN CREATE. Pauses for brainstorming on conflict.
 - **Draft spec** -- Creates a spec in `docs/specs/` if one does not exist for the feature
 - **TDD cycle** -- Standard red-green-commit loop for each unit of work
 - **Default version bump:** MINOR
@@ -50,6 +52,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 ### Fix Orchestrator
 
+- **Knowledge alignment** -- Domain: READ-ONLY, Decisions: READ-ONLY, Specs: PRIMARY FOCUS. Blocks pipeline on conflict.
 - **Root cause investigation** -- Traces backward from symptoms through code paths, forms a written hypothesis
 - **TDD reproduce** -- Writes a failing test that reproduces the bug, then fixes it
 - **Investigation retry** -- On fix failure, loops back to investigation with a new hypothesis (up to 2 cycles)
@@ -58,6 +61,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 ### Refactor Orchestrator
 
+- **Knowledge alignment** -- Domain: CAN EDIT, Decisions: CAN EDIT/FORCE ALIGN, Specs: NOT PRIMARY. Pauses for brainstorming on conflict.
 - **TDD guard** -- Runs full test suite before any changes. Aborts if tests are not green.
 - **Incremental refactor** -- One conceptual change at a time, tests must stay green after each
 - **No new tests** -- Relies entirely on existing test suite as safety net
@@ -66,6 +70,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 ### Docs Orchestrator
 
+- **No knowledge alignment check** -- Docs orchestrator directly manipulates documentation; clash-check serves as its quality gate instead
 - **Write/update documentation** -- Creates or updates docs across all three tiers
 - **Clash check** -- Dispatches clash-check subagent on modified tiers
 - **No tooling discovery** -- Does not detect test runners or build tools
