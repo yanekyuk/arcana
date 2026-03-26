@@ -75,17 +75,9 @@ After user confirms the classification:
    ```
    If branch or worktree already exists, offer the user two options: resume the existing worktree, or create with a numeric suffix (e.g., `feat/user-auth-2`).
 
-## Step 8: Create branch and worktree
+## Step 8: Create branch, worktree, and handoff artifact
 
-```bash
-git branch <type>/<short-description>
-mkdir -p .worktrees
-git worktree add .worktrees/<type>-<short-description> <type>/<short-description>
-```
-
-## Step 9: Write handoff artifact, commit, and instruct
-
-Write the handoff directly into the worktree at `.worktrees/<folder>/.claude/handoff.md` using the Write tool. Do **not** run `mkdir -p` for the `.claude/` directory — the Write tool creates parent directories automatically:
+Compose the handoff content as a string (do not write it to a file):
 
 ```yaml
 ---
@@ -106,13 +98,22 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 <summary of what needs to be done and why>
 ```
 
-Then commit:
+Then pipe the handoff content into the setup-worktree script via a **single Bash call**. The script creates the branch, worktree, writes the handoff, and commits it in one operation. This reduces 3 permission prompts (branch, write, commit) to 1.
+
+Combine path resolution and invocation into one command:
 
 ```bash
-git -C .worktrees/<folder> add -f .claude/handoff.md
-git -C .worktrees/<folder> commit -m "chore: add handoff artifact for <type>/<short-description>"
+SCRIPT="./plugins/swe/scripts/setup-worktree.sh"
+if [ ! -f "$SCRIPT" ]; then
+  SCRIPT="$(find ~/.claude/plugins/cache/arcana/swe -name setup-worktree.sh 2>/dev/null | head -1)"
+fi
+cat <<'HANDOFF' | bash "$SCRIPT" "<type>/<short-description>" "<type>-<short-description>" "chore: add handoff artifact for <type>/<short-description>"
+<handoff content here>
+HANDOFF
 ```
 
-Then tell the user:
+## Step 9: Instruct the user
+
+Tell the user:
 
 > Worktree ready. Run `cd .worktrees/<folder>` and start a new Claude session. Then run `/run-start` to begin.
