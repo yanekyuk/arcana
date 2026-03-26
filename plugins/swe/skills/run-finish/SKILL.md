@@ -2,7 +2,6 @@
 name: run-finish
 description: "Use after a PR is opened — reviews the PR, suggests changes or merges to main, then cleans up worktree and branches"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Bash, Grep
 ---
 

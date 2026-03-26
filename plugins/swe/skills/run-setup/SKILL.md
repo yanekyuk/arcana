@@ -2,7 +2,6 @@
 name: run-setup
 description: "Use to configure a project for the swe plugin -- detects tech stack, sets architecture rules, integration toggles, and custom directives"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 

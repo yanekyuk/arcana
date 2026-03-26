@@ -2,7 +2,6 @@
 name: run-resume
 description: "Use when entering a worktree to resume work — reads handoff artifact and dispatches the matching orchestrator agent"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Bash, Agent
 ---
 
