@@ -63,7 +63,7 @@ Skills are composable building blocks invoked via slash commands (e.g., `/run-td
 
 Two-session model:
 1. **Session 1** (project root): `/run-triage` classifies work, creates branch + worktree + handoff artifact (`.claude/handoff.md`). After the orchestrator opens a PR, `/run-finish` reviews and merges it.
-2. **Session 2** (worktree): `/run-resume` reads handoff and dispatches the correct orchestrator.
+2. **Session 2** (worktree): `/run-start` reads handoff and dispatches the correct orchestrator.
 
 **Root-session rule:** Session 1 must always run from the project root, never from inside a worktree. Both `/run-triage` and `/run-finish` enforce this with a context validation step. The `worktree-boundary.sh` hook additionally blocks `cd`/`pushd` into `.worktrees/` from the main session.
 

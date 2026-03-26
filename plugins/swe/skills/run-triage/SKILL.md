@@ -115,4 +115,4 @@ git -C .worktrees/<folder> commit -m "chore: add handoff artifact for <type>/<sh
 
 Then tell the user:
 
-> Worktree ready. Run `cd .worktrees/<folder>` and start a new Claude session. Then run `/run-resume` to begin.
+> Worktree ready. Run `cd .worktrees/<folder>` and start a new Claude session. Then run `/run-start` to begin.

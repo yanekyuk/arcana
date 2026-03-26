@@ -1,7 +1,7 @@
 ---
 title: "Skill Contracts"
 type: spec
-tags: [skill, contract, triage, resume, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
+tags: [skill, contract, triage, start, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -39,7 +39,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Invocation:** User-invoked or model-invoked in main session
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
 
-### run-resume
+### run-start
 
 - **Input:** Presence of `.claude/handoff.md` in current worktree
 - **Output:** Dispatches orchestrator agent (no direct output of its own)

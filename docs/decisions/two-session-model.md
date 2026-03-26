@@ -11,7 +11,7 @@ updated: 2026-03-26
 Work is split across two separate Claude sessions:
 
 1. **Main session** (project root) -- runs triage (`/run-triage`) to classify and set up work, then later runs finish (`/run-finish`) to review, merge, and clean up.
-2. **Worktree session** (`.worktrees/<type>-<desc>`) -- runs resume (`/run-resume`) which dispatches the appropriate orchestrator agent to execute the work autonomously.
+2. **Worktree session** (`.worktrees/<type>-<desc>`) -- runs start (`/run-start`) which dispatches the appropriate orchestrator agent to execute the work autonomously.
 
 ## Context
 
