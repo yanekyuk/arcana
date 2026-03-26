@@ -1,7 +1,6 @@
 ---
 name: run-open-pr
 description: "Use to finalize work — commits remaining changes, pushes branch, opens a PR with conventional title and structured body"
-user-invocable: true
 allowed-tools: Read, Bash, Grep
 ---
 

@@ -24,7 +24,7 @@ The triage skill runs in one session and the orchestrator runs in another. There
 ## Lifecycle
 
 1. **Created by triage** -- `/run-triage` writes the handoff into the worktree at `.worktrees/<folder>/.claude/handoff.md` and commits it.
-2. **Consumed by resume** -- `/run-resume` reads the handoff and dispatches the matching orchestrator based on the `type` field.
+2. **Consumed by start** -- `/run-start` reads the handoff and dispatches the matching orchestrator based on the `type` field.
 3. **Removed before PR** -- The orchestrator runs `git rm .claude/handoff.md` as its second-to-last step, ensuring the artifact does not appear in the PR.
 
 ## Frontmatter Schema

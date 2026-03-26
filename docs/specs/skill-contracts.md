@@ -1,7 +1,7 @@
 ---
 title: "Skill Contracts"
 type: spec
-tags: [skill, contract, triage, resume, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
+tags: [skill, contract, triage, start, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -26,7 +26,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** `docs/swe-config.json` architecture rules, diff against base branch
 - **Output:** Pass/fail report with violation details
 - **Tools:** Read, Bash, Grep, Glob
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators after self-review (or after sync-docs for docs orchestrator)
+- **Invocation:** Model-invoked or dispatched by orchestrators after self-review (or after sync-docs for docs orchestrator)
 - **Constraint:** Hard gate -- violations must be fixed before PR creation. When dispatched by an orchestrator, a fail result triggers fix attempts; unresolved violations result in a draft PR.
 
 ## Lifecycle Skills
@@ -39,7 +39,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Invocation:** User-invoked or model-invoked in main session
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
 
-### run-resume
+### run-start
 
 - **Input:** Presence of `.claude/handoff.md` in current worktree
 - **Output:** Dispatches orchestrator agent (no direct output of its own)
@@ -62,7 +62,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Knowledge of test runner (auto-detected or from orchestrator context)
 - **Output:** Committed test + implementation pairs
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Cycle:** Write failing test, implement minimally, refactor, commit
 - **Failure:** 3 attempts per unit, then WIP commit and stop
 
@@ -71,7 +71,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Diff against base branch, handoff artifact, referenced specs/domain docs
 - **Output:** Review report (pass or list of issues with classifications)
 - **Tools:** Read, Bash, Grep, Glob
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Checks:** Scope compliance, spec alignment, domain rule compliance, test coverage, code quality
 
 ### run-open-pr
@@ -79,7 +79,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Committed changes on a feature branch; optionally handoff artifact (falls back to git log/diff if missing)
 - **Output:** PR URL
 - **Tools:** Read, Bash, Grep
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Stages remaining changes, pushes branch, creates PR via `gh pr create`
 
 ## Knowledge Management Skills
@@ -89,7 +89,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Diff against base branch
 - **Output:** Created/updated docs, clash-check warnings, CLAUDE.md suggestions
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Creates/updates docs in `docs/`, dispatches clash-check subagent
 - **Cascade:** Depth-1 only (dispatches clash-check but clash-check does not cascade further)
 
@@ -99,7 +99,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Report of clashes (contradictions, overlaps, ambiguity, alignment violations) or clean pass
 - **Tools:** Read, Bash, Grep, Glob
 - **Context:** Runs in `fork` context (isolated subagent with own token budget)
-- **Invocation:** User-invoked, model-invoked, or dispatched by other skills/orchestrators
+- **Invocation:** Model-invoked or dispatched by other skills/orchestrators
 - **Constraint:** Must not trigger further cascades (depth-1 limit)
 
 ### run-domain-knowledge
@@ -107,7 +107,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Topic from context or user request
 - **Output:** Created/updated domain doc, clash-check report
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Writes to `docs/domain/`, dispatches clash-check on decisions and specs
 - **Cascade:** Downward to both decisions and specs tiers
 
@@ -116,7 +116,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Topic from context or user request
 - **Output:** Created/updated decision doc, alignment report, clash-check report
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Writes to `docs/decisions/`, dispatches clash-check on specs
 - **Upward check:** Verifies alignment with `docs/domain/` before writing
 - **Cascade:** Downward to specs tier only
@@ -126,7 +126,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Input:** Topic from context, handoff artifact, or user request
 - **Output:** Created/updated spec doc
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
-- **Invocation:** User-invoked, model-invoked, or dispatched by orchestrators
+- **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Writes to `docs/specs/`
 - **Upward check:** Verifies alignment with both `docs/domain/` and `docs/decisions/`
 - **Cascade:** None (specs are leaf-level)

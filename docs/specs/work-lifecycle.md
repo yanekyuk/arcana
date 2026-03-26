@@ -1,7 +1,7 @@
 ---
 title: "Work Lifecycle"
 type: spec
-tags: [lifecycle, triage, resume, orchestrator, finish, workflow]
+tags: [lifecycle, triage, start, orchestrator, finish, workflow]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -35,7 +35,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 - Handoff artifact is committed in the worktree
 - User is instructed to `cd` into the worktree and start a new session
 
-## Phase 2: Resume (`/run-resume`)
+## Phase 2: Start (`/run-start`)
 
 **Session:** Worktree
 
@@ -53,7 +53,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 
 ## Phase 3: Orchestrator (autonomous agent)
 
-**Session:** Worktree (same session as resume)
+**Session:** Worktree (same session as start)
 
 **Entry conditions:**
 - Handoff content is provided as context

@@ -38,7 +38,7 @@ Autonomous pipelines that take work from triage to PR.
 |---|---|
 | `/run-setup` | Interactive project config wizard — tech stack, architecture rules, integrations |
 | `/run-triage` | Explore codebase, classify work, create branch + worktree + handoff |
-| `/run-resume` | Read handoff, dispatch the right orchestrator |
+| `/run-start` | Read handoff, dispatch the right orchestrator |
 | `/run-finish` | Review PR, merge, clean up worktree and branches |
 | `/run-tdd` | Red → green → refactor → commit cycle |
 | `/run-self-review` | Diff-based review against spec, domain rules, code quality |
@@ -81,7 +81,7 @@ Describe what you want to build or fix. Triage classifies it (feat/fix/refactor/
 ```
 cd .worktrees/<branch-folder>
 # start a new Claude session
-/run-resume
+/run-start
 ```
 
 The correct orchestrator picks up the handoff and runs autonomously: spec → TDD → self-review → arch check → docs → PR.
@@ -108,7 +108,7 @@ You: "Fix the auth bug in session handling"
     │  worktree + handoff artifact  │
     └───────────────┬───────────────┘
                     │
-            /run-resume (in worktree)
+            /run-start (in worktree)
                     │
     ┌───────────────┴───────────────┐
     │  fix-orchestrator             │
@@ -131,7 +131,7 @@ You: "Fix the auth bug in session handling"
     └───────────────────────────────┘
 ```
 
-Two-session model: **Session 1** (project root) runs `/run-setup` (once), `/run-triage`, and `/run-finish`. **Session 2** (in worktree) runs `/run-resume` which dispatches the autonomous pipeline.
+Two-session model: **Session 1** (project root) runs `/run-setup` (once), `/run-triage`, and `/run-finish`. **Session 2** (in worktree) runs `/run-start` which dispatches the autonomous pipeline.
 
 ## Knowledge Hierarchy
 

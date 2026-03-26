@@ -1,13 +1,13 @@
 ---
-name: run-resume
-description: "Use when entering a worktree to resume work — reads handoff artifact and dispatches the matching orchestrator agent"
+name: run-start
+description: "Use when entering a worktree to start work — reads handoff artifact and dispatches the matching orchestrator agent"
 user-invocable: true
 allowed-tools: Read, Bash, Agent
 ---
 
-# Resume
+# Start
 
-You are resuming work in a worktree. Follow these steps exactly.
+You are starting work in a worktree. Follow these steps exactly.
 
 ## Step 1: Validate worktree
 
@@ -17,7 +17,7 @@ Check that you're in a git worktree (not the main repo):
 test -f .git && echo "WORKTREE" || echo "NOT_WORKTREE"
 ```
 
-If NOT_WORKTREE, tell the user: "This doesn't appear to be a git worktree. Please cd into a worktree under .worktrees/ first."
+If NOT_WORKTREE (`.git` is a directory, not a file), tell the user: "This skill must run from a worktree, not the project root. Please cd into a worktree under .worktrees/ first."
 
 ## Step 2: Read handoff
 
