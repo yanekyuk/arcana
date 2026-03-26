@@ -26,35 +26,39 @@ Before doing anything else, create all pipeline tasks so the user can see progre
    - `activeForm`: "Fetching knowledge docs"
    - `description`: "Extract keywords from handoff, grep docs/ frontmatter tags for matches, read top 5 relevant docs."
 
-4. **Investigate root cause**
+4. **Knowledge alignment check**
+   - `activeForm`: "Checking knowledge alignment"
+   - `description`: "Validate planned fix against domain rules, specs, and design decisions. Block and ask the user if conflicts detected."
+
+5. **Investigate root cause**
    - `activeForm`: "Investigating root cause"
    - `description`: "Trace backward from symptoms through code paths. Form a written hypothesis about why the bug exists."
 
-5. **TDD reproduce**
+6. **TDD reproduce**
    - `activeForm`: "Reproducing bug via TDD"
    - `description`: "Write a failing test that reproduces the bug, then implement the minimum fix to make it pass."
 
-6. **Self-review**
+7. **Self-review**
    - `activeForm`: "Running self-review"
    - `description`: "Diff against main. Verify fix addresses the reported bug with no regressions or scope creep."
 
-7. **Arch check**
+8. **Arch check**
    - `activeForm`: "Running arch check"
    - `description`: "Dispatch run-arch-check skill to validate architecture rules against the current diff."
 
-8. **Sync docs**
+9. **Sync docs**
    - `activeForm`: "Syncing knowledge docs"
    - `description`: "Review diff for undocumented domain rules, design decisions, or spec gaps. Update docs/ and run clash-check if changed."
 
-9. **Version bump**
-   - `activeForm`: "Bumping version"
-   - `description`: "Apply semver PATCH bump following the semver bump procedure. Skip if no version manifest found."
+10. **Version bump**
+    - `activeForm`: "Bumping version"
+    - `description`: "Apply semver PATCH bump following the semver bump procedure. Skip if no version manifest found."
 
-10. **Clean up handoff**
+11. **Clean up handoff**
     - `activeForm`: "Cleaning up handoff"
     - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
 
-11. **Open PR**
+12. **Open PR**
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
@@ -92,53 +96,84 @@ If `docs/` exists:
 
 Fixes don't draft new specs — the bug is a deviation from existing expected behavior.
 
-## Step 4: Investigate root cause
+## Step 4: Knowledge alignment check
+
+Cross-reference the handoff scope against the fetched knowledge docs to detect misalignment before investigation begins.
+
+### 4a. Check each knowledge tier
+
+For each fetched doc, evaluate whether the planned fix conflicts with the documented knowledge:
+
+- **Domain rules** (`docs/domain/`): READ-ONLY. The fix must not break any domain rules. If the planned fix would violate a domain rule, flag it as a blocking conflict.
+- **Design decisions** (`docs/decisions/`): READ-ONLY. Fixes should not alter design patterns. If the planned fix would change an established pattern, flag it as a blocking conflict.
+- **Specs** (`docs/specs/`): PRIMARY FOCUS. Bugs are deviations from spec. Validate that the planned fix aligns the behavior back to what the spec describes. If the fix would deviate from the spec in a different way, flag it.
+
+### 4b. No-conflict fast path
+
+If no misalignment is detected across any tier, this step passes silently. Proceed to Step 5.
+
+### 4c. Brainstorming session (on conflict)
+
+If any misalignment is detected, **block the pipeline** and enter a brainstorming session with the user:
+
+1. **Present the conflict** -- Quote the specific section from the knowledge doc and describe what part of the planned fix conflicts with it.
+2. **Ask targeted questions** -- Do not ask open-ended questions. Ask specific, answerable questions to resolve the conflict. Examples:
+   - "The planned fix would change the retry behavior, but `docs/domain/error-handling.md` states 'All retries must use exponential backoff.' Should the fix (a) preserve exponential backoff, or (b) is the domain rule outdated?"
+   - "The spec at `docs/specs/auth-flow.md` expects a 401 response, but the bug report describes a 500. Should the fix return 401 as the spec requires, or has the expected behavior changed?"
+3. **Wait for responses** -- Do not proceed until the user answers.
+4. **Continue until resolved** -- If the user's answer raises new questions or reveals additional conflicts, keep asking.
+5. **Document decisions** -- Once all conflicts are resolved, if any knowledge docs need updating based on the user's answers, update them:
+   - Spec corrections go to `docs/specs/`
+   - Commit: `git add <doc-files> && git commit -m "docs: capture alignment decisions from brainstorming"`
+6. **Proceed** -- Only after all conflicts are resolved, continue to Step 5.
+
+## Step 5: Investigate root cause
 
 Before writing any fix, understand *why* the bug exists.
 
-### 4a. Observe and reproduce symptoms
+### 5a. Observe and reproduce symptoms
 - Re-read the handoff's bug description carefully
 - Identify the reported symptoms (error messages, incorrect output, unexpected behavior)
 - If possible, reproduce the symptoms locally to confirm your understanding
 
-### 4b. Trace backward through code
+### 5b. Trace backward through code
 - Starting from the symptom, trace the execution path backward
 - Identify the code paths involved: entry points, data flow, branching logic
 - Use Grep and Read to follow references, callers, and dependencies
 - Note any recent changes in the area (`git log --oneline -10 -- <relevant-files>`)
 
-### 4c. Form a written hypothesis
+### 5c. Form a written hypothesis
 - Write a clear, one-sentence hypothesis: "The bug occurs because X causes Y when Z"
 - Identify the specific file(s) and line(s) you believe need to change
 - If the hypothesis is uncertain, note what would confirm or refute it
 
 Record the hypothesis as a code comment in the test file (above the reproducing test) so it persists across turns and is revisited if fix attempts fail.
 
-## Step 5: TDD — reproduce the bug
+## Step 6: TDD — reproduce the bug
 
-### 5a. Write a failing test that reproduces the bug
+### 6a. Write a failing test that reproduces the bug
 - The test should demonstrate the incorrect behavior described in the handoff
 - Run it to confirm it fails in the expected way
 
-### 5b. Fix the bug
+### 6b. Fix the bug
 - Implement the minimum change to make the test pass
 - Run the test to confirm it passes
 - Run the full test suite to check for regressions
 
-### 5c. Commit
+### 6c. Commit
 ```bash
 git add <test-file> <implementation-file>
 git commit -m "fix: <what was fixed>"
 ```
 
 **Failure handling:** If the fix won't pass after 3 attempts:
-1. Loop back to Step 4 (Investigate root cause) — your hypothesis was likely wrong
+1. Loop back to Step 5 (Investigate root cause) — your hypothesis was likely wrong
 2. Form a new hypothesis and retry the TDD cycle
 3. If the second investigation also fails to produce a passing fix:
    - `git add -A && git commit -m "chore(wip): attempted fix for <bug>"`
-   - Skip to Step 11 (Open PR) as draft
+   - Skip to Step 12 (Open PR) as draft
 
-## Step 6: Self-review
+## Step 7: Self-review
 
 1. `git diff main...HEAD`
 2. Check:
@@ -146,9 +181,9 @@ git commit -m "fix: <what was fixed>"
    - No domain rule violations
    - No regressions (full test suite green)
    - No scope creep
-3. If blocking issues: attempt fix, if fails after 1 retry → draft PR (skip to Step 11)
+3. If blocking issues: attempt fix, if fails after 1 retry → draft PR (skip to Step 12)
 
-## Step 7: Arch check
+## Step 8: Arch check
 
 Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
 
@@ -158,9 +193,9 @@ If violations are found:
 1. Attempt to fix each violation
 2. Re-run the arch check to confirm fixes
 3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "fix: resolve architecture violations"`
-4. If fixes fail after 1 retry, proceed to Step 11 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+4. If fixes fail after 1 retry, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
-## Step 8: Sync docs
+## Step 9: Sync docs
 
 1. Review diff for implicit knowledge changes
 2. Update `docs/` if needed
@@ -168,11 +203,11 @@ If violations are found:
 4. Note any CLAUDE.md suggestions
 5. Commit doc changes if any
 
-## Step 9: Version bump
+## Step 10: Version bump
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (backward-compatible bug fix). Skip if no version manifest is found.
 
-## Step 10: Clean up handoff
+## Step 11: Clean up handoff
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -180,11 +215,11 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 11: Open PR
+## Step 12: Open PR
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-Since the handoff artifact was removed in Step 10, the skill will derive PR context from `git log` and `git diff` instead.
+Since the handoff artifact was removed in Step 11, the skill will derive PR context from `git log` and `git diff` instead.
 
 **Fallback:** If the skill dispatch is not available, run these commands directly:
 
