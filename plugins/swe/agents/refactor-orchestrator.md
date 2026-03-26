@@ -26,35 +26,39 @@ Before doing anything else, create all pipeline tasks so the user can see progre
    - `activeForm`: "Fetching knowledge docs"
    - `description`: "Extract keywords from handoff, grep docs/ frontmatter tags for matches, read top 5 relevant docs."
 
-4. **TDD guard**
+4. **Knowledge alignment check**
+   - `activeForm`: "Checking knowledge alignment"
+   - `description`: "Validate planned refactor against domain rules and design decisions. Pause for brainstorming if misalignment detected."
+
+5. **TDD guard**
    - `activeForm`: "Running TDD guard"
    - `description`: "Run the full test suite before any changes. Abort if tests are not green — cannot refactor on a red suite."
 
-5. **Refactor incrementally**
+6. **Refactor incrementally**
    - `activeForm`: "Refactoring incrementally"
    - `description`: "One conceptual change at a time. Tests must stay green after each change. Commit per change."
 
-6. **Self-review**
+7. **Self-review**
    - `activeForm`: "Running self-review"
    - `description`: "Diff against main. Verify no behavior changes — only structural improvements aligned with design decisions."
 
-7. **Arch check**
+8. **Arch check**
    - `activeForm`: "Running arch check"
    - `description`: "Dispatch run-arch-check skill to validate architecture rules against the current diff."
 
-8. **Sync docs**
+9. **Sync docs**
    - `activeForm`: "Syncing knowledge docs"
    - `description`: "Review diff for undocumented domain rules, design decisions, or spec gaps. Update docs/ and run clash-check if changed."
 
-9. **Version bump**
-   - `activeForm`: "Bumping version"
-   - `description`: "Apply semver PATCH bump following the semver bump procedure. Skip if no version manifest found."
+10. **Version bump**
+    - `activeForm`: "Bumping version"
+    - `description`: "Apply semver PATCH bump following the semver bump procedure. Skip if no version manifest found."
 
-10. **Clean up handoff**
+11. **Clean up handoff**
     - `activeForm`: "Cleaning up handoff"
     - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
 
-11. **Open PR**
+12. **Open PR**
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
@@ -89,7 +93,39 @@ If `docs/` exists:
 
 Refactors don't write new tests or draft specs — they preserve existing behavior under existing tests.
 
-## Step 4: TDD guard
+## Step 4: Knowledge alignment check
+
+Cross-reference the handoff scope against the fetched knowledge docs to detect misalignment before refactoring begins.
+
+### 4a. Check each knowledge tier
+
+For each fetched doc, evaluate whether the planned refactor conflicts with or implies changes to the documented knowledge:
+
+- **Domain rules** (`docs/domain/`): CAN EDIT. Refactors may restructure how domain rules are expressed. If the refactor would change the expression of a domain rule (e.g., renaming concepts, moving boundaries), flag it for user confirmation.
+- **Design decisions** (`docs/decisions/`): CAN EDIT or FORCE ALIGNMENT. Refactors can update design patterns or force existing code to align with them. If the refactor introduces a new pattern or changes an existing one, flag it for user confirmation.
+- **Specs** (`docs/specs/`): NOT PRIMARY CONCERN. Refactors should not change behavior, so specs are not a focus. Only flag if the refactor would inadvertently change behavior described in a spec.
+
+### 4b. No-conflict fast path
+
+If no misalignment is detected across any tier, this step passes silently. Proceed to Step 5.
+
+### 4c. Brainstorming session (on conflict)
+
+If any misalignment is detected, pause the autonomous pipeline and enter a brainstorming session with the user:
+
+1. **Present the conflict** -- Quote the specific section from the knowledge doc and describe what part of the planned refactor conflicts with it.
+2. **Ask targeted questions** -- Do not ask open-ended questions. Ask specific, answerable questions to resolve the conflict. Examples:
+   - "The refactor would rename the 'UserService' pattern to 'UserRepository', but `docs/decisions/service-layer.md` mandates the Service pattern. Should we (a) update the decision to use Repository, or (b) keep the Service naming?"
+   - "This refactor restructures how validation rules are expressed. `docs/domain/validation-rules.md` documents the current structure. Should the domain doc be updated to reflect the new structure?"
+3. **Wait for responses** -- Do not proceed until the user answers.
+4. **Continue until resolved** -- If the user's answer raises new questions or reveals additional conflicts, keep asking.
+5. **Document decisions** -- Once all conflicts are resolved, create or update the appropriate knowledge docs to capture the decisions made:
+   - Domain rule edits go to `docs/domain/`
+   - Design decision edits go to `docs/decisions/`
+   - Commit: `git add <doc-files> && git commit -m "docs: capture alignment decisions from brainstorming"`
+6. **Proceed** -- Only after all conflicts are resolved and documented, continue to Step 5.
+
+## Step 5: TDD guard
 
 Run the full test suite BEFORE making any changes:
 
@@ -101,40 +137,40 @@ Run the full test suite BEFORE making any changes:
 
 If all green, proceed.
 
-## Step 5: Refactor incrementally
+## Step 6: Refactor incrementally
 
 For each refactoring change:
 
-### 5a. Make a focused change
+### 6a. Make a focused change
 - One conceptual change at a time
 - Keep it small enough to reason about
 
-### 5b. Run tests
+### 6b. Run tests
 ```bash
 <test-command>
 ```
 - All tests MUST stay green
 - If a test fails: revert the change, try a different approach
-- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`, skip to Step 11
+- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`, skip to Step 12
 
-### 5c. Commit
+### 6c. Commit
 ```bash
 git add <changed-files>
 git commit -m "refactor: <what was changed>"
 ```
 
-### 5d. Repeat
+### 6d. Repeat
 
-## Step 6: Self-review
+## Step 7: Self-review
 
 1. `git diff main...HEAD`
 2. Check:
    - No behavior changes (only structural improvements)
    - Alignment with design decisions
    - All tests still pass
-3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 11)
+3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 12)
 
-## Step 7: Arch check
+## Step 8: Arch check
 
 Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
 
@@ -144,9 +180,9 @@ If violations are found:
 1. Attempt to fix each violation
 2. Re-run the arch check to confirm fixes
 3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "refactor: resolve architecture violations"`
-4. If fixes fail after 1 retry, proceed to Step 11 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+4. If fixes fail after 1 retry, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
-## Step 8: Sync docs
+## Step 9: Sync docs
 
 1. Review diff for implicit knowledge
 2. Update `docs/` if needed (refactors often produce design decision docs)
@@ -154,11 +190,11 @@ If violations are found:
 4. Note CLAUDE.md suggestions
 5. Commit
 
-## Step 9: Version bump
+## Step 10: Version bump
 
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (no behavior change). Skip if no version manifest is found.
 
-## Step 10: Clean up handoff
+## Step 11: Clean up handoff
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -166,11 +202,11 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 11: Open PR
+## Step 12: Open PR
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-Since the handoff artifact was removed in Step 10, the skill will derive PR context from `git log` and `git diff` instead.
+Since the handoff artifact was removed in Step 11, the skill will derive PR context from `git log` and `git diff` instead.
 
 **Fallback:** If the skill dispatch is not available, run these commands directly:
 
