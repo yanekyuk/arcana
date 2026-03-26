@@ -1,7 +1,7 @@
 ---
 title: "Autonomous Orchestrators"
 type: decision
-tags: [orchestrator, agent, autonomous, pipeline, progress-tracking]
+tags: [orchestrator, agent, autonomous, pipeline, progress-tracking, knowledge-alignment]
 created: 2026-03-26
 updated: 2026-03-26
 ---
@@ -27,13 +27,13 @@ Four orchestrators exist, each tailored to a work type:
 
 | Orchestrator | Type | Default Version Bump | Max Turns | Unique Steps |
 |---|---|---|---|---|
-| feat-orchestrator | feat | MINOR | 100 | Draft spec, TDD cycle |
-| fix-orchestrator | fix | PATCH | 100 | Root cause investigation, TDD reproduce |
-| refactor-orchestrator | refactor | PATCH | 80 | TDD guard (pre-check), incremental refactor |
+| feat-orchestrator | feat | MINOR | 100 | Knowledge alignment check, Draft spec, TDD cycle |
+| fix-orchestrator | fix | PATCH | 100 | Knowledge alignment check, Root cause investigation, TDD reproduce |
+| refactor-orchestrator | refactor | PATCH | 80 | Knowledge alignment check, TDD guard (pre-check), incremental refactor |
 | docs-orchestrator | docs | none | 60 | Write/update docs, clash check |
 
 ## Constraints
 
-- Orchestrators must not ask the user questions or wait for input
+- Orchestrators must not ask the user questions or wait for input **except** during the knowledge alignment check, where misalignment with the knowledge base triggers a brainstorming session with the user
 - All orchestrators must remove the handoff artifact before opening the PR
 - WIP draft PRs are the fallback for any unrecoverable failure
