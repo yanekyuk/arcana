@@ -2,7 +2,6 @@
 name: run-domain-knowledge
 description: "Use to create or update domain knowledge docs (business rules, invariants, constraints) in docs/domain/ — triggers clash-check on decisions and specs"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---
 

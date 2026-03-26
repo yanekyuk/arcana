@@ -2,7 +2,6 @@
 name: run-sync-docs
 description: "Use after implementation to detect if docs/ need updating based on changes made — updates docs, triggers clash-check"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---
 
