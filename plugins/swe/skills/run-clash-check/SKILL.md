@@ -1,6 +1,7 @@
 ---
 name: run-clash-check
 description: "Use to scan knowledge docs for contradictions, overlaps, and misalignments — dispatched as subagent to isolate token cost"
+user-invocable: false
 context: fork
 allowed-tools: Read, Bash, Grep, Glob
 ---

@@ -1,6 +1,7 @@
 ---
 name: run-spec
 description: "Use to create or update specification docs in docs/specs/ — checks alignment with parent domain knowledge and design decisions"
+user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---
 
