@@ -282,9 +282,11 @@ Since the handoff artifact was removed in Step 11, the skill will derive PR cont
 **Fallback:** If the skill dispatch is not available, run these commands directly:
 
 1. `git push -u origin HEAD`
-2. `gh pr create --title "feat: <short description>" --body "<body>" --base main`
+2. `gh pr create --title "feat: <short description>" --body "<body>" --base <base-branch>`
 
-If this is a WIP: `gh pr create --title "[WIP] feat: <desc>" --body "<body>" --base main --draft`
+Use the `base-branch` value from the handoff frontmatter. If not available, default to `main`.
+
+If this is a WIP: `gh pr create --title "[WIP] feat: <desc>" --body "<body>" --base <base-branch> --draft`
 
 Report the PR URL, then tell the user:
 

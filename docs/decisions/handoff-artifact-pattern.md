@@ -3,7 +3,7 @@ title: "Handoff Artifact Pattern"
 type: decision
 tags: [handoff, triage, orchestrator, contract, artifact]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-27
 ---
 
 ## Decision
@@ -16,7 +16,7 @@ The triage skill runs in one session and the orchestrator runs in another. There
 
 ## Rationale
 
-- **Structured format** -- YAML frontmatter carries machine-readable fields (`trigger`, `type`, `branch`, `created`, `version-bump`). Markdown body carries human-readable sections (Related Files, Relevant Docs, Scope).
+- **Structured format** -- YAML frontmatter carries machine-readable fields (`trigger`, `type`, `branch`, `base-branch`, `created`, `version-bump`). Markdown body carries human-readable sections (Related Files, Relevant Docs, Scope).
 - **Single source of truth** -- The orchestrator reads only this file to understand what to build. It does not re-explore the codebase from scratch.
 - **Auditable** -- The handoff is committed to git, so the exact instructions given to the orchestrator are part of the branch history.
 - **Disposable** -- The handoff is removed (`git rm`) before the PR is opened, so it never appears in the final diff against main.
@@ -34,10 +34,13 @@ The triage skill runs in one session and the orchestrator runs in another. There
 trigger: "<original user request>"
 type: <feat|fix|refactor|docs>
 branch: <type>/<short-description>
+base-branch: <branch worktree was derived from>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional override
 ---
 ```
+
+The `base-branch` field records the branch that was current when triage created the worktree. Orchestrators and `run-open-pr` use this value for the `--base` flag when creating PRs, ensuring the PR targets the correct branch instead of hardcoding `main`.
 
 ## Body Sections
 
