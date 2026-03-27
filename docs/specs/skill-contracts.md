@@ -59,7 +59,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 
 ### run-tdd
 
-- **Input:** Knowledge of test runner (auto-detected or from orchestrator context)
+- **Input:** Test command from `docs/swe-config.json` (`stack.test`) or user input when standalone
 - **Output:** Committed test + implementation pairs
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
 - **Invocation:** Model-invoked or dispatched by orchestrators

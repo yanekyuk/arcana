@@ -12,9 +12,8 @@ You are doing test-driven development. Follow this cycle strictly.
 ## Prerequisites
 
 Determine the test command:
-1. Check if `docs/swe-config.json` exists — if so, use `stack.test` from the config
-2. If no config, fall back to auto-detection: check `package.json` scripts for `test` command, check for `Makefile`, `Cargo.toml`, `pyproject.toml`, `go.mod`
-3. If still unclear and used standalone, ask the user. Within a pipeline (orchestrator context), the config is always available — the orchestrator aborts if it is missing.
+1. Check if `docs/swe-config.json` exists — if so, use `stack.test` from the config. In pipeline context (dispatched by an orchestrator), the config is guaranteed to exist — the orchestrator aborts if it is missing.
+2. If no config (standalone invocation), ask the user for the test command. Do not attempt auto-detection — that logic belongs in `/run-setup`.
 
 ## The Cycle
 
