@@ -115,6 +115,14 @@ Then tell the user:
 
 Tell the user the PR passes review, then proceed to Step 5.
 
+## Step 4b: Check Linear issue reference
+
+Read `docs/swe-config.json` and check if `integrations.linear` is true.
+
+If enabled, check the PR body and branch commits for a Linear issue reference. Linear issue IDs typically appear in the PR body under "Linear Issues" or in the handoff frontmatter (`linear-issue` field). Record the Linear issue ID if found — it will be used in Step 5b.
+
+If `integrations.linear` is false or the config file does not exist, skip this check.
+
 ## Step 5: Merge
 
 Ask the user for merge strategy preference (merge commit or squash). If the user has already expressed a preference, use it. Default to squash if not specified.
@@ -130,6 +138,17 @@ gh pr merge <number> --merge
 ```
 
 Do **not** pass `--delete-branch` — the worktree still holds the branch at this point, so `gh` would exit with code 1. Remote and local branch cleanup is handled in Step 6.
+
+## Step 5b: Complete Linear issue
+
+If `integrations.linear` is true and a Linear issue ID was found in Step 4b, update the Linear issue after successful merge. **All Linear MCP calls must be wrapped in error handling** — log a warning on failure but never block the finish pipeline.
+
+1. **Mark as Done:** Update the Linear issue status to **"Done"** using `mcp__linear__updateIssue`.
+2. **Post a comment:** Add a comment to the Linear issue with the merged PR URL using `mcp__linear__createComment`. Example comment: "Merged in PR #<number> — <pr-url>"
+
+Graceful degradation: if either MCP call fails, log "Warning: Linear MCP unavailable — skipping Linear issue completion." and continue to Step 6.
+
+If `integrations.linear` is false or no Linear issue was found, skip this step.
 
 ## Step 6: Clean up local resources
 
