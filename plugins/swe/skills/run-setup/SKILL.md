@@ -179,21 +179,35 @@ Integration toggles (y/n for each):
 5. Context7 — Library documentation lookups via MCP during implementation
 ```
 
-For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": CodeRabbit off, Linear off, GitHub Issues on, auto-docs on, Context7 off.
+For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": GitHub Issues on, CodeRabbit off, Linear off, Context7 on, auto-docs on.
 
 ### Step 6b: Verify prerequisites
 
-After the user confirms their integration selections, verify prerequisites for each enabled integration:
+After the user confirms their integration selections, verify prerequisites for each enabled integration. Checks are advisory, not blocking — warn the user but do not prevent them from enabling the integration.
 
-| Integration | Check | Action |
-|---|---|---|
-| **githubIssues** | Run `which gh` | If missing, warn: "GitHub CLI (`gh`) is required for GitHub Issues integration. Install it from https://cli.github.com/ before running pipelines." |
-| **coderabbit** | Advisory only | Inform: "CodeRabbit requires the CodeRabbit GitHub App to be installed on this repository. Visit https://coderabbit.ai to set it up." |
-| **linear** | Check for Linear MCP server availability | If not available, suggest: "Linear integration requires the Linear MCP server. Add it to your MCP configuration to enable issue search during triage." |
-| **context7** | Check for Context7 MCP server availability | If not available, suggest: "Context7 integration requires the Context7 MCP server. Add it to your MCP configuration to enable library doc lookups during implementation." |
-| **autoDocs** | No prerequisite | No verification needed — this is built-in behavior. |
+**GitHub Issues:**
+```bash
+which gh && gh auth status 2>&1 | head -5
+```
+If `gh` is not found, warn: "GitHub CLI is required for GitHub Issues integration. Install with `brew install gh`, then run `gh auth login`."
 
-Prerequisite checks are advisory, not blocking. Warn the user but do not prevent them from enabling the integration.
+**CodeRabbit:**
+No executable check. Inform: "CodeRabbit requires the CodeRabbit GitHub App installed on this repository. Visit https://coderabbit.ai to set it up."
+
+**Linear:**
+```bash
+claude mcp list 2>/dev/null | grep -qi linear
+```
+If not found, suggest: "Linear integration requires the Linear MCP server. Install with: `claude mcp add linear -- npx -y @anthropic/linear-mcp@latest`"
+
+**Context7:**
+```bash
+claude mcp list 2>/dev/null | grep -qi context7
+```
+If not found, suggest: "Context7 integration requires the Context7 MCP server. Install with: `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`"
+
+**Auto-docs:**
+No prerequisite — this is built-in behavior.
 
 ## Step 7: Write config
 
@@ -212,11 +226,11 @@ Assemble the final config object:
   },
   "sourceRoot": "<detected or overridden>",
   "integrations": {
-    "coderabbit": true,
-    "linear": false,
     "githubIssues": true,
-    "autoDocs": true,
-    "context7": false
+    "coderabbit": false,
+    "linear": false,
+    "context7": true,
+    "autoDocs": true
   },
   "architecture": {
     "rules": [
