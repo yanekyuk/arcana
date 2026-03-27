@@ -13,7 +13,8 @@
     "coderabbit": false,
     "linear": false,
     "githubIssues": true,
-    "autoDocs": true
+    "autoDocs": true,
+    "context7": false
   },
   "architecture": {
     "rules": [
