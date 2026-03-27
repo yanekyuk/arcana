@@ -26,5 +26,8 @@
       "Each plugin is self-contained under plugins/<name>/ — no cross-plugin imports or shared files between plugins"
     ]
   },
+  "versioning": [
+    "Bump plugins/swe/.claude-plugin/plugin.json version and .claude-plugin/marketplace.json swe entry version in sync for all changes"
+  ],
   "directives": []
 }

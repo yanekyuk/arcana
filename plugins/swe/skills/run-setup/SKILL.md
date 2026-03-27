@@ -1,6 +1,6 @@
 ---
 name: run-setup
-description: "Use to configure a project for the swe plugin -- detects tech stack, sets architecture rules, integration toggles, and custom directives"
+description: "Use to configure a project for the swe plugin -- detects tech stack, sets architecture rules, discovers versioning manifests, integration toggles, and custom directives"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
@@ -118,13 +118,54 @@ After expanding, show the user the resulting rules and ask: "These are the archi
 
 Wait for user response. Apply any changes.
 
-## Step 4: Custom directives
+## Step 4: Versioning rules
+
+Auto-discover version-bearing files across the project tree. Search for these manifest types:
+
+- `**/package.json` -- look for `"version"` field (skip `node_modules/`)
+- `**/Cargo.toml` -- look for `version` under `[package]`
+- `**/pyproject.toml` -- look for `version` under `[project]` or `[tool.poetry]`
+- `**/setup.cfg` -- look for `version` under `[metadata]`
+- `**/build.gradle` / `**/build.gradle.kts` -- look for `version = "X.Y.Z"`
+- `**/version.txt` -- entire file content is the version string
+
+Use Glob to find candidate files, then Read each to confirm it contains a version field. Skip files in `node_modules/`, `dist/`, `build/`, `.git/`, and vendor directories.
+
+**Generate rule prompts from detected layout:**
+
+- **Single manifest at root:** Generate one rule: `"Bump <manifest> version for all changes"`
+- **Multiple manifests (monorepo):** Generate one rule per manifest with path-based conditions:
+  - `"Bump <path>/<manifest> version for changes under <path>/"`
+- **No manifests found:** Set `versioning` to an empty array and inform the user: "No version manifests detected. Versioning rules will be empty -- orchestrators will skip version bumps."
+
+Present the generated rules to the user:
+
+```
+Detected versioning rules:
+  1. Bump package.json version for all changes
+```
+
+Or for monorepos:
+
+```
+Detected versioning rules:
+  1. Bump frontend/package.json version for changes under frontend/
+  2. Bump api/pyproject.toml version for changes under api/
+```
+
+Ask: "These are the versioning rules that tell orchestrators which version files to bump. Add, remove, or modify any? Or confirm to proceed."
+
+Wait for user response. Apply any changes.
+
+**When editing an existing config:** Load the current `versioning` array as defaults. Show them alongside any newly detected manifests. If new manifests are found that are not covered by existing rules, highlight them: "New version manifest detected at `<path>` -- not covered by existing rules. Add a rule for it?"
+
+## Step 5: Custom directives
 
 Ask: "Do you have any custom directives? These are soft guidelines for the AI during implementation -- style preferences, patterns to favor, conventions to follow. Enter one per line, or say 'none' to skip."
 
 Wait for user response. Collect directives until the user indicates they are done.
 
-## Step 5: Integration toggles
+## Step 6: Integration toggles
 
 Present integration options:
 
@@ -139,7 +180,7 @@ Integration toggles (y/n for each):
 
 For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": CodeRabbit on, Linear off, GitHub Issues on, auto-docs on.
 
-## Step 6: Write config
+## Step 7: Write config
 
 Assemble the final config object:
 
@@ -166,6 +207,9 @@ Assemble the final config object:
       "<expanded flat rules>"
     ]
   },
+  "versioning": [
+    "<generated or user-edited versioning rules>"
+  ],
   "directives": [
     "<user-provided directives>"
   ]

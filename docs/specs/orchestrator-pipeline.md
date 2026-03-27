@@ -3,7 +3,7 @@ title: "Orchestrator Pipeline"
 type: spec
 tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup, knowledge-alignment]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-27
 ---
 
 ## Behavior
@@ -25,7 +25,7 @@ Every orchestrator executes these phases in order:
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
 | Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check |
-| Release | Version bump | Apply semver bump per orchestrator default |
+| Release | Version bump | Evaluate versioning rules from config, bump matching manifests |
 | Cleanup | Remove handoff | `git rm .claude/handoff.md` |
 | Delivery | Open PR | Push, create PR via `gh pr create` |
 
@@ -39,6 +39,19 @@ All orchestrators require `docs/swe-config.json` to exist. This file is created 
 - **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs).
 
 If the config file is missing, the orchestrator stops immediately with: "No project config found. Run `/run-setup` in the target project first."
+
+## Version Bump Phase
+
+The version bump phase uses rule-based versioning configured in `docs/swe-config.json` under the `versioning` array. Each entry is a natural-language rule string that specifies which manifest to bump and when.
+
+**Evaluation flow:**
+
+1. Read the `versioning` array from config. If empty or absent, skip the version bump entirely.
+2. For each rule, evaluate whether it applies to the current change (based on the diff and handoff scope).
+3. For each matching rule, invoke the semver bump procedure on the specified manifest with the orchestrator's default bump type.
+4. If no rules match, skip the version bump.
+
+This replaces the previous approach of scanning a hardcoded list of manifest filenames at the project root. It supports monorepos with multiple independent version manifests where different parts of the codebase have their own version files.
 
 ## Per-Type Variations
 
