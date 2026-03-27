@@ -80,8 +80,15 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `integrations.autoDocs` → gates the sync-docs step (Step 6)
 - `integrations.context7` → enables Context7 MCP tool guidance during documentation (Step 4)
 - `integrations.githubIssues` → used by run-open-pr for issue linking
-- `integrations.linear` → used by run-open-pr for Linear issue refs
+- `integrations.linear` → used by run-open-pr for Linear issue refs; also gates Linear status management (see below)
 - `integrations.coderabbit` → used by run-open-pr for review-requested notes
+
+**Linear status management:** If `integrations.linear` is true and the handoff frontmatter contains a `linear-issue` field, update the Linear issue status at key pipeline stages. All Linear MCP calls must be wrapped in error handling — log a warning on failure but never block the pipeline.
+
+- **Now (after config load):** Set the Linear issue to **"In Progress"** using `mcp__linear__updateIssue`. Pass the issue identifier from the `linear-issue` frontmatter field.
+- **Before opening PR (Step 10):** Set the Linear issue to **"In Review"** using `mcp__linear__updateIssue`.
+
+Graceful degradation: if the MCP call fails, log "Warning: Linear MCP unavailable — skipping status update." and continue.
 
 ## Step 3: Fetch relevant knowledge docs
 
@@ -180,6 +187,10 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 ```bash
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
+
+## Step 9b: Update Linear status to "In Review"
+
+If `integrations.linear` is true and the handoff contains a `linear-issue` field, update the Linear issue status to **"In Review"** using `mcp__linear__updateIssue`. Wrap in error handling — log warning on failure, do not block.
 
 ## Step 10: Open PR
 
