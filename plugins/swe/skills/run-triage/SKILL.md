@@ -53,6 +53,30 @@ If `docs/` exists, scan for relevant docs:
 4. Grep `docs/` frontmatter `tags` for matches
 5. Read the top 5 matching docs. If more than 5 match, log the skipped doc paths for transparency.
 
+## Step 5b: Search for related issues
+
+Read `docs/swe-config.json` and check integration flags.
+
+**If `integrations.githubIssues` is true:**
+
+Search GitHub Issues for related issues using keywords from the trigger:
+
+```bash
+gh issue list --search "<keywords from trigger>" --limit 10
+```
+
+Record any relevant matches (issue number, title, state).
+
+**If `integrations.linear` is true:**
+
+Search Linear for related issues using Linear MCP tools:
+1. `mcp__linear__searchIssues` with keywords from the trigger
+2. Record any relevant matches (issue ID, title, state).
+
+**If neither integration is enabled**, skip this step.
+
+Store discovered issues for inclusion in the handoff artifact (Step 8).
+
 ## Step 6: Propose classification
 
 Based on your exploration, propose one of:
@@ -93,6 +117,10 @@ version-bump: <major|minor|patch|none>  # optional — overrides the orchestrato
 
 ## Relevant Docs
 <list of matched docs/ paths, or "None — knowledge base does not cover this area yet.">
+
+## Related Issues
+<list of related issues discovered in Step 5b, or "None — no related issues found.">
+Format: "- #<number> <title> (<state>)" for GitHub Issues, "- <ID> <title> (<state>)" for Linear issues.
 
 ## Scope
 <summary of what needs to be done and why>
