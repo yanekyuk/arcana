@@ -1,7 +1,7 @@
 ---
 title: "Skill Contracts"
 type: spec
-tags: [skill, contract, triage, start, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
+tags: [skill, contract, triage, start, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check, create-triage]
 created: 2026-03-26
 updated: 2026-03-27
 ---
@@ -40,7 +40,21 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
 - **Integration behavior:**
   - `githubIssues`: searches GitHub Issues via `gh issue list --search` and includes matches in handoff "Related Issues" section
-  - `linear`: searches Linear via MCP tools and includes matches in handoff "Related Issues" section
+  - `linear`: searches Linear via MCP tools and includes matches in handoff "Related Issues" section. Graceful degradation: if Linear MCP is unavailable, logs warning and continues. If no issue number provided, searches by trigger keywords. Stores matched issue ID in `linear-issue` frontmatter field.
+
+### run-create-triage
+
+- **Input:** User-provided issue type (bug/feature), title, and description
+- **Output:** Created issue reference, handoff to run-triage
+- **Tools:** Read, Bash, Write
+- **Invocation:** User-invoked in main session
+- **Side effects:** Creates an issue in the selected backend (GitHub Issues or Linear)
+- **Integration behavior:**
+  - `githubIssues`: creates via `gh issue create` with bug/enhancement labels
+  - `linear`: creates via `mcp__linear__createIssue`. Falls back to GitHub Issues if Linear MCP unavailable and `githubIssues` is enabled.
+  - If both enabled, asks user which backend to use
+  - If neither enabled, warns and exits
+- **Handoff:** After issue creation, instructs user to run `/run-triage` with the created issue
 
 ### run-start
 
@@ -59,6 +73,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Side effects:** Merges PR, deletes remote/local branches, removes worktree, pulls main
 - **Integration behavior:**
   - `coderabbit`: checks CodeRabbit review status via `gh pr reviews` before delivering verdict. Warns if review is pending, includes CodeRabbit comments if changes requested.
+  - `linear`: after successful merge, marks linked Linear issue as "Done" and posts a comment with the PR URL. Graceful degradation on MCP failure.
 
 ## Development Skills
 

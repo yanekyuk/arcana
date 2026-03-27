@@ -37,6 +37,7 @@ branch: <type>/<short-description>
 base-branch: <branch worktree was derived from>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional override
+linear-issue: <LINEAR-ID>              # optional — set when a Linear issue is matched during triage
 ---
 ```
 

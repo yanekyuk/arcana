@@ -1,7 +1,7 @@
 ---
 title: "Integration Wiring"
 type: spec
-tags: [integrations, coderabbit, linear, github-issues, auto-docs, context7, orchestrator, triage, open-pr, finish, setup]
+tags: [integrations, coderabbit, linear, github-issues, auto-docs, context7, orchestrator, triage, open-pr, finish, setup, create-triage, graceful-degradation]
 created: 2026-03-27
 updated: 2026-03-27
 ---
@@ -40,14 +40,20 @@ When an integration is enabled during setup, `run-setup` verifies prerequisites:
 
 **Context7 tool guidance:** When `integrations.context7` is true, implementation steps include guidance to use Context7 MCP tools (`mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs`) for looking up library documentation during coding.
 
+**Linear status management:** When `integrations.linear` is true and the handoff contains a `linear-issue` frontmatter field, orchestrators update the Linear issue status at two pipeline stages:
+- **After config load:** Set to "In Progress" via `mcp__linear__updateIssue`
+- **Before opening PR:** Set to "In Review" via `mcp__linear__updateIssue`
+
+All Linear MCP calls are wrapped in error handling -- failures log a warning but never block the pipeline.
+
 ### Triage Wiring (run-triage)
 
 After classification (Step 5), if integrations are configured:
 
 - **githubIssues:** Search GitHub Issues via `gh issue list --search "<query>"` for related issues. Include matches in handoff.
-- **linear:** Search Linear via MCP tools (`mcp__linear__searchIssues`) for related issues. Include matches in handoff.
+- **linear:** Search Linear via MCP tools (`mcp__linear__searchIssues`) for related issues. Include matches in handoff. If the user provided a specific Linear issue ID, fetch it directly via `mcp__linear__getIssue`. If no issue number was provided, search by trigger keywords and pick the best match. All Linear MCP calls use graceful degradation -- failures log a warning and the pipeline continues without Linear data.
 
-The handoff template gains a "Related Issues" section listing any discovered issues.
+The handoff template gains a "Related Issues" section listing any discovered issues. When a Linear issue is matched, its identifier is stored in the `linear-issue` frontmatter field for downstream use by orchestrators and run-finish.
 
 ### Open PR Wiring (run-open-pr)
 
@@ -62,6 +68,19 @@ Before PR creation:
 Before approving merge:
 
 - **coderabbit:** Check CodeRabbit review status via `gh pr reviews <pr-number>`. If CodeRabbit has not approved, warn the user before proceeding.
+
+After successful merge:
+
+- **linear:** If the PR references a Linear issue (from the PR body or handoff `linear-issue` field), mark the issue as "Done" via `mcp__linear__updateIssue` and post a comment with the PR URL via `mcp__linear__createComment`. Wrapped in error handling -- failures log a warning but do not block cleanup.
+
+### Create-Triage Wiring (run-create-triage)
+
+A user-invocable skill that creates issues and routes to the correct backend:
+
+- **githubIssues:** Creates via `gh issue create` with appropriate labels.
+- **linear:** Creates via `mcp__linear__createIssue`. Falls back to GitHub Issues if Linear MCP is unavailable and `githubIssues` is also enabled.
+- If both backends are enabled, the user chooses which to use.
+- After creation, hands off to run-triage with the new issue reference.
 
 ## Constraints
 
@@ -81,4 +100,9 @@ Before approving merge:
 6. `run-triage` handoff template includes "Related Issues" section
 7. `run-open-pr` adds issue closing refs and CodeRabbit notes when enabled
 8. `run-finish` checks CodeRabbit review status when enabled
-9. All 3 existing specs are updated to reflect integration wiring
+9. All 4 orchestrators update Linear issue status ("In Progress" at start, "In Review" before PR) when `linear-issue` is present
+10. `run-triage` gracefully handles Linear MCP unavailability (logs warning, continues)
+11. `run-triage` searches Linear by keywords when no issue number is provided
+12. `run-finish` marks Linear issue as "Done" and posts PR URL comment after merge
+13. `run-create-triage` creates issues via GitHub Issues or Linear and hands off to run-triage
+14. All Linear MCP calls across all skills and orchestrators use graceful degradation
