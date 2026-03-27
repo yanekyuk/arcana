@@ -3,7 +3,7 @@ title: "Project Setup and Architecture Enforcement"
 type: spec
 tags: [setup, architecture, config, orchestrator, skill]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-27
 ---
 
 ## Behavior
@@ -14,9 +14,11 @@ Interactive project configuration wizard that:
 1. Auto-detects tech stack (language, runtime, package manager, test runner, linter/formatter) from project files
 2. Presents detected values and lets the user confirm or override
 3. Offers architecture presets (Layered, Hexagonal, Vertical Slices, Custom) that expand into flat rule lists at setup time -- presets are not a runtime concept
-4. Allows custom directives (style preferences, patterns to favor)
-5. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs
-6. Writes config to `docs/swe-config.json` in the target project
+4. Auto-discovers version-bearing files (package.json, Cargo.toml, pyproject.toml, etc.) across the project tree and generates natural-language versioning rules for the user to confirm or edit
+5. Allows custom directives (style preferences, patterns to favor)
+6. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs
+7. Writes config to `docs/swe-config.json` in the target project
+8. Supports updating an existing config -- loads current values (including versioning rules) as defaults when editing
 
 ### run-arch-check skill
 
@@ -66,9 +68,26 @@ All four orchestrators gain:
   "architecture": {
     "rules": ["string"]
   },
+  "versioning": ["string"],
   "directives": ["string"]
 }
 ```
+
+### Versioning Rules
+
+The `versioning` array contains natural-language rule strings that tell orchestrators which version manifests to bump and under what conditions. This replaces hardcoded manifest detection and supports monorepos with multiple independent version manifests.
+
+Each rule should specify:
+- **Which manifest** to bump (e.g., `package.json`, `frontend/package.json`, `Cargo.toml`)
+- **When** to bump it (e.g., "for frontend changes", "for API changes", "always")
+
+Examples:
+- `"Bump package.json version for all changes"` -- single-manifest project
+- `"Bump frontend/package.json version for changes under frontend/"` -- monorepo frontend
+- `"Bump api/pyproject.toml version for changes under api/"` -- monorepo backend
+- `"Bump version.txt for all changes"` -- simple version file
+
+If the `versioning` array is empty or absent, the orchestrator skips the version bump step entirely.
 
 ## Acceptance Criteria
 
