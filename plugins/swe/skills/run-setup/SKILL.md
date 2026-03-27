@@ -176,9 +176,24 @@ Integration toggles (y/n for each):
 2. Linear — Issue tracking integration
 3. GitHub Issues — Link PRs to GitHub Issues
 4. Auto-docs — Automatically update documentation on changes
+5. Context7 — Library documentation lookups via MCP during implementation
 ```
 
-For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": CodeRabbit on, Linear off, GitHub Issues on, auto-docs on.
+For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": CodeRabbit off, Linear off, GitHub Issues on, auto-docs on, Context7 off.
+
+### Step 6b: Verify prerequisites
+
+After the user confirms their integration selections, verify prerequisites for each enabled integration:
+
+| Integration | Check | Action |
+|---|---|---|
+| **githubIssues** | Run `which gh` | If missing, warn: "GitHub CLI (`gh`) is required for GitHub Issues integration. Install it from https://cli.github.com/ before running pipelines." |
+| **coderabbit** | Advisory only | Inform: "CodeRabbit requires the CodeRabbit GitHub App to be installed on this repository. Visit https://coderabbit.ai to set it up." |
+| **linear** | Check for Linear MCP server availability | If not available, suggest: "Linear integration requires the Linear MCP server. Add it to your MCP configuration to enable issue search during triage." |
+| **context7** | Check for Context7 MCP server availability | If not available, suggest: "Context7 integration requires the Context7 MCP server. Add it to your MCP configuration to enable library doc lookups during implementation." |
+| **autoDocs** | No prerequisite | No verification needed — this is built-in behavior. |
+
+Prerequisite checks are advisory, not blocking. Warn the user but do not prevent them from enabling the integration.
 
 ## Step 7: Write config
 
@@ -200,7 +215,8 @@ Assemble the final config object:
     "coderabbit": true,
     "linear": false,
     "githubIssues": true,
-    "autoDocs": true
+    "autoDocs": true,
+    "context7": false
   },
   "architecture": {
     "rules": [
