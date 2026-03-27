@@ -69,9 +69,22 @@ Record any relevant matches (issue number, title, state).
 
 **If `integrations.linear` is true:**
 
-Search Linear for related issues using Linear MCP tools:
-1. `mcp__linear__searchIssues` with keywords from the trigger
-2. Record any relevant matches (issue ID, title, state).
+Search Linear for related issues using Linear MCP tools. **All Linear MCP calls must be wrapped in error handling** — if the Linear MCP server is unavailable or any call fails, log a warning and continue without Linear data. Never let a Linear failure block the triage pipeline.
+
+1. If the user provided a specific Linear issue identifier (e.g., `ENG-123`), fetch it directly using `mcp__linear__getIssue`.
+2. If the user did NOT provide an issue number, search Linear for existing issues matching trigger keywords:
+   - Use `mcp__linear__searchIssues` with keywords extracted from the trigger text
+   - Review the returned matches and pick the best match based on title/description relevance
+   - If no good match exists, proceed with no Linear issue linked
+3. Record any matched issue (issue ID, title, state) for inclusion in the handoff.
+
+**Graceful degradation pattern:**
+
+```
+Attempt Linear MCP call:
+  - Success → use the result
+  - Failure → log "Warning: Linear MCP unavailable — proceeding without Linear issues." and continue
+```
 
 **If neither integration is enabled**, skip this step.
 
@@ -119,6 +132,7 @@ branch: <type>/<short-description>
 base-branch: <base-branch>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional — overrides the orchestrator's default semver bump
+linear-issue: <LINEAR-ID>              # optional — set when a Linear issue is matched in Step 5b
 ---
 
 ## Related Files
