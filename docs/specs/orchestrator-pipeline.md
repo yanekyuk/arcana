@@ -35,7 +35,7 @@ All orchestrators require `docs/swe-config.json` to exist. This file is created 
 
 - **`stack.*`** -- Tech stack configuration (language, runtime, test command, lint/format/typecheck commands). Replaces dynamic tooling discovery.
 - **`architecture.rules`** -- Flat list of architecture rules enforced by `run-arch-check` as a hard gate.
-- **`directives`** -- Soft guidance strings read by orchestrators during implementation.
+- **`directives`** -- Categorized soft guidance object keyed by skill group (`implementation`, `review`, `documentation`, `delivery`, `triage`). Each group is an array of strings. Orchestrators read the relevant groups and pass them to dispatched skills.
 - **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs, Context7). These flags gate specific pipeline behaviors:
   - `autoDocs`: gates the sync-docs phase (skipped when false)
   - `context7`: enables Context7 MCP tool guidance during implementation phases
