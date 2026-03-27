@@ -76,7 +76,8 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 
 **If the file exists:** Parse it and store the values for later use:
 - `architecture.rules` → enforced by arch-check gate
-- `directives` → soft guidance to follow during documentation work
+- `directives.documentation` → soft guidance for writing/updating docs (Step 4) and sync-docs (Step 6)
+- `directives.delivery` → soft guidance for open-pr (Step 10)
 - `integrations.autoDocs` → gates the sync-docs step (Step 6)
 - `integrations.context7` → enables Context7 MCP tool guidance during documentation (Step 4)
 - `integrations.githubIssues` → used by run-open-pr for issue linking
