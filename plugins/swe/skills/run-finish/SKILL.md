@@ -125,16 +125,16 @@ If `integrations.linear` is false or the config file does not exist, skip this c
 
 ## Step 5: Merge
 
-Ask the user for merge strategy preference (merge commit or squash). If the user has already expressed a preference, use it. Default to squash if not specified.
-
-```bash
-gh pr merge <number> --squash
-```
-
-Or with merge commit:
+Ask the user for merge strategy preference (merge commit or squash). If the user has already expressed a preference, use it. Default to merge commit if not specified.
 
 ```bash
 gh pr merge <number> --merge
+```
+
+Or with squash:
+
+```bash
+gh pr merge <number> --squash
 ```
 
 Do **not** pass `--delete-branch` — the worktree still holds the branch at this point, so `gh` would exit with code 1. Remote and local branch cleanup is handled in Step 6.
