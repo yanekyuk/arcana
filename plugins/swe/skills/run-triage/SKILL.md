@@ -101,6 +101,14 @@ After user confirms the classification:
 
 ## Step 8: Create branch, worktree, and handoff artifact
 
+First, capture the current branch name — this is the branch the worktree will be derived from:
+
+```bash
+git branch --show-current
+```
+
+Store the output as `<base-branch>` for use in the handoff frontmatter below.
+
 Compose the handoff content as a string (do not write it to a file):
 
 ```yaml
@@ -108,6 +116,7 @@ Compose the handoff content as a string (do not write it to a file):
 trigger: "<original user request>"
 type: <feat|fix|refactor|docs>
 branch: <type>/<short-description>
+base-branch: <base-branch>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional — overrides the orchestrator's default semver bump
 ---
