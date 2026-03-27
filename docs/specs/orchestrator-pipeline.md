@@ -21,10 +21,10 @@ Every orchestrator executes these phases in order:
 | Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
 | Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming on conflict (skipped by docs) |
-| Work | Type-specific implementation | See per-type sections below |
+| Work | Type-specific implementation | See per-type sections below. **When `integrations.context7` is true**, Context7 MCP tools are available for library doc lookups. |
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
-| Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check |
+| Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check. **Gated on `integrations.autoDocs`** -- skipped when false. |
 | Release | Version bump | Evaluate versioning rules from config, bump matching manifests |
 | Cleanup | Remove handoff | `git rm .claude/handoff.md` |
 | Delivery | Open PR | Push, create PR via `gh pr create` |
@@ -36,7 +36,10 @@ All orchestrators require `docs/swe-config.json` to exist. This file is created 
 - **`stack.*`** -- Tech stack configuration (language, runtime, test command, lint/format/typecheck commands). Replaces dynamic tooling discovery.
 - **`architecture.rules`** -- Flat list of architecture rules enforced by `run-arch-check` as a hard gate.
 - **`directives`** -- Soft guidance strings read by orchestrators during implementation.
-- **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs).
+- **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs, Context7). These flags gate specific pipeline behaviors:
+  - `autoDocs`: gates the sync-docs phase (skipped when false)
+  - `context7`: enables Context7 MCP tool guidance during implementation phases
+  - `githubIssues`, `linear`, `coderabbit`: passed through to `run-open-pr` and `run-finish` skills
 
 If the config file is missing, the orchestrator stops immediately with: "No project config found. Run `/run-setup` in the target project first."
 

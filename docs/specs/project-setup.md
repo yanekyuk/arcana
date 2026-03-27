@@ -16,7 +16,8 @@ Interactive project configuration wizard that:
 3. Offers architecture presets (Layered, Hexagonal, Vertical Slices, Custom) that expand into flat rule lists at setup time -- presets are not a runtime concept
 4. Auto-discovers version-bearing files (package.json, Cargo.toml, pyproject.toml, etc.) across the project tree and generates natural-language versioning rules for the user to confirm or edit
 5. Allows custom directives (style preferences, patterns to favor)
-6. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs
+6. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs, Context7
+6b. Verifies prerequisites for each enabled integration (advisory, not blocking)
 7. Writes config to `docs/swe-config.json` in the target project
 8. Supports updating an existing config -- loads current values (including versioning rules) as defaults when editing
 
@@ -35,6 +36,22 @@ All four orchestrators gain:
 1. **Config gate** after "Read handoff": reads `docs/swe-config.json`. If missing, aborts with: "No project config found. Run `/run-setup` in the target project first."
 2. **Config-driven tooling** replaces dynamic tooling discovery with `stack.*` values from config
 3. **Arch check step** after self-review (after sync-docs for docs orchestrator): dispatches `run-arch-check`. Violations trigger fix attempt; failed fix proceeds as draft PR.
+4. **Integration wiring** reads `integrations.*` flags and applies them:
+   - `autoDocs` gates the sync-docs step (skipped when false)
+   - `context7` enables Context7 MCP tool guidance during implementation steps
+   - Remaining flags (`githubIssues`, `linear`, `coderabbit`) are passed through to `run-open-pr`
+
+### Integration prerequisites
+
+`run-setup` verifies prerequisites for each enabled integration (advisory, not blocking):
+
+| Integration | Prerequisite |
+|---|---|
+| githubIssues | `gh` CLI available |
+| coderabbit | CodeRabbit GitHub App installed (advisory) |
+| linear | Linear MCP server configured |
+| context7 | Context7 MCP server configured |
+| autoDocs | None (built-in) |
 
 ## Constraints
 
@@ -63,7 +80,8 @@ All four orchestrators gain:
     "coderabbit": "boolean",
     "linear": "boolean",
     "githubIssues": "boolean",
-    "autoDocs": "boolean"
+    "autoDocs": "boolean",
+    "context7": "boolean"
   },
   "architecture": {
     "rules": ["string"]

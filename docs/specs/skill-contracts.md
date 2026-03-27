@@ -3,7 +3,7 @@ title: "Skill Contracts"
 type: spec
 tags: [skill, contract, triage, start, finish, tdd, self-review, open-pr, sync-docs, clash-check, domain-knowledge, design-decision, spec, setup, arch-check]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-27
 ---
 
 ## Behavior
@@ -38,6 +38,9 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Tools:** Read, Grep, Glob, Bash, Write, Agent
 - **Invocation:** User-invoked or model-invoked in main session
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
+- **Integration behavior:**
+  - `githubIssues`: searches GitHub Issues via `gh issue list --search` and includes matches in handoff "Related Issues" section
+  - `linear`: searches Linear via MCP tools and includes matches in handoff "Related Issues" section
 
 ### run-start
 
@@ -54,6 +57,8 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Tools:** Read, Bash, Grep
 - **Invocation:** User-invoked or model-invoked in main session
 - **Side effects:** Merges PR, deletes remote/local branches, removes worktree, pulls main
+- **Integration behavior:**
+  - `coderabbit`: checks CodeRabbit review status via `gh pr reviews` before delivering verdict. Warns if review is pending, includes CodeRabbit comments if changes requested.
 
 ## Development Skills
 
@@ -81,6 +86,10 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Tools:** Read, Bash, Grep
 - **Invocation:** Model-invoked or dispatched by orchestrators
 - **Side effects:** Stages remaining changes, pushes branch, creates PR via `gh pr create`
+- **Integration behavior:**
+  - `githubIssues`: adds `Closes #N` lines to PR body for related GitHub issues from handoff
+  - `linear`: adds Linear issue references to PR body from handoff
+  - `coderabbit`: adds a "CodeRabbit review requested" note to PR body
 
 ## Knowledge Management Skills
 
