@@ -10,6 +10,20 @@ updated: 2026-03-27
 
 Each skill is a composable building block with defined inputs, outputs, and tool requirements. Skills are invoked via slash commands or dispatched by orchestrator agents.
 
+### Directive Groups
+
+Skills that consume directives declare a `directive group` mapping. The group determines which key from `directives` in `docs/swe-config.json` they read:
+
+| Group | Skills |
+|---|---|
+| `implementation` | run-tdd |
+| `review` | run-self-review |
+| `documentation` | run-sync-docs, run-spec, run-domain-knowledge, run-design-decision |
+| `delivery` | run-open-pr, run-finish |
+| `triage` | run-triage |
+
+Skills not listed (run-setup, run-start, run-arch-check, run-clash-check) do not consume directives.
+
 ## Configuration Skills
 
 ### run-setup
@@ -18,7 +32,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** `docs/swe-config.json` written to the target project
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
 - **Invocation:** User-invoked or model-invoked in the target project (interactive -- asks questions and waits for responses)
-- **Side effects:** Creates `docs/swe-config.json` with tech stack, architecture rules, integration toggles, and custom directives
+- **Side effects:** Creates `docs/swe-config.json` with tech stack, architecture rules, integration toggles, and categorized directives (per skill group: implementation, review, documentation, delivery, triage)
 - **Note:** This is the only interactive skill -- all others are non-interactive when dispatched by orchestrators
 
 ### run-arch-check
@@ -37,6 +51,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Branch, worktree, committed handoff artifact (`.claude/handoff.md`)
 - **Tools:** Read, Grep, Glob, Bash, Write, Agent
 - **Invocation:** User-invoked or model-invoked in main session
+- **Directive group:** `triage`
 - **Side effects:** Creates git branch, creates worktree directory, commits handoff
 - **Integration behavior:**
   - `githubIssues`: searches GitHub Issues via `gh issue list --search` and includes matches in handoff "Related Issues" section
@@ -70,6 +85,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Merged PR, cleaned-up worktree and branches
 - **Tools:** Read, Bash, Grep
 - **Invocation:** User-invoked or model-invoked in main session
+- **Directive group:** `delivery`
 - **Side effects:** Merges PR, deletes remote/local branches, removes worktree, pulls main
 - **Integration behavior:**
   - `coderabbit`: checks CodeRabbit review status via `gh pr reviews` before delivering verdict. Warns if review is pending, includes CodeRabbit comments if changes requested.
@@ -83,6 +99,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Committed test + implementation pairs
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `implementation`
 - **Cycle:** Write failing test, implement minimally, refactor, commit
 - **Failure:** 3 attempts per unit, then WIP commit and stop
 
@@ -92,6 +109,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Review report (pass or list of issues with classifications)
 - **Tools:** Read, Bash, Grep, Glob
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `review`
 - **Checks:** Scope compliance, spec alignment, domain rule compliance, test coverage, code quality
 
 ### run-open-pr
@@ -100,6 +118,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** PR URL
 - **Tools:** Read, Bash, Grep
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `delivery`
 - **Side effects:** Stages remaining changes, pushes branch, creates PR via `gh pr create`
 - **Integration behavior:**
   - `githubIssues`: adds `Closes #N` lines to PR body for related GitHub issues from handoff
@@ -114,6 +133,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Created/updated docs, clash-check warnings, CLAUDE.md suggestions
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `documentation`
 - **Side effects:** Creates/updates docs in `docs/`, dispatches clash-check subagent
 - **Cascade:** Depth-1 only (dispatches clash-check but clash-check does not cascade further)
 
@@ -132,6 +152,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Created/updated domain doc, clash-check report
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `documentation`
 - **Side effects:** Writes to `docs/domain/`, dispatches clash-check on decisions and specs
 - **Cascade:** Downward to both decisions and specs tiers
 
@@ -141,6 +162,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Created/updated decision doc, alignment report, clash-check report
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `documentation`
 - **Side effects:** Writes to `docs/decisions/`, dispatches clash-check on specs
 - **Upward check:** Verifies alignment with `docs/domain/` before writing
 - **Cascade:** Downward to specs tier only
@@ -151,6 +173,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 - **Output:** Created/updated spec doc
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob, Agent
 - **Invocation:** Model-invoked or dispatched by orchestrators
+- **Directive group:** `documentation`
 - **Side effects:** Writes to `docs/specs/`
 - **Upward check:** Verifies alignment with both `docs/domain/` and `docs/decisions/`
 - **Cascade:** None (specs are leaf-level)

@@ -9,6 +9,10 @@ allowed-tools: Read, Bash, Grep
 
 You are reviewing and completing a PR lifecycle. This skill runs from the **main session** (project root, not a worktree) after an orchestrator has opened a PR.
 
+## Prerequisites
+
+**Directives:** If `docs/swe-config.json` exists, read `directives.delivery` from the config. These are soft guidelines that influence review standards and merge preferences. Apply them during PR review and merge decisions. If the field is missing or empty, proceed without directives.
+
 ## Step 1: Validate context
 
 Confirm you are in the main repo (not a worktree):

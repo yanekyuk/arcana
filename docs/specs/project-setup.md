@@ -15,7 +15,7 @@ Interactive project configuration wizard that:
 2. Presents detected values and lets the user confirm or override
 3. Offers architecture presets (Layered, Hexagonal, Vertical Slices, Custom) that expand into flat rule lists at setup time -- presets are not a runtime concept
 4. Auto-discovers version-bearing files (package.json, Cargo.toml, pyproject.toml, etc.) across the project tree and generates natural-language versioning rules for the user to confirm or edit
-5. Allows custom directives (style preferences, patterns to favor)
+5. Allows custom directives per skill group (implementation, review, documentation, delivery, triage)
 6. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs, Context7
 6b. Verifies prerequisites for each enabled integration (advisory, not blocking)
 7. Writes config to `docs/swe-config.json` in the target project
@@ -56,7 +56,7 @@ All four orchestrators gain:
 ## Constraints
 
 - Architecture rules are flat strings at runtime -- no preset taxonomy
-- `architecture.rules` are hard-enforced by `run-arch-check`; `directives` are soft guidance
+- `architecture.rules` are hard-enforced by `run-arch-check`; `directives` (per group) are soft guidance
 - Config lives in `docs/` (version controlled, human-editable, visible in PRs)
 - No config = orchestrator aborts immediately (hard requirement)
 - Skill format must follow existing YAML frontmatter conventions
@@ -87,7 +87,13 @@ All four orchestrators gain:
     "rules": ["string"]
   },
   "versioning": ["string"],
-  "directives": ["string"]
+  "directives": {
+    "implementation": ["string"],
+    "review": ["string"],
+    "documentation": ["string"],
+    "delivery": ["string"],
+    "triage": ["string"]
+  }
 }
 ```
 

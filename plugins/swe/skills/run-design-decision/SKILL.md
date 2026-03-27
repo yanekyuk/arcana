@@ -9,6 +9,10 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 
 You are creating or updating a design decision document — architectural choices, patterns, and their rationale.
 
+## Prerequisites
+
+**Directives:** If `docs/swe-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when writing decision docs. If the field is missing or empty, proceed without directives.
+
 ## Creating a new decision doc
 
 1. Determine the topic from context or user request

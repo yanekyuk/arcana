@@ -30,5 +30,11 @@
   "versioning": [
     "Bump plugins/swe/.claude-plugin/plugin.json version and .claude-plugin/marketplace.json swe entry version in sync for all changes"
   ],
-  "directives": []
+  "directives": {
+    "implementation": [],
+    "review": [],
+    "documentation": [],
+    "delivery": [],
+    "triage": []
+  }
 }

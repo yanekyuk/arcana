@@ -9,14 +9,18 @@ allowed-tools: Read, Bash, Grep
 
 You are finalizing work and opening a pull request.
 
-## Step 0: Load integration config
+## Step 0: Load config
 
-Read `docs/swe-config.json` and extract the `integrations` object. Store these flags for use in later steps:
+Read `docs/swe-config.json` and extract:
+
+**Integration flags** (store for use in later steps):
 - `integrations.githubIssues` → add `Closes #N` lines to PR body
 - `integrations.linear` → add Linear issue refs to PR body
 - `integrations.coderabbit` → add CodeRabbit review-requested note to PR body
 
-If the config file does not exist, proceed without integration features.
+**Directives:** Read `directives.delivery` from the config. These are soft guidelines that influence PR conventions, merge preferences, and changelog notes. Apply them when building the PR title and body. If the field is missing or empty, proceed without directives.
+
+If the config file does not exist, proceed without integration features or directives.
 
 ## Step 1: Stage and commit any remaining changes
 

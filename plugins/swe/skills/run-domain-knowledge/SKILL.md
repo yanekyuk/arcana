@@ -9,6 +9,10 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 
 You are creating or updating a domain knowledge document — business rules, invariants, and constraints that govern the system.
 
+## Prerequisites
+
+**Directives:** If `docs/swe-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when writing domain docs. If the field is missing or empty, proceed without directives.
+
 ## Creating a new domain doc
 
 1. Determine the topic from context or user request

@@ -85,7 +85,10 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 **If the file exists:** Parse it and store the values for later use:
 - `stack.test` → test command for TDD guard and incremental refactoring
 - `architecture.rules` → enforced by arch-check gate
-- `directives` → soft guidance to follow during refactoring
+- `directives.implementation` → soft guidance for incremental refactoring (Step 6)
+- `directives.review` → soft guidance for self-review (Step 7)
+- `directives.documentation` → soft guidance for sync-docs (Step 9)
+- `directives.delivery` → soft guidance for open-pr (Step 12)
 - `integrations.autoDocs` → gates the sync-docs step (Step 9)
 - `integrations.context7` → enables Context7 MCP tool guidance during refactoring (Step 6)
 - `integrations.githubIssues` → used by run-open-pr for issue linking
