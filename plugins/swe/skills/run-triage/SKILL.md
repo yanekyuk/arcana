@@ -33,6 +33,8 @@ If `docs/swe-config.json` does not exist, stop immediately and tell the user:
 
 Do NOT proceed with any further steps.
 
+If the config exists, also read `directives.triage` from the config. These are soft guidelines that influence classification preferences, branch naming, and scope boundaries. Apply them throughout the triage process. If the field is missing or empty, proceed without directives.
+
 ## Step 3: Understand the trigger
 
 The user has provided a ticket, idea, or bug report. Read it carefully. Ask NO clarifying questions — work with what you have.

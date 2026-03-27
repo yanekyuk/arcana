@@ -9,6 +9,10 @@ allowed-tools: Read, Bash, Grep, Glob
 
 You are reviewing your own changes before opening a PR. Be rigorous — pretend you're reviewing someone else's code.
 
+## Prerequisites
+
+**Directives:** If `docs/swe-config.json` exists, read `directives.review` from the config. These are soft guidelines that influence your review focus areas and quality thresholds. Apply them throughout the review process. If the field is missing or empty, proceed without directives.
+
 ## Step 1: Detect base branch and get the diff
 
 ```bash
