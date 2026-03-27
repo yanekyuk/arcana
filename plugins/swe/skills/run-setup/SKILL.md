@@ -161,9 +161,66 @@ Wait for user response. Apply any changes.
 
 ## Step 5: Custom directives
 
-Ask: "Do you have any custom directives? These are soft guidelines for the AI during implementation -- style preferences, patterns to favor, conventions to follow. Enter one per line, or say 'none' to skip."
+Directives are soft guidelines for the AI, organized by skill group. Walk through each group in order, explaining what it covers and collecting directives for it.
 
-Wait for user response. Collect directives until the user indicates they are done.
+**When editing an existing config:** If the existing `directives` field is an object with group keys, show the current directives per group as defaults. If the existing `directives` field is a flat array (legacy format), migrate all entries to the `implementation` group and inform the user: "Existing directives were in the legacy flat format. They have been migrated to the `implementation` group. You can redistribute them during this setup."
+
+Present each group and collect directives:
+
+### 5a. Implementation directives
+
+```
+Implementation directives apply to: run-tdd
+These guide coding style, patterns to favor, and implementation preferences.
+```
+
+Ask: "Enter implementation directives (one per line), or say 'none' to skip."
+
+Wait for user response. Collect directives until done.
+
+### 5b. Review directives
+
+```
+Review directives apply to: run-self-review
+These guide review focus areas, quality thresholds, and things to watch for.
+```
+
+Ask: "Enter review directives (one per line), or say 'none' to skip."
+
+Wait for user response. Collect directives until done.
+
+### 5c. Documentation directives
+
+```
+Documentation directives apply to: run-sync-docs, run-spec, run-domain-knowledge, run-design-decision
+These guide doc style, detail level, and terminology preferences.
+```
+
+Ask: "Enter documentation directives (one per line), or say 'none' to skip."
+
+Wait for user response. Collect directives until done.
+
+### 5d. Delivery directives
+
+```
+Delivery directives apply to: run-open-pr, run-finish
+These guide PR conventions, merge preferences, and changelog notes.
+```
+
+Ask: "Enter delivery directives (one per line), or say 'none' to skip."
+
+Wait for user response. Collect directives until done.
+
+### 5e. Triage directives
+
+```
+Triage directives apply to: run-triage
+These guide classification preferences, branch naming, and scope boundaries.
+```
+
+Ask: "Enter triage directives (one per line), or say 'none' to skip."
+
+Wait for user response. Collect directives until done.
 
 ## Step 6: Integration toggles
 
@@ -240,9 +297,13 @@ Assemble the final config object:
   "versioning": [
     "<generated or user-edited versioning rules>"
   ],
-  "directives": [
-    "<user-provided directives>"
-  ]
+  "directives": {
+    "implementation": ["<implementation directives>"],
+    "review": ["<review directives>"],
+    "documentation": ["<documentation directives>"],
+    "delivery": ["<delivery directives>"],
+    "triage": ["<triage directives>"]
+  }
 }
 ```
 
