@@ -62,13 +62,17 @@ Before doing anything else, create all pipeline tasks so the user can see progre
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
-Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
+Each step below includes a TaskUpdate reminder. Follow it exactly — mark the task `in_progress` at the start, `completed` at the end.
 
 ## Step 1: Read handoff
+
+> **TaskUpdate:** Mark "Read handoff" (task 1) as `in_progress` now. Mark `completed` when done.
 
 Read `.claude/handoff.md` in the current directory. Parse the frontmatter and all sections. This is your source of truth for what to build.
 
 ## Step 2: Load project config
+
+> **TaskUpdate:** Mark "Load project config" (task 2) as `in_progress` now. Mark `completed` when done.
 
 Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
 
@@ -86,6 +90,8 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 
 ## Step 3: Fetch relevant knowledge docs
 
+> **TaskUpdate:** Mark "Fetch docs" (task 3) as `in_progress` now. Mark `completed` when done.
+
 If `docs/` exists:
 
 1. Extract keywords from the handoff: file paths → module/directory names, trigger text → nouns and domain terms
@@ -97,6 +103,8 @@ If `docs/` exists:
 Remember the content of these docs — they inform your implementation.
 
 ## Step 4: Knowledge alignment check
+
+> **TaskUpdate:** Mark "Knowledge alignment check" (task 4) as `in_progress` now. Mark `completed` when done.
 
 Cross-reference the handoff scope against the fetched knowledge docs to detect misalignment before implementation begins.
 
@@ -131,6 +139,8 @@ If any misalignment is detected, pause the autonomous pipeline and enter a brain
 
 ## Step 5: Draft spec (if needed)
 
+> **TaskUpdate:** Mark "Draft spec" (task 5) as `in_progress` now. Mark `completed` when done.
+
 Check if a relevant spec already exists in `docs/specs/`.
 
 If not, create one:
@@ -160,6 +170,8 @@ Commit: `git add docs/specs/<file>.md && git commit -m "docs: add spec — <titl
 
 ## Step 6: TDD cycle
 
+> **TaskUpdate:** Mark "TDD cycle" (task 6) as `in_progress` now. Mark `completed` when done.
+
 For each unit of work in the feature:
 
 ### 6a. Write a failing test
@@ -187,6 +199,8 @@ git commit -m "feat: <what this unit does>"
 
 ## Step 7: Self-review
 
+> **TaskUpdate:** Mark "Self-review" (task 7) as `in_progress` now. Mark `completed` when done.
+
 1. Get the full diff: `git diff main...HEAD`
 2. Read the handoff and any referenced specs/domain docs
 3. Check:
@@ -199,6 +213,8 @@ git commit -m "feat: <what this unit does>"
 
 ## Step 8: Arch check
 
+> **TaskUpdate:** Mark "Arch check" (task 8) as `in_progress` now. Mark `completed` when done.
+
 Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
 
 If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
@@ -210,6 +226,8 @@ If violations are found:
 4. If fixes fail after 1 retry, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
 ## Step 9: Sync docs
+
+> **TaskUpdate:** Mark "Sync docs" (task 9) as `in_progress` now. Mark `completed` when done.
 
 1. Review the diff for implicit knowledge:
    - New domain rules not documented
@@ -226,9 +244,13 @@ If violations are found:
 
 ## Step 10: Version bump
 
+> **TaskUpdate:** Mark "Version bump" (task 10) as `in_progress` now. Mark `completed` when done.
+
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: MINOR** (new backward-compatible functionality). Skip if no version manifest is found.
 
 ## Step 11: Clean up handoff
+
+> **TaskUpdate:** Mark "Clean up handoff" (task 11) as `in_progress` now. Mark `completed` when done.
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -237,6 +259,8 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
 ## Step 12: Open PR
+
+> **TaskUpdate:** Mark "Open PR" (task 12) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
