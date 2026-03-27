@@ -39,7 +39,8 @@ All orchestrators require `docs/swe-config.json` to exist. This file is created 
 - **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs, Context7). These flags gate specific pipeline behaviors:
   - `autoDocs`: gates the sync-docs phase (skipped when false)
   - `context7`: enables Context7 MCP tool guidance during implementation phases
-  - `githubIssues`, `linear`, `coderabbit`: passed through to `run-open-pr` and `run-finish` skills
+  - `linear`: when true and `linear-issue` is present in handoff, orchestrators update Linear issue status at pipeline stages ("In Progress" after config load, "In Review" before PR). All MCP calls use graceful degradation.
+  - `githubIssues`, `coderabbit`: passed through to `run-open-pr` and `run-finish` skills
 
 If the config file is missing, the orchestrator stops immediately with: "No project config found. Run `/run-setup` in the target project first."
 
