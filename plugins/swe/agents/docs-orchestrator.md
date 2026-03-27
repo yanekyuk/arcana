@@ -54,13 +54,17 @@ Before doing anything else, create all pipeline tasks so the user can see progre
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
-Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
+Each step below includes a TaskUpdate reminder. Follow it exactly — mark the task `in_progress` at the start, `completed` at the end.
 
 ## Step 1: Read handoff
+
+> **TaskUpdate:** Mark "Read handoff" (task 1) as `in_progress` now. Mark `completed` when done.
 
 Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
 ## Step 2: Load project config
+
+> **TaskUpdate:** Mark "Load project config" (task 2) as `in_progress` now. Mark `completed` when done.
 
 Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
 
@@ -76,6 +80,8 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 
 ## Step 3: Fetch relevant knowledge docs
 
+> **TaskUpdate:** Mark "Fetch docs" (task 3) as `in_progress` now. Mark `completed` when done.
+
 If `docs/` exists:
 
 1. Extract keywords from handoff
@@ -84,6 +90,8 @@ If `docs/` exists:
 4. Rank by match count, read top 5 total across all tiers (not per tier — cap prevents token bloat). If more than 5 match, log skipped doc paths for transparency.
 
 ## Step 4: Write/update documentation
+
+> **TaskUpdate:** Mark "Write/update documentation" (task 4) as `in_progress` now. Mark `completed` when done.
 
 Based on the handoff scope:
 
@@ -110,11 +118,15 @@ git commit -m "docs: <create|update> <type> — <title>"
 
 ## Step 5: Clash check
 
+> **TaskUpdate:** Mark "Clash check" (task 5) as `in_progress` now. Mark `completed` when done.
+
 Dispatch a clash-check subagent (via Agent tool) targeting the tiers that were modified. This runs in an isolated context.
 
 If clashes found, note them for the PR description.
 
 ## Step 6: Sync docs
+
+> **TaskUpdate:** Mark "Sync docs" (task 6) as `in_progress` now. Mark `completed` when done.
 
 Check if the documentation changes affect other tiers:
 - A new domain doc may require corresponding decisions or specs
@@ -128,6 +140,8 @@ Commit any additional changes.
 
 ## Step 7: Arch check
 
+> **TaskUpdate:** Mark "Arch check" (task 7) as `in_progress` now. Mark `completed` when done.
+
 Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
 
 If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
@@ -140,9 +154,13 @@ If violations are found:
 
 ## Step 8: Version bump
 
+> **TaskUpdate:** Mark "Version bump" (task 8) as `in_progress` now. Mark `completed` when done.
+
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
 
 ## Step 9: Clean up handoff
+
+> **TaskUpdate:** Mark "Clean up handoff" (task 9) as `in_progress` now. Mark `completed` when done.
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -151,6 +169,8 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
 ## Step 10: Open PR
+
+> **TaskUpdate:** Mark "Open PR" (task 10) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 

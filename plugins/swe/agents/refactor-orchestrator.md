@@ -62,13 +62,17 @@ Before doing anything else, create all pipeline tasks so the user can see progre
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
-Then, at the **start** of each step, call `TaskUpdate` to mark the task `in_progress`. At the **end**, mark it `completed`.
+Each step below includes a TaskUpdate reminder. Follow it exactly — mark the task `in_progress` at the start, `completed` at the end.
 
 ## Step 1: Read handoff
+
+> **TaskUpdate:** Mark "Read handoff" (task 1) as `in_progress` now. Mark `completed` when done.
 
 Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
 ## Step 2: Load project config
+
+> **TaskUpdate:** Mark "Load project config" (task 2) as `in_progress` now. Mark `completed` when done.
 
 Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
 
@@ -85,6 +89,8 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 
 ## Step 3: Fetch relevant knowledge docs
 
+> **TaskUpdate:** Mark "Fetch docs" (task 3) as `in_progress` now. Mark `completed` when done.
+
 If `docs/` exists:
 
 1. Extract keywords, exclude noise, normalize
@@ -94,6 +100,8 @@ If `docs/` exists:
 Refactors don't write new tests or draft specs — they preserve existing behavior under existing tests.
 
 ## Step 4: Knowledge alignment check
+
+> **TaskUpdate:** Mark "Knowledge alignment check" (task 4) as `in_progress` now. Mark `completed` when done.
 
 Cross-reference the handoff scope against the fetched knowledge docs to detect misalignment before refactoring begins.
 
@@ -127,6 +135,8 @@ If any misalignment is detected, pause the autonomous pipeline and enter a brain
 
 ## Step 5: TDD guard
 
+> **TaskUpdate:** Mark "TDD guard" (task 5) as `in_progress` now. Mark `completed` when done.
+
 Run the full test suite BEFORE making any changes:
 
 ```bash
@@ -138,6 +148,8 @@ Run the full test suite BEFORE making any changes:
 If all green, proceed.
 
 ## Step 6: Refactor incrementally
+
+> **TaskUpdate:** Mark "Refactor incrementally" (task 6) as `in_progress` now. Mark `completed` when done.
 
 For each refactoring change:
 
@@ -163,6 +175,8 @@ git commit -m "refactor: <what was changed>"
 
 ## Step 7: Self-review
 
+> **TaskUpdate:** Mark "Self-review" (task 7) as `in_progress` now. Mark `completed` when done.
+
 1. `git diff main...HEAD`
 2. Check:
    - No behavior changes (only structural improvements)
@@ -171,6 +185,8 @@ git commit -m "refactor: <what was changed>"
 3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 12)
 
 ## Step 8: Arch check
+
+> **TaskUpdate:** Mark "Arch check" (task 8) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-arch-check` skill to validate architecture rules against the current diff.
 
@@ -184,6 +200,8 @@ If violations are found:
 
 ## Step 9: Sync docs
 
+> **TaskUpdate:** Mark "Sync docs" (task 9) as `in_progress` now. Mark `completed` when done.
+
 1. Review diff for implicit knowledge
 2. Update `docs/` if needed (refactors often produce design decision docs)
 3. Dispatch clash-check subagent if docs changed
@@ -192,9 +210,13 @@ If violations are found:
 
 ## Step 10: Version bump
 
+> **TaskUpdate:** Mark "Version bump" (task 10) as `in_progress` now. Mark `completed` when done.
+
 Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: PATCH** (no behavior change). Skip if no version manifest is found.
 
 ## Step 11: Clean up handoff
+
+> **TaskUpdate:** Mark "Clean up handoff" (task 11) as `in_progress` now. Mark `completed` when done.
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -203,6 +225,8 @@ git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
 ## Step 12: Open PR
+
+> **TaskUpdate:** Mark "Open PR" (task 12) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
