@@ -9,6 +9,15 @@ allowed-tools: Read, Bash, Grep
 
 You are finalizing work and opening a pull request.
 
+## Step 0: Load integration config
+
+Read `docs/swe-config.json` and extract the `integrations` object. Store these flags for use in later steps:
+- `integrations.githubIssues` → add `Closes #N` lines to PR body
+- `integrations.linear` → add Linear issue refs to PR body
+- `integrations.coderabbit` → add CodeRabbit review-requested note to PR body
+
+If the config file does not exist, proceed without integration features.
+
 ## Step 1: Stage and commit any remaining changes
 
 ```bash
@@ -57,6 +66,27 @@ Read `.claude/handoff.md` for trigger and scope context.
 
 ## Knowledge Warnings
 <Any clash-check warnings from the pipeline, or "None">
+```
+
+**Integration-driven sections (add these when the corresponding integration is enabled):**
+
+If `integrations.githubIssues` is true and the handoff (or Related Issues section) contains GitHub issue numbers:
+```markdown
+## Closes
+Closes #<issue-number>
+```
+Add one `Closes #N` line per related GitHub issue. GitHub will automatically link and close these issues when the PR is merged.
+
+If `integrations.linear` is true and the handoff contains Linear issue references:
+```markdown
+## Linear Issues
+- <LINEAR-ID>: <issue title>
+```
+
+If `integrations.coderabbit` is true:
+```markdown
+## Review
+CodeRabbit review has been requested for this PR.
 ```
 
 If `run-sync-docs` detected that `CLAUDE.md` might need updating, add a section:
