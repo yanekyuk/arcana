@@ -77,6 +77,11 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 **If the file exists:** Parse it and store the values for later use:
 - `architecture.rules` → enforced by arch-check gate
 - `directives` → soft guidance to follow during documentation work
+- `integrations.autoDocs` → gates the sync-docs step (Step 6)
+- `integrations.context7` → enables Context7 MCP tool guidance during documentation (Step 4)
+- `integrations.githubIssues` → used by run-open-pr for issue linking
+- `integrations.linear` → used by run-open-pr for Linear issue refs
+- `integrations.coderabbit` → used by run-open-pr for review-requested notes
 
 ## Step 3: Fetch relevant knowledge docs
 
@@ -92,6 +97,12 @@ If `docs/` exists:
 ## Step 4: Write/update documentation
 
 > **TaskUpdate:** Mark "Write/update documentation" (task 4) as `in_progress` now. Mark `completed` when done.
+
+**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools when documenting code that uses external libraries:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+
+Use these tools to verify accuracy when writing documentation about third-party library usage, API references, or configuration.
 
 Based on the handoff scope:
 
@@ -127,6 +138,8 @@ If clashes found, note them for the PR description.
 ## Step 6: Sync docs
 
 > **TaskUpdate:** Mark "Sync docs" (task 6) as `in_progress` now. Mark `completed` when done.
+
+**Integration gate:** If `integrations.autoDocs` is false, skip this step entirely. Log: "Skipping sync-docs — autoDocs integration is disabled." Mark the task as completed and proceed to Step 7.
 
 Check if the documentation changes affect other tiers:
 - A new domain doc may require corresponding decisions or specs

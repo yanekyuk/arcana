@@ -87,6 +87,11 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `stack.lint`, `stack.format`, `stack.typecheck` → quality commands
 - `architecture.rules` → enforced by arch-check gate
 - `directives` → soft guidance to follow during implementation
+- `integrations.autoDocs` → gates the sync-docs step (Step 9)
+- `integrations.context7` → enables Context7 MCP tool guidance during implementation (Step 6)
+- `integrations.githubIssues` → used by run-open-pr for issue linking
+- `integrations.linear` → used by run-open-pr for Linear issue refs
+- `integrations.coderabbit` → used by run-open-pr for review-requested notes
 
 ## Step 3: Fetch relevant knowledge docs
 
@@ -172,6 +177,12 @@ Commit: `git add docs/specs/<file>.md && git commit -m "docs: add spec — <titl
 
 > **TaskUpdate:** Mark "TDD cycle" (task 6) as `in_progress` now. Mark `completed` when done.
 
+**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools during implementation to look up library documentation when working with external dependencies:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+
+Use these tools when you need to understand API signatures, configuration options, or usage patterns for third-party libraries referenced in the codebase. This replaces guesswork with authoritative documentation.
+
 For each unit of work in the feature:
 
 ### 6a. Write a failing test
@@ -228,6 +239,8 @@ If violations are found:
 ## Step 9: Sync docs
 
 > **TaskUpdate:** Mark "Sync docs" (task 9) as `in_progress` now. Mark `completed` when done.
+
+**Integration gate:** If `integrations.autoDocs` is false, skip this step entirely. Log: "Skipping sync-docs — autoDocs integration is disabled." Mark the task as completed and proceed to Step 10.
 
 1. Review the diff for implicit knowledge:
    - New domain rules not documented

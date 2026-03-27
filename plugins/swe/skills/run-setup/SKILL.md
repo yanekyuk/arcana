@@ -176,9 +176,38 @@ Integration toggles (y/n for each):
 2. Linear — Issue tracking integration
 3. GitHub Issues — Link PRs to GitHub Issues
 4. Auto-docs — Automatically update documentation on changes
+5. Context7 — Library documentation lookups via MCP during implementation
 ```
 
-For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": CodeRabbit on, Linear off, GitHub Issues on, auto-docs on.
+For each integration, ask the user and wait for their response. Default to the most common setup if they say "use defaults": GitHub Issues on, CodeRabbit off, Linear off, Context7 on, auto-docs on.
+
+### Step 6b: Verify prerequisites
+
+After the user confirms their integration selections, verify prerequisites for each enabled integration. Checks are advisory, not blocking — warn the user but do not prevent them from enabling the integration.
+
+**GitHub Issues:**
+```bash
+which gh && gh auth status 2>&1 | head -5
+```
+If `gh` is not found, warn: "GitHub CLI is required for GitHub Issues integration. Install with `brew install gh`, then run `gh auth login`."
+
+**CodeRabbit:**
+No executable check. Inform: "CodeRabbit requires the CodeRabbit GitHub App installed on this repository. Visit https://coderabbit.ai to set it up."
+
+**Linear:**
+```bash
+claude mcp list 2>/dev/null | grep -qi linear
+```
+If not found, suggest: "Linear integration requires the Linear MCP server. Install with: `claude mcp add linear -- npx -y @anthropic/linear-mcp@latest`"
+
+**Context7:**
+```bash
+claude mcp list 2>/dev/null | grep -qi context7
+```
+If not found, suggest: "Context7 integration requires the Context7 MCP server. Install with: `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`"
+
+**Auto-docs:**
+No prerequisite — this is built-in behavior.
 
 ## Step 7: Write config
 
@@ -197,9 +226,10 @@ Assemble the final config object:
   },
   "sourceRoot": "<detected or overridden>",
   "integrations": {
-    "coderabbit": true,
-    "linear": false,
     "githubIssues": true,
+    "coderabbit": false,
+    "linear": false,
+    "context7": true,
     "autoDocs": true
   },
   "architecture": {
