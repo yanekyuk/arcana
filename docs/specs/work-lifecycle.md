@@ -90,7 +90,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 2. Identify the PR (auto-select if only one, prompt if multiple)
 3. Review: conventional commits compliance, diff quality, scope alignment, test coverage
 4. If issues found: present structured review with fix prompt, stop
-5. If clean: proceed to merge (ask user for squash vs merge commit, default squash)
+5. If clean: proceed to merge (ask user for squash vs merge commit, default merge commit)
 6. Clean up: pull main, remove worktree, delete local branch
 
 **Exit conditions:**
