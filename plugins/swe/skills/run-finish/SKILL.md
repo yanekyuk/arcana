@@ -67,6 +67,24 @@ git show main:marketplace.json 2>/dev/null | head -20
 
 If the PR's base version (the `-` side of the diff) does not match main's current version, the branch needs a rebase before merging. Flag this as "needs rebase" and **stop** — do not approve or merge.
 
+## Step 3f: CodeRabbit review check
+
+Read `docs/swe-config.json` and check if `integrations.coderabbit` is true.
+
+If enabled, check CodeRabbit's review status on this PR:
+
+```bash
+gh pr reviews <number> --json author,state
+```
+
+Look for a review from CodeRabbit (author containing "coderabbit"). Evaluate the result:
+
+- **If CodeRabbit has approved:** Proceed normally to Step 4.
+- **If CodeRabbit has requested changes:** Include CodeRabbit's review comments in the review report. Present them to the user alongside your own review findings.
+- **If CodeRabbit has not reviewed yet:** Warn the user: "CodeRabbit review is pending. You may want to wait for it before merging." Proceed to Step 4 — do not block the pipeline.
+
+If `integrations.coderabbit` is false or the config file does not exist, skip this check.
+
 ## Step 4: Deliver verdict
 
 ### If changes are needed:
