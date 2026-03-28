@@ -93,7 +93,7 @@ If `integrations.coderabbit` is false or the config file does not exist, skip th
 
 ### If changes are needed:
 
-Present a structured review:
+Present a structured review using the template below. **You MUST fill in the Suggested Fix Prompt section with a concrete, actionable prompt.** Do not leave it blank, do not use a generic placeholder, and do not simply restate the issue list. The prompt must be a ready-to-paste instruction that tells the developer exactly what to change, in which files, and how.
 
 ```
 ## PR Review: <PR title>
@@ -106,8 +106,15 @@ Present a structured review:
 
 Copy and paste the following into your orchestrator session (in the worktree):
 
-> <ready-to-paste prompt describing exactly what to fix, formatted as an instruction>
+> <GENERATE A CONCRETE PROMPT HERE — see rules below>
 ```
+
+**Prompt generation rules** (mandatory):
+- The prompt MUST be a single, self-contained instruction that can be copy-pasted verbatim into a Claude session.
+- It MUST reference the specific file(s) and line(s) or section(s) that need to change.
+- It MUST describe the expected change (e.g., "rename X to Y", "remove the debug line at line 42", "add a guard clause for null input in function Z").
+- It MUST NOT simply repeat the issues list — it should synthesize the issues into one clear fix instruction.
+- Format it as a direct imperative (e.g., "In `src/api.ts`, fix the error handler on line 35 to return a 401 instead of 500 when the token is expired, and remove the `console.log` on line 22.").
 
 Then tell the user:
 
