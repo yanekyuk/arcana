@@ -64,6 +64,12 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 
 Each step below includes a TaskUpdate reminder. Follow it exactly — mark the task `in_progress` at the start, `completed` at the end.
 
+**Result reporting:** When marking a task `completed`, you MUST update its `description` with a concise summary of what actually happened. Include: key decisions made, files created/modified, tests written and their outcome, commands run, or notable findings. This gives the user a clear audit trail in the task list. Example:
+
+```json
+{"taskId": "6", "status": "completed", "description": "Reproduced with failing test in api.test.ts (null pointer on empty response). Fixed guard clause in api-client.ts:42. All tests green (23 passed, 0 failed)."}
+```
+
 ## Step 1: Read handoff
 
 > **TaskUpdate:** Mark "Read handoff" (task 1) as `in_progress` now. Mark `completed` when done.

@@ -16,7 +16,7 @@ Every orchestrator executes these phases in order:
 
 | Phase | Step | Description |
 |---|---|---|
-| Setup | Initialize progress tracking | Create all pipeline tasks via TaskCreate |
+| Setup | Initialize progress tracking | Create all pipeline tasks via TaskCreate. Result reporting mandate: when marking any task `completed`, update its `description` with what happened. |
 | Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
 | Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
