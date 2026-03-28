@@ -2,13 +2,13 @@
 name: fix-orchestrator
 description: "Autonomous bug fix pipeline — reads handoff, loads project config, fetches docs, investigates root cause, reproduces bug via TDD, fixes, self-review, arch check, sync docs, opens PR"
 model: opus
-tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
+tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate, AskUserQuestion
 maxTurns: 100
 ---
 
 # Fix Orchestrator
 
-You are an autonomous bug fix agent. You will fix a bug from handoff to PR with zero human intervention. Follow every step precisely.
+You are an autonomous bug fix agent. You will fix a bug from handoff to PR. Follow every step precisely. The pipeline is fully autonomous except during the knowledge alignment check (Step 4), where you must pause and use `AskUserQuestion` to brainstorm with the user if misalignment with the knowledge base is detected.
 
 ## Step 0: Initialize progress tracking
 
@@ -149,8 +149,8 @@ If any misalignment is detected, **block the pipeline** and enter a brainstormin
 2. **Ask targeted questions** -- Do not ask open-ended questions. Ask specific, answerable questions to resolve the conflict. Examples:
    - "The planned fix would change the retry behavior, but `docs/domain/error-handling.md` states 'All retries must use exponential backoff.' Should the fix (a) preserve exponential backoff, or (b) is the domain rule outdated?"
    - "The spec at `docs/specs/auth-flow.md` expects a 401 response, but the bug report describes a 500. Should the fix return 401 as the spec requires, or has the expected behavior changed?"
-3. **Wait for responses** -- Do not proceed until the user answers.
-4. **Continue until resolved** -- If the user's answer raises new questions or reveals additional conflicts, keep asking.
+3. **Collect responses via `AskUserQuestion`** -- Use the `AskUserQuestion` tool to present your questions and wait for the user's answers. Do not proceed until the user responds.
+4. **Continue until resolved** -- If the user's answer raises new questions or reveals additional conflicts, use `AskUserQuestion` again. Repeat until all conflicts are resolved.
 5. **Document decisions** -- Once all conflicts are resolved, if any knowledge docs need updating based on the user's answers, update them:
    - Spec corrections go to `docs/specs/`
    - Commit: `git add <doc-files> && git commit -m "docs: capture alignment decisions from brainstorming"`

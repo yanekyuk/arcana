@@ -8,11 +8,11 @@ updated: 2026-03-28
 
 ## Decision
 
-Orchestrator agents run autonomously from handoff to PR with zero human intervention. Progress is tracked via TaskCreate/TaskUpdate so users can monitor status.
+Orchestrator agents run autonomously from handoff to PR. Progress is tracked via TaskCreate/TaskUpdate so users can monitor status. The sole exception to full autonomy is the knowledge alignment check, where the orchestrator pauses and uses `AskUserQuestion` to brainstorm with the user when misalignment with the knowledge base is detected.
 
 ## Context
 
-The plugin's goal is to automate the full software engineering workflow. Human intervention at each step (write test, run test, implement, review, etc.) defeats the purpose. The agent needs to execute the entire pipeline independently.
+The plugin's goal is to automate the full software engineering workflow. Human intervention at each step (write test, run test, implement, review, etc.) defeats the purpose. The agent needs to execute the entire pipeline independently, except when the knowledge alignment check detects a conflict between the planned work and the existing knowledge base -- in that case, the user's input is required to resolve the conflict before proceeding.
 
 ## Rationale
 

@@ -3,7 +3,7 @@ title: "Knowledge Alignment Gate"
 type: spec
 tags: [orchestrator, knowledge, alignment, domain, decisions, specs, brainstorming, pipeline]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-28
 ---
 
 ## Behavior
@@ -40,8 +40,8 @@ When misalignment is detected, the orchestrator:
 
 1. Presents the specific conflict (quotes the relevant doc section and the planned work that conflicts)
 2. Asks targeted questions (not open-ended) to resolve the conflict
-3. Waits for user responses
-4. Continues asking until all conflicts are resolved
+3. Uses the `AskUserQuestion` tool to collect user responses -- does not proceed until the user answers
+4. Continues asking (via `AskUserQuestion`) until all conflicts are resolved
 5. Documents any decisions made during brainstorming in the appropriate `docs/` tier
 6. Only then proceeds with implementation
 
@@ -51,7 +51,7 @@ If no misalignment is detected, the step passes silently and the pipeline contin
 
 ## Constraints
 
-- The brainstorming session is the only point where orchestrators pause for user input. All other steps remain fully autonomous.
+- The brainstorming session is the only point where orchestrators pause for user input (via the `AskUserQuestion` tool). All other steps remain fully autonomous.
 - The step must not modify any knowledge documents on its own -- it can only create/update docs to capture decisions made during the brainstorming session with user confirmation.
 - The knowledge hierarchy authority order (domain > decisions > specs) must be respected: lower-tier docs cannot override higher-tier rules.
 - The step runs after knowledge docs are fetched so it has full context, and before implementation so conflicts are caught early.
@@ -66,4 +66,6 @@ If no misalignment is detected, the step passes silently and the pipeline contin
 - [ ] The brainstorming session format is documented with the 6-step process
 - [ ] No-conflict fast path is documented (silent pass when aligned)
 - [ ] All subsequent step numbers are incremented to accommodate the new step
+- [ ] Each orchestrator includes `AskUserQuestion` in its `tools:` frontmatter
+- [ ] Step 4c explicitly references the `AskUserQuestion` tool for collecting user responses
 - [ ] The orchestrator-pipeline spec is updated to reflect the new shared pipeline step
