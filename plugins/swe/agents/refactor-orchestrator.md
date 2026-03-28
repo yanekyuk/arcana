@@ -184,7 +184,12 @@ For each refactoring change:
 ```
 - All tests MUST stay green
 - If a test fails: revert the change, try a different approach
-- If still failing after 3 attempts: stop, commit what you have with `chore(wip): <what was attempted>`, skip to Step 12
+- **Re-approach loop (max 2 re-approaches):** If still failing after 3 attempts, do NOT bail immediately:
+  1. Re-read the handoff scope and design decisions
+  2. Reconsider the refactoring approach — the current strategy may be wrong or the change may need to be decomposed differently
+  3. Revert the failing change and try a different approach (up to 3 attempts again)
+  4. Track re-approach count — you get a maximum of 2 re-approaches per refactoring step
+  5. If still failing after exhausting all re-approaches (2 re-approaches x 3 attempts each = up to 9 total attempts): stop, commit what you have with `chore(wip): <what was attempted>`, skip to Step 12
 
 ### 6c. Commit
 ```bash
@@ -203,7 +208,11 @@ git commit -m "refactor: <what was changed>"
    - No behavior changes (only structural improvements)
    - Alignment with design decisions
    - All tests still pass
-3. If blocking issues: attempt fix, if fails → draft PR (skip to Step 12)
+3. **Self-review retry loop (max 3 iterations):**
+   - If blocking issues found: attempt to fix them
+   - After fixing, re-run the full self-review (back to step 1 of this list)
+   - Repeat up to 3 iterations total (review -> fix -> re-review -> fix -> re-review -> fix -> final review)
+   - If blocking issues persist after 3 iterations, proceed to Step 12 as a draft PR with `[WIP]` prefix
 
 ## Step 8: Arch check
 
@@ -213,11 +222,14 @@ Dispatch the `run-arch-check` skill to validate architecture rules against the c
 
 If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
 
+**Arch check retry loop (max 3 iterations):**
+
 If violations are found:
 1. Attempt to fix each violation
 2. Re-run the arch check to confirm fixes
-3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "refactor: resolve architecture violations"`
-4. If fixes fail after 1 retry, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+3. If all violations resolved, commit: `git add <fixed-files> && git commit -m "refactor: resolve architecture violations"`
+4. If violations remain, repeat from step 1 (up to 3 iterations total)
+5. If violations persist after 3 iterations, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
 ## Step 9: Sync docs
 
