@@ -3,7 +3,7 @@ title: "TDD-First Development"
 type: decision
 tags: [tdd, testing, orchestrator, failure-handling]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-28
 ---
 
 ## Decision
@@ -31,12 +31,26 @@ For each unit of work:
 
 ## Failure Handling
 
-If a test will not pass after 3 attempts for a single unit of work:
+Each orchestrator uses a two-tier retry strategy: an inner loop of 3 attempts per unit, wrapped in an outer loop that reconsiders the approach before giving up.
+
+### Inner loop (3 attempts per unit)
+
+If a test will not pass after 3 attempts for a single unit of work, the orchestrator enters the outer retry loop rather than bailing immediately.
+
+### Outer retry loops (max 2 retries, type-specific)
+
+Each orchestrator type has its own strategy for the outer loop:
+
+- **Feat orchestrator -- Re-plan loop:** Re-reads the spec and reconsiders the unit decomposition. The failing unit may be too large, incorrectly scoped, or based on a wrong assumption.
+- **Fix orchestrator -- Re-investigation loop:** Invalidates the previous hypothesis, notes what evidence disproved it, forms a new hypothesis, and retries the TDD cycle.
+- **Refactor orchestrator -- Re-approach loop:** Re-reads the handoff scope and design decisions, reconsiders the refactoring approach, reverts the failing change, and tries a different strategy.
+
+### Exhaustion
+
+If the unit still fails after exhausting all outer retries (2 retries x 3 attempts each = up to 9 total attempts):
 1. Stop the TDD cycle
 2. Commit work-in-progress: `chore(wip): <what was attempted>`
 3. Skip remaining steps and open a draft PR with `[WIP]` prefix
-
-For the fix orchestrator specifically, failure triggers a second investigation loop -- the initial hypothesis is revisited and a new one is formed before retrying. Only after two full investigation-fix cycles fail does it fall back to a WIP draft PR.
 
 ## Orchestrator Variations
 
