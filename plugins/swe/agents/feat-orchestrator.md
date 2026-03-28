@@ -213,7 +213,16 @@ git commit -m "feat: <what this unit does>"
 
 ### 6d. Repeat for each unit
 
-**Failure handling:** If a test won't pass after 3 attempts for a single unit:
+**Failure handling — re-plan loop (max 2 re-plans):**
+
+If a test won't pass after 3 attempts for a single unit, do NOT bail immediately. Instead, enter the re-plan loop:
+
+1. **Re-read the spec** — go back to `docs/specs/` and re-read the relevant spec
+2. **Reconsider the unit decomposition** — the failing unit may be too large, incorrectly scoped, or based on a wrong assumption. Break it down differently or reorder the remaining units.
+3. **Reset the attempt counter** and retry the revised unit (up to 3 attempts again)
+4. **Track re-plan count** — you get a maximum of 2 re-plans per TDD cycle
+
+If the unit still fails after exhausting all re-plans (2 re-plans x 3 attempts each = up to 9 total attempts):
 1. Stop the TDD cycle
 2. `git add -A && git commit -m "chore(wip): <what was attempted>"`
 3. Skip to Step 12 (Open PR) and create a draft PR with `[WIP]` prefix
@@ -230,7 +239,11 @@ git commit -m "feat: <what this unit does>"
    - Domain rule compliance — no violations
    - Test coverage — all behavior changes tested
    - Code quality — no debug code, no stale TODOs
-4. If blocking issues found: attempt to fix. If fix fails after 1 retry, proceed to Step 12 as draft PR.
+4. **Self-review retry loop (max 3 iterations):**
+   - If blocking issues found: attempt to fix them
+   - After fixing, re-run the full self-review (back to step 1 of this list)
+   - Repeat up to 3 iterations total (review -> fix -> re-review -> fix -> re-review -> fix -> final review)
+   - If blocking issues persist after 3 iterations, proceed to Step 12 as a draft PR with `[WIP]` prefix
 
 ## Step 8: Arch check
 
@@ -240,11 +253,14 @@ Dispatch the `run-arch-check` skill to validate architecture rules against the c
 
 If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
 
+**Arch check retry loop (max 3 iterations):**
+
 If violations are found:
 1. Attempt to fix each violation
 2. Re-run the arch check to confirm fixes
-3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "fix: resolve architecture violations"`
-4. If fixes fail after 1 retry, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+3. If all violations resolved, commit: `git add <fixed-files> && git commit -m "fix: resolve architecture violations"`
+4. If violations remain, repeat from step 1 (up to 3 iterations total)
+5. If violations persist after 3 iterations, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
 ## Step 9: Sync docs
 

@@ -3,7 +3,7 @@ title: "Orchestrator Pipeline"
 type: spec
 tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup, knowledge-alignment]
 created: 2026-03-26
-updated: 2026-03-27
+updated: 2026-03-28
 ---
 
 ## Behavior
@@ -97,11 +97,47 @@ This replaces the previous approach of scanning a hardcoded list of manifest fil
 
 ## Failure Handling
 
-All orchestrators share the same fallback pattern:
+All orchestrators share the same fallback pattern with bounded retry loops at three pipeline stages:
 
-1. Attempt the failing operation up to 3 times
-2. If still failing, commit work-in-progress: `chore(wip): <what was attempted>`
-3. Skip remaining steps and open a draft PR with `[WIP]` prefix
+### TDD / Implementation Retry Loops
+
+Each orchestrator type has a type-specific outer retry loop around its implementation step:
+
+| Orchestrator | Loop Name | Max Retries | Strategy |
+|---|---|---|---|
+| feat | Re-plan loop | 2 | Re-read spec, reconsider unit decomposition |
+| fix | Re-investigation loop | 2 | Invalidate hypothesis, form new one, retry TDD |
+| refactor | Re-approach loop | 2 | Reconsider refactoring approach, try different strategy |
+| docs | N/A | -- | No TDD cycle |
+
+Each inner attempt allows up to 3 tries per unit. With the outer loop, this gives up to 9 total attempts before bailing (3 attempts x initial + 2 retries).
+
+### Self-Review Retry Loop (max 3 iterations)
+
+All orchestrators with a self-review step (feat, fix, refactor) use a bounded retry loop:
+
+1. Run self-review and identify blocking issues
+2. Attempt to fix the issues
+3. Re-run the full self-review
+4. Repeat up to 3 iterations total
+5. If blocking issues persist after 3 iterations, bail to draft PR
+
+### Arch Check Retry Loop (max 3 iterations)
+
+All four orchestrators use a bounded retry loop for architecture checks:
+
+1. Run arch check and identify violations
+2. Attempt to fix each violation
+3. Re-run the arch check
+4. Repeat up to 3 iterations total
+5. If violations persist after 3 iterations, bail to draft PR
+
+### Escape Hatch
+
+When any retry loop is exhausted:
+
+1. Commit work-in-progress: `chore(wip): <what was attempted>`
+2. Skip remaining steps and open a draft PR with `[WIP]` prefix
 
 This ensures the pipeline never hangs and always produces a reviewable artifact.
 
