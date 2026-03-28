@@ -3,7 +3,7 @@ title: "Autonomous Orchestrators"
 type: decision
 tags: [orchestrator, agent, autonomous, pipeline, progress-tracking, knowledge-alignment]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-28
 ---
 
 ## Decision
@@ -17,7 +17,7 @@ The plugin's goal is to automate the full software engineering workflow. Human i
 ## Rationale
 
 - **End-to-end automation** -- The agent handles every phase: reading the handoff, discovering tooling, fetching docs, implementing (via TDD), self-reviewing, syncing docs, bumping versions, cleaning up, and opening the PR.
-- **Progress visibility** -- TaskCreate/TaskUpdate provide real-time status updates. Users see which step is in progress, which are complete, and which are pending via the task list (Ctrl+T).
+- **Progress visibility** -- TaskCreate/TaskUpdate provide real-time status updates. Users see which step is in progress, which are complete, and which are pending via the task list (Ctrl+T). When marking a task completed, orchestrators report what actually happened (decisions, files touched, test outcomes) in the task description for a clear audit trail.
 - **Graceful degradation** -- When the agent cannot complete a step (tests fail after retries, blocking self-review issues), it falls back to a WIP draft PR rather than hanging or crashing silently.
 - **Deterministic pipeline** -- Every orchestrator follows a numbered step sequence. This makes behavior predictable and debuggable.
 
