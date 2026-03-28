@@ -20,7 +20,7 @@ Every orchestrator executes these phases in order:
 | Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
 | Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
-| Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming on conflict (skipped by docs) |
+| Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming via `AskUserQuestion` on conflict (skipped by docs) |
 | Work | Type-specific implementation | See per-type sections below. **When `integrations.context7` is true**, Context7 MCP tools are available for library doc lookups. |
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
