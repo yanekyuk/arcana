@@ -167,11 +167,14 @@ Dispatch the `run-arch-check` skill to validate architecture rules against the c
 
 If no architecture rules are configured (empty `architecture.rules` array), this step passes automatically.
 
+**Arch check retry loop (max 3 iterations):**
+
 If violations are found:
 1. Attempt to fix each violation
 2. Re-run the arch check to confirm fixes
-3. If fixes succeed, commit: `git add <fixed-files> && git commit -m "docs: resolve architecture violations"`
-4. If fixes fail after 1 retry, proceed to Step 10 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+3. If all violations resolved, commit: `git add <fixed-files> && git commit -m "docs: resolve architecture violations"`
+4. If violations remain, repeat from step 1 (up to 3 iterations total)
+5. If violations persist after 3 iterations, proceed to Step 10 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
 ## Step 8: Version bump
 
