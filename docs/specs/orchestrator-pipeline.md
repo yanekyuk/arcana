@@ -47,7 +47,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 Version bumping is **not** performed by orchestrators. It is handled by the `run-finish` skill after PR review passes but before merge. See the [Work Lifecycle](work-lifecycle.md) spec for details.
 
-The bump type is derived from the branch prefix (`feat/`→MINOR, `fix/`→PATCH, `refactor/`→PATCH, `docs/`→none) and can be overridden via a `version-bump:` directive in the PR body or commit messages. The [Semver Bump Procedure](../../plugins/swe/docs/semver-bump.md) and the `versioning` array in `docs/swe-config.json` remain unchanged.
+The bump type is derived from the branch prefix (`feat/`→MINOR, `fix/`→PATCH, `refactor/`→PATCH, `docs/`→none) and can be overridden via a `version-bump:` directive in the PR body or commit messages. The semver bump procedure is inlined directly in the `run-finish` skill (Step 5c) to ensure it is available when the plugin is served from cache. The `versioning` array in `docs/swe-config.json` remains unchanged.
 
 ## Per-Type Variations
 
