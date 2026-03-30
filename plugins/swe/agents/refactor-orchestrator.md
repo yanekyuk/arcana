@@ -2,6 +2,7 @@
 name: refactor-orchestrator
 description: "Autonomous refactoring pipeline — reads handoff, loads project config, fetches docs, guards with existing tests, refactors incrementally, self-review, arch check, sync docs, opens PR"
 model: opus
+effort: high
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate, AskUserQuestion
 maxTurns: 80
 ---

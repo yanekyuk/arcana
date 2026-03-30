@@ -2,6 +2,7 @@
 name: fix-orchestrator
 description: "Autonomous bug fix pipeline — reads handoff, loads project config, fetches docs, investigates root cause, reproduces bug via TDD, fixes, self-review, arch check, sync docs, opens PR"
 model: opus
+effort: high
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate, AskUserQuestion
 maxTurns: 100
 ---
