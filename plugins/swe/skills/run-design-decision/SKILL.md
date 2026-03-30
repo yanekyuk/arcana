@@ -1,6 +1,8 @@
 ---
 name: run-design-decision
 description: "Use to create or update design decision docs (architecture, patterns, rationale) in docs/decisions/ — checks alignment with domain knowledge, triggers clash-check on specs"
+model: sonnet
+effort: medium
 user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 ---

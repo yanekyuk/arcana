@@ -1,6 +1,8 @@
 ---
 name: run-open-pr
 description: "Use to finalize work — commits remaining changes, pushes branch, opens a PR with conventional title and structured body"
+model: haiku
+effort: low
 user-invocable: false
 allowed-tools: Read, Bash, Grep
 ---

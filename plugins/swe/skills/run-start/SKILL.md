@@ -1,6 +1,8 @@
 ---
 name: run-start
 description: "Use when entering a worktree to start work — reads handoff artifact and dispatches the matching orchestrator agent"
+model: haiku
+effort: low
 user-invocable: true
 allowed-tools: Read, Bash, Agent
 ---
