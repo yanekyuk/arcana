@@ -2,7 +2,7 @@
 name: run-finish
 description: "Use after a PR is opened — reviews the PR, suggests changes or merges to main, then cleans up worktree and branches"
 user-invocable: true
-allowed-tools: Read, Bash, Grep
+allowed-tools: Read, Write, Edit, Bash, Grep
 ---
 
 # Finish
@@ -134,7 +134,61 @@ If enabled, check the PR body and branch commits for a Linear issue reference. L
 
 If `integrations.linear` is false or the config file does not exist, skip this check.
 
-## Step 5: Merge
+## Step 5: Version bump
+
+After the PR passes review, apply a version bump before merging. This centralizes version bumping that was previously done by each orchestrator.
+
+### 5a. Determine bump type
+
+Derive the default bump type from the PR branch name prefix:
+
+| Branch prefix | Default bump |
+|---|---|
+| `feat/` | MINOR |
+| `fix/` | PATCH |
+| `refactor/` | PATCH |
+| `docs/` | none |
+
+To get the branch name:
+
+```bash
+gh pr view <number> --json headRefName --jq '.headRefName'
+```
+
+Extract the prefix (everything before the first `/`). If the prefix does not match any row above, default to PATCH.
+
+### 5b. Check for explicit override
+
+Read the PR body and commit messages for an explicit `version-bump:` directive (e.g., `version-bump: major`). If found, use that instead of the branch-derived default.
+
+### 5c. Apply the bump
+
+If the bump type is `none`, skip this step.
+
+Otherwise, check out the PR branch locally and follow the [Semver Bump Procedure](../../docs/semver-bump.md):
+
+```bash
+git fetch origin <branch>
+git checkout <branch>
+```
+
+Read `docs/swe-config.json` for the `versioning` array. Follow the procedure to evaluate rules, determine the bump, apply it, and commit. Then push the bump commit to the PR branch:
+
+```bash
+git push origin <branch>
+```
+
+After pushing, switch back to the main branch:
+
+```bash
+git checkout main
+```
+
+### 5d. Handle no-op
+
+If no version manifest is found or no versioning rules match, skip the bump silently and proceed to merge.
+
+## Step 6: Merge
 
 Ask the user for merge strategy preference (merge commit or squash). If the user has already expressed a preference, use it. Default to merge commit if not specified.
 
@@ -148,20 +202,20 @@ Or with squash:
 gh pr merge <number> --squash
 ```
 
-Do **not** pass `--delete-branch` — the worktree still holds the branch at this point, so `gh` would exit with code 1. Remote and local branch cleanup is handled in Step 6.
+Do **not** pass `--delete-branch` — the worktree still holds the branch at this point, so `gh` would exit with code 1. Remote and local branch cleanup is handled in Step 7.
 
-## Step 5b: Complete Linear issue
+## Step 6b: Complete Linear issue
 
 If `integrations.linear` is true and a Linear issue ID was found in Step 4b, update the Linear issue after successful merge. **All Linear MCP calls must be wrapped in error handling** — log a warning on failure but never block the finish pipeline.
 
 1. **Mark as Done:** Update the Linear issue status to **"Done"** using `mcp__linear__updateIssue`.
 2. **Post a comment:** Add a comment to the Linear issue with the merged PR URL using `mcp__linear__createComment`. Example comment: "Merged in PR #<number> — <pr-url>"
 
-Graceful degradation: if either MCP call fails, log "Warning: Linear MCP unavailable — skipping Linear issue completion." and continue to Step 6.
+Graceful degradation: if either MCP call fails, log "Warning: Linear MCP unavailable — skipping Linear issue completion." and continue to Step 7.
 
 If `integrations.linear` is false or no Linear issue was found, skip this step.
 
-## Step 6: Clean up local resources
+## Step 7: Clean up local resources
 
 After merge completes:
 
