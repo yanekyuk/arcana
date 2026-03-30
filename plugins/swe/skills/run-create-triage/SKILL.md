@@ -1,6 +1,8 @@
 ---
 name: run-create-triage
 description: "Use to create a new issue (bug report or feature request) and route to the correct backend, then hand off to run-triage"
+model: haiku
+effort: low
 user-invocable: true
 allowed-tools: Read, Bash, Write
 ---

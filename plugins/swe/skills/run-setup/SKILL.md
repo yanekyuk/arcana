@@ -1,6 +1,8 @@
 ---
 name: run-setup
 description: "Use to configure a project for the swe plugin -- detects tech stack, sets architecture rules, discovers versioning manifests, integration toggles, and custom directives"
+model: haiku
+effort: low
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---

@@ -2,6 +2,7 @@
 name: feat-orchestrator
 description: "Autonomous feature development pipeline — reads handoff, loads project config, fetches docs, drafts spec, TDD cycle, self-review, arch check, sync docs, opens PR"
 model: opus
+effort: high
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate, AskUserQuestion
 maxTurns: 100
 ---
