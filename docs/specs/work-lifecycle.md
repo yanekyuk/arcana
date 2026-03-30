@@ -3,7 +3,7 @@ title: "Work Lifecycle"
 type: spec
 tags: [lifecycle, triage, start, orchestrator, finish, workflow]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-03-30
 ---
 
 ## Behavior
@@ -68,9 +68,8 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 6. Self-review (feat/fix/refactor only)
 7. Arch check -- validate architecture rules against diff (after sync-docs for docs orchestrator)
 8. Sync docs
-9. Version bump
-10. Remove handoff artifact (`git rm .claude/handoff.md`)
-11. Push and open PR via `gh pr create`
+9. Remove handoff artifact (`git rm .claude/handoff.md`)
+10. Push and open PR via `gh pr create`
 
 **Exit conditions:**
 - PR is open (regular or WIP draft)
@@ -90,8 +89,9 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 2. Identify the PR (auto-select if only one, prompt if multiple)
 3. Review: conventional commits compliance, diff quality, scope alignment, test coverage
 4. If issues found: present structured review with fix prompt, stop
-5. If clean: proceed to merge (ask user for squash vs merge commit, default merge commit)
-6. Clean up: pull main, remove worktree, delete local branch
+5. Version bump: derive bump type from branch prefix (`feat/`→MINOR, `fix/`→PATCH, `refactor/`→PATCH, `docs/`→none), apply semver bump procedure, push to PR branch
+6. If clean: proceed to merge (ask user for squash vs merge commit, default merge commit)
+7. Clean up: pull main, remove worktree, delete local branch
 
 **Exit conditions:**
 - PR is merged

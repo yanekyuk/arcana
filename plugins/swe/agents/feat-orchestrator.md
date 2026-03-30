@@ -50,15 +50,11 @@ Before doing anything else, create all pipeline tasks so the user can see progre
    - `activeForm`: "Syncing knowledge docs"
    - `description`: "Review diff for undocumented domain rules, design decisions, or spec gaps. Update docs/ and run clash-check if changed."
 
-10. **Version bump**
-    - `activeForm`: "Bumping version"
-    - `description`: "Apply semver MINOR bump following the semver bump procedure. Skip if no version manifest found."
-
-11. **Clean up handoff**
+10. **Clean up handoff**
     - `activeForm`: "Cleaning up handoff"
     - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
 
-12. **Open PR**
+11. **Open PR**
     - `activeForm`: "Opening pull request"
     - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
@@ -95,7 +91,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `directives.implementation` → soft guidance for TDD cycle (Step 6)
 - `directives.review` → soft guidance for self-review (Step 7)
 - `directives.documentation` → soft guidance for sync-docs (Step 9)
-- `directives.delivery` → soft guidance for open-pr (Step 12)
+- `directives.delivery` → soft guidance for open-pr (Step 11)
 - `integrations.autoDocs` → gates the sync-docs step (Step 9)
 - `integrations.context7` → enables Context7 MCP tool guidance during implementation (Step 6)
 - `integrations.githubIssues` → used by run-open-pr for issue linking
@@ -105,7 +101,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 **Linear status management:** If `integrations.linear` is true and the handoff frontmatter contains a `linear-issue` field, update the Linear issue status at key pipeline stages. All Linear MCP calls must be wrapped in error handling — log a warning on failure but never block the pipeline.
 
 - **Now (after config load):** Set the Linear issue to **"In Progress"** using `mcp__linear__updateIssue`. Pass the issue identifier from the `linear-issue` frontmatter field.
-- **Before opening PR (Step 12):** Set the Linear issue to **"In Review"** using `mcp__linear__updateIssue`.
+- **Before opening PR (Step 11):** Set the Linear issue to **"In Review"** using `mcp__linear__updateIssue`.
 
 Graceful degradation: if the MCP call fails, log "Warning: Linear MCP unavailable — skipping status update." and continue.
 
@@ -231,7 +227,7 @@ If a test won't pass after 3 attempts for a single unit, do NOT bail immediately
 If the unit still fails after exhausting all re-plans (2 re-plans x 3 attempts each = up to 9 total attempts):
 1. Stop the TDD cycle
 2. `git add -A && git commit -m "chore(wip): <what was attempted>"`
-3. Skip to Step 12 (Open PR) and create a draft PR with `[WIP]` prefix
+3. Skip to Step 11 (Open PR) and create a draft PR with `[WIP]` prefix
 
 ## Step 7: Self-review
 
@@ -249,7 +245,7 @@ If the unit still fails after exhausting all re-plans (2 re-plans x 3 attempts e
    - If blocking issues found: attempt to fix them
    - After fixing, re-run the full self-review (back to step 1 of this list)
    - Repeat up to 3 iterations total (review -> fix -> re-review -> fix -> re-review -> fix -> final review)
-   - If blocking issues persist after 3 iterations, proceed to Step 12 as a draft PR with `[WIP]` prefix
+   - If blocking issues persist after 3 iterations, proceed to Step 11 as a draft PR with `[WIP]` prefix
 
 ## Step 8: Arch check
 
@@ -266,7 +262,7 @@ If violations are found:
 2. Re-run the arch check to confirm fixes
 3. If all violations resolved, commit: `git add <fixed-files> && git commit -m "fix: resolve architecture violations"`
 4. If violations remain, repeat from step 1 (up to 3 iterations total)
-5. If violations persist after 3 iterations, proceed to Step 12 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+5. If violations persist after 3 iterations, proceed to Step 11 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
 ## Step 9: Sync docs
 
@@ -287,15 +283,9 @@ If violations are found:
 4. Check if `CLAUDE.md` might need updating. Do NOT modify it. Note any suggestions for the PR description.
 5. Commit only the specific doc files that were created or updated: `git add <specific-doc-files> && git commit -m "docs: sync knowledge docs"`
 
-## Step 10: Version bump
+## Step 10: Clean up handoff
 
-> **TaskUpdate:** Mark "Version bump" (task 10) as `in_progress` now. Mark `completed` when done.
-
-Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: MINOR** (new backward-compatible functionality). Skip if no version manifest is found.
-
-## Step 11: Clean up handoff
-
-> **TaskUpdate:** Mark "Clean up handoff" (task 11) as `in_progress` now. Mark `completed` when done.
+> **TaskUpdate:** Mark "Clean up handoff" (task 10) as `in_progress` now. Mark `completed` when done.
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -303,17 +293,17 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 11b: Update Linear status to "In Review"
+## Step 10b: Update Linear status to "In Review"
 
 If `integrations.linear` is true and the handoff contains a `linear-issue` field, update the Linear issue status to **"In Review"** using `mcp__linear__updateIssue`. Wrap in error handling — log warning on failure, do not block.
 
-## Step 12: Open PR
+## Step 11: Open PR
 
-> **TaskUpdate:** Mark "Open PR" (task 12) as `in_progress` now. Mark `completed` when done.
+> **TaskUpdate:** Mark "Open PR" (task 11) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-Since the handoff artifact was removed in Step 11, the skill will derive PR context from `git log` and `git diff` instead.
+Since the handoff artifact was removed in Step 10, the skill will derive PR context from `git log` and `git diff` instead.
 
 **Fallback:** If the skill dispatch is not available, run these commands directly:
 

@@ -42,17 +42,13 @@ Before doing anything else, create all pipeline tasks so the user can see progre
    - `activeForm`: "Running arch check"
    - `description`: "Dispatch run-arch-check skill to validate architecture rules against the current diff."
 
-8. **Version bump**
-   - `activeForm`: "Bumping version"
-   - `description`: "Apply semver bump only if handoff has explicit version-bump directive or docs ship as part of a versioned package."
-
-9. **Clean up handoff**
+8. **Clean up handoff**
    - `activeForm`: "Cleaning up handoff"
    - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
 
-10. **Open PR**
-    - `activeForm`: "Opening pull request"
-    - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
+9. **Open PR**
+   - `activeForm`: "Opening pull request"
+   - `description`: "Push branch, build PR title/body from handoff scope, create PR via gh cli."
 
 Each step below includes a TaskUpdate reminder. Follow it exactly — mark the task `in_progress` at the start, `completed` at the end.
 
@@ -83,7 +79,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 **If the file exists:** Parse it and store the values for later use:
 - `architecture.rules` → enforced by arch-check gate
 - `directives.documentation` → soft guidance for writing/updating docs (Step 4) and sync-docs (Step 6)
-- `directives.delivery` → soft guidance for open-pr (Step 10)
+- `directives.delivery` → soft guidance for open-pr (Step 9)
 - `integrations.autoDocs` → gates the sync-docs step (Step 6)
 - `integrations.context7` → enables Context7 MCP tool guidance during documentation (Step 4)
 - `integrations.githubIssues` → used by run-open-pr for issue linking
@@ -93,7 +89,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 **Linear status management:** If `integrations.linear` is true and the handoff frontmatter contains a `linear-issue` field, update the Linear issue status at key pipeline stages. All Linear MCP calls must be wrapped in error handling — log a warning on failure but never block the pipeline.
 
 - **Now (after config load):** Set the Linear issue to **"In Progress"** using `mcp__linear__updateIssue`. Pass the issue identifier from the `linear-issue` frontmatter field.
-- **Before opening PR (Step 10):** Set the Linear issue to **"In Review"** using `mcp__linear__updateIssue`.
+- **Before opening PR (Step 9):** Set the Linear issue to **"In Review"** using `mcp__linear__updateIssue`.
 
 Graceful degradation: if the MCP call fails, log "Warning: Linear MCP unavailable — skipping status update." and continue.
 
@@ -180,17 +176,11 @@ If violations are found:
 2. Re-run the arch check to confirm fixes
 3. If all violations resolved, commit: `git add <fixed-files> && git commit -m "docs: resolve architecture violations"`
 4. If violations remain, repeat from step 1 (up to 3 iterations total)
-5. If violations persist after 3 iterations, proceed to Step 10 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
+5. If violations persist after 3 iterations, proceed to Step 9 (Open PR) as a draft PR with `[WIP]` prefix. Include the violation report in the PR body.
 
-## Step 8: Version bump
+## Step 8: Clean up handoff
 
-> **TaskUpdate:** Mark "Version bump" (task 8) as `in_progress` now. Mark `completed` when done.
-
-Follow the [Semver Bump Procedure](../docs/semver-bump.md) with **default: none** (docs-only changes typically don't warrant a version bump). Only bump if the handoff contains an explicit `version-bump` directive or if the docs ship as part of a versioned package.
-
-## Step 9: Clean up handoff
-
-> **TaskUpdate:** Mark "Clean up handoff" (task 9) as `in_progress` now. Mark `completed` when done.
+> **TaskUpdate:** Mark "Clean up handoff" (task 8) as `in_progress` now. Mark `completed` when done.
 
 Remove the triage handoff artifact so it doesn't appear in the final PR:
 
@@ -198,17 +188,17 @@ Remove the triage handoff artifact so it doesn't appear in the final PR:
 git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
 ```
 
-## Step 9b: Update Linear status to "In Review"
+## Step 8b: Update Linear status to "In Review"
 
 If `integrations.linear` is true and the handoff contains a `linear-issue` field, update the Linear issue status to **"In Review"** using `mcp__linear__updateIssue`. Wrap in error handling — log warning on failure, do not block.
 
-## Step 10: Open PR
+## Step 9: Open PR
 
-> **TaskUpdate:** Mark "Open PR" (task 10) as `in_progress` now. Mark `completed` when done.
+> **TaskUpdate:** Mark "Open PR" (task 9) as `in_progress` now. Mark `completed` when done.
 
 Dispatch the `run-open-pr` skill to push the branch and create the pull request. The skill handles staging remaining changes, pushing, building the PR title/body, and creating the PR via `gh pr create`.
 
-Since the handoff artifact was removed in Step 9, the skill will derive PR context from `git log` and `git diff` instead.
+Since the handoff artifact was removed in Step 8, the skill will derive PR context from `git log` and `git diff` instead.
 
 **Fallback:** If the skill dispatch is not available, run these commands directly:
 
