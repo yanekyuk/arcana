@@ -26,10 +26,10 @@ If in a worktree, tell the user: "This skill must run from the project root (mai
 Check that the target project has been configured:
 
 ```bash
-test -f docs/swe-config.json && echo "CONFIG FOUND" || echo "CONFIG MISSING"
+test -f docs/ritual-config.json && echo "CONFIG FOUND" || echo "CONFIG MISSING"
 ```
 
-If `docs/swe-config.json` does not exist, stop immediately and tell the user:
+If `docs/ritual-config.json` does not exist, stop immediately and tell the user:
 
 > No project config found. Run `/run-setup` in the target project first.
 
@@ -59,7 +59,7 @@ If `docs/` exists, scan for relevant docs:
 
 ## Step 5b: Search for related issues
 
-Read `docs/swe-config.json` and check integration flags.
+Read `docs/ritual-config.json` and check integration flags.
 
 **If `integrations.githubIssues` is true:**
 
@@ -158,9 +158,9 @@ Then pipe the handoff content into the setup-worktree script via a **single Bash
 Combine path resolution and invocation into one command:
 
 ```bash
-SCRIPT="./plugins/swe/scripts/setup-worktree.sh"
+SCRIPT="./plugins/ritual/scripts/setup-worktree.sh"
 if [ ! -f "$SCRIPT" ]; then
-  SCRIPT="$(find ~/.claude/plugins/cache/arcana/swe -name setup-worktree.sh 2>/dev/null | head -1)"
+  SCRIPT="$(find ~/.claude/plugins/cache/arcana/ritual -name setup-worktree.sh 2>/dev/null | head -1)"
 fi
 cat <<'HANDOFF' | bash "$SCRIPT" "<type>/<short-description>" "<type>-<short-description>" "chore: add handoff artifact for <type>/<short-description>"
 <handoff content here>

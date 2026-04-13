@@ -13,7 +13,7 @@ You are reviewing and completing a PR lifecycle. This skill runs from the **main
 
 ## Prerequisites
 
-**Directives:** If `docs/swe-config.json` exists, read `directives.delivery` from the config. These are soft guidelines that influence review standards and merge preferences. Apply them during PR review and merge decisions. If the field is missing or empty, proceed without directives.
+**Directives:** If `docs/ritual-config.json` exists, read `directives.delivery` from the config. These are soft guidelines that influence review standards and merge preferences. Apply them during PR review and merge decisions. If the field is missing or empty, proceed without directives.
 
 ## Step 1: Validate context
 
@@ -75,7 +75,7 @@ If the PR's base version (the `-` side of the diff) does not match main's curren
 
 ## Step 3f: CodeRabbit review check
 
-Read `docs/swe-config.json` and check if `integrations.coderabbit` is true.
+Read `docs/ritual-config.json` and check if `integrations.coderabbit` is true.
 
 If enabled, check CodeRabbit's review status on this PR:
 
@@ -130,7 +130,7 @@ Tell the user the PR passes review, then proceed to Step 5.
 
 ## Step 4b: Check Linear issue reference
 
-Read `docs/swe-config.json` and check if `integrations.linear` is true.
+Read `docs/ritual-config.json` and check if `integrations.linear` is true.
 
 If enabled, check the PR body and branch commits for a Linear issue reference. Linear issue IDs typically appear in the PR body under "Linear Issues" or in the handoff frontmatter (`linear-issue` field). Record the Linear issue ID if found — it will be used in Step 5b.
 
@@ -178,7 +178,7 @@ git checkout <branch>
 
 **1. Read versioning rules**
 
-Read the `versioning` array from `docs/swe-config.json`. Each entry is a natural-language rule string that specifies which version manifest to bump and under what conditions.
+Read the `versioning` array from `docs/ritual-config.json`. Each entry is a natural-language rule string that specifies which version manifest to bump and under what conditions.
 
 Example rules:
 - `"Bump package.json version for all changes"`

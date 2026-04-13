@@ -21,7 +21,7 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 
 2. **Load project config**
    - `activeForm`: "Loading project config"
-   - `description`: "Read docs/swe-config.json for tech stack, architecture rules, and custom directives."
+   - `description`: "Read docs/ritual-config.json for tech stack, architecture rules, and custom directives."
 
 3. **Fetch docs**
    - `activeForm`: "Fetching knowledge docs"
@@ -77,7 +77,7 @@ Read `.claude/handoff.md`. Parse frontmatter and all sections.
 
 > **TaskUpdate:** Mark "Load project config" (task 2) as `in_progress` now. Mark `completed` when done.
 
-Read `docs/swe-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
+Read `docs/ritual-config.json` in the current project directory. This file is written by `/run-setup` and contains the project's tech stack, architecture rules, integration toggles, and custom directives.
 
 **If the file does not exist:** Stop the pipeline immediately. Report to the user:
 

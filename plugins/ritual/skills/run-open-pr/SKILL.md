@@ -13,7 +13,7 @@ You are finalizing work and opening a pull request.
 
 ## Step 0: Load config
 
-Read `docs/swe-config.json` and extract:
+Read `docs/ritual-config.json` and extract:
 
 **Integration flags** (store for use in later steps):
 - `integrations.githubIssues` → add `Closes #N` lines to PR body

@@ -13,7 +13,7 @@ You are validating architecture rules against the current changes. This is a **h
 
 ## Step 1: Load config
 
-Read `docs/swe-config.json` in the current project directory.
+Read `docs/ritual-config.json` in the current project directory.
 
 If the file does not exist, report: "No project config found. Run `/run-setup` first." and stop.
 

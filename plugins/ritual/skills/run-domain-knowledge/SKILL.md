@@ -13,7 +13,7 @@ You are creating or updating a domain knowledge document — business rules, inv
 
 ## Prerequisites
 
-**Directives:** If `docs/swe-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when writing domain docs. If the field is missing or empty, proceed without directives.
+**Directives:** If `docs/ritual-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when writing domain docs. If the field is missing or empty, proceed without directives.
 
 ## Creating a new domain doc
 

@@ -14,10 +14,10 @@ You are doing test-driven development. Follow this cycle strictly.
 ## Prerequisites
 
 Determine the test command:
-1. Check if `docs/swe-config.json` exists — if so, use `stack.test` from the config. In pipeline context (dispatched by an orchestrator), the config is guaranteed to exist — the orchestrator aborts if it is missing.
+1. Check if `docs/ritual-config.json` exists — if so, use `stack.test` from the config. In pipeline context (dispatched by an orchestrator), the config is guaranteed to exist — the orchestrator aborts if it is missing.
 2. If no config (standalone invocation), ask the user for the test command. Do not attempt auto-detection — that logic belongs in `/run-setup`.
 
-**Directives:** If `docs/swe-config.json` exists, read `directives.implementation` from the config. These are soft guidelines that influence your coding style and implementation choices. Apply them throughout the TDD cycle. If the field is missing or empty, proceed without directives.
+**Directives:** If `docs/ritual-config.json` exists, read `directives.implementation` from the config. These are soft guidelines that influence your coding style and implementation choices. Apply them throughout the TDD cycle. If the field is missing or empty, proceed without directives.
 
 ## The Cycle
 

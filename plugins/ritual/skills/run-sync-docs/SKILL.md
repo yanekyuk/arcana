@@ -13,7 +13,7 @@ You are checking whether the implementation work introduced knowledge that shoul
 
 ## Prerequisites
 
-**Directives:** If `docs/swe-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when creating or updating docs. If the field is missing or empty, proceed without directives.
+**Directives:** If `docs/ritual-config.json` exists, read `directives.documentation` from the config. These are soft guidelines that influence your documentation style, detail level, and terminology. Apply them when creating or updating docs. If the field is missing or empty, proceed without directives.
 
 ## Step 1: Understand what changed
 

@@ -26,16 +26,16 @@ If in a worktree, tell the user: "This skill must run from the project root (mai
 Check that the target project has been configured:
 
 ```bash
-test -f docs/swe-config.json && echo "CONFIG FOUND" || echo "CONFIG MISSING"
+test -f docs/ritual-config.json && echo "CONFIG FOUND" || echo "CONFIG MISSING"
 ```
 
-If `docs/swe-config.json` does not exist, stop immediately and tell the user:
+If `docs/ritual-config.json` does not exist, stop immediately and tell the user:
 
 > No project config found. Run `/run-setup` in the target project first.
 
 Do NOT proceed with any further steps.
 
-Read `docs/swe-config.json` and extract the `integrations` object. Check which issue backends are available:
+Read `docs/ritual-config.json` and extract the `integrations` object. Check which issue backends are available:
 - `integrations.githubIssues` — GitHub Issues via `gh` CLI
 - `integrations.linear` — Linear via MCP tools
 
@@ -46,7 +46,7 @@ Evaluate which backends are enabled:
 - **Both enabled:** Proceed to Step 4 with both options.
 - **Only `githubIssues`:** Use GitHub Issues. Skip backend selection in Step 4.
 - **Only `linear`:** Use Linear. Skip backend selection in Step 4.
-- **Neither enabled:** Tell the user: "No issue backend is configured. Enable `githubIssues` or `linear` in `docs/swe-config.json` (or run `/run-setup`)." Stop here.
+- **Neither enabled:** Tell the user: "No issue backend is configured. Enable `githubIssues` or `linear` in `docs/ritual-config.json` (or run `/run-setup`)." Stop here.
 
 ## Step 4: Gather issue details
 

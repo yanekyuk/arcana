@@ -1,6 +1,6 @@
 ---
 name: run-setup
-description: "Use to configure a project for the swe plugin -- detects tech stack, sets architecture rules, discovers versioning manifests, integration toggles, and custom directives"
+description: "Use to configure a project for the ritual plugin -- detects tech stack, sets architecture rules, discovers versioning manifests, integration toggles, and custom directives"
 model: haiku
 effort: low
 user-invocable: true
@@ -9,12 +9,12 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 
 # Project Setup
 
-You are configuring a project for the swe plugin. This is an interactive wizard -- you WILL ask the user questions and wait for responses.
+You are configuring a project for the ritual plugin. This is an interactive wizard -- you WILL ask the user questions and wait for responses.
 
 ## Step 1: Check for existing config
 
 ```bash
-test -f docs/swe-config.json && echo "CONFIG EXISTS" || echo "NO CONFIG"
+test -f docs/ritual-config.json && echo "CONFIG EXISTS" || echo "NO CONFIG"
 ```
 
 If config exists, read it and ask the user: "Existing config found. Do you want to reconfigure from scratch or edit the current config?" If they want to edit, load the existing values as defaults for each step below.
@@ -309,7 +309,7 @@ Assemble the final config object:
 }
 ```
 
-Write to `docs/swe-config.json`:
+Write to `docs/ritual-config.json`:
 
 ```bash
 # Ensure docs/ directory exists
@@ -318,4 +318,4 @@ mkdir -p docs
 
 Use the Write tool to write the JSON file. Format it with 2-space indentation.
 
-Show the user the final config and confirm: "Config written to `docs/swe-config.json`. You can edit this file directly at any time. Orchestrators will read it at the start of every pipeline run."
+Show the user the final config and confirm: "Config written to `docs/ritual-config.json`. You can edit this file directly at any time. Orchestrators will read it at the start of every pipeline run."
