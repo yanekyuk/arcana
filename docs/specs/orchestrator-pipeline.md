@@ -17,7 +17,7 @@ Every orchestrator executes these phases in order:
 | Phase | Step | Description |
 |---|---|---|
 | Setup | Initialize progress tracking | Create all pipeline tasks via TaskCreate. Result reporting mandate: when marking any task `completed`, update its `description` with what happened. |
-| Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
+| Setup | Read handoff | Parse `docs/handoffs/<folder>.md` frontmatter and body |
 | Setup | Load project config | Read `docs/ritual-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
 | Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming via `AskUserQuestion` on conflict (skipped by docs) |
@@ -25,7 +25,7 @@ Every orchestrator executes these phases in order:
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
 | Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check. **Gated on `integrations.autoDocs`** -- skipped when false. |
-| Cleanup | Remove handoff | `git rm .claude/handoff.md` |
+| Cleanup | Remove handoff | `git rm docs/handoffs/<folder>.md` |
 | Delivery | Open PR | Push, create PR via `gh pr create` |
 
 ## Config Gate
