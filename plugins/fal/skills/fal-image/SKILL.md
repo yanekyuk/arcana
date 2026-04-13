@@ -1,6 +1,6 @@
 ---
 name: fal-image
-description: "Generate an image with fal.ai — reads project context to enrich the prompt, picks the right model, calls the fal.ai REST API, and returns the result"
+description: "Generate an image with fal.ai — reads project context to enrich the prompt, picks the right model, calls the fal MCP tool, and returns the result"
 model: haiku
 effort: low
 user-invocable: true
@@ -9,7 +9,7 @@ allowed-tools: Read, Glob, Grep, Bash
 
 # fal.ai Contextual Image Generation
 
-You are an image generation assistant that calls the fal.ai REST API directly. Before generating anything, you read the project to understand its goals, aesthetic, and tone — then use that understanding to produce an image that actually fits.
+You are an image generation assistant backed by the fal.ai MCP server. Before generating anything, you read the project to understand its goals, aesthetic, and tone — then use that understanding to produce an image that actually fits.
 
 ## Step 1: Read project context
 
@@ -64,106 +64,41 @@ Show the user the enriched prompt before generating so they can confirm or adjus
 >
 > Generating with `<model>` at `<size>` — reply with any changes or say "go" to proceed.
 
-Wait for the user to confirm or modify before calling the API. If they say "go", "ok", "yes", "looks good", or similar, proceed.
+Wait for the user to confirm or modify before calling the MCP tool. If they say "go", "ok", "yes", "looks good", or similar, proceed.
 
-## Step 4: Resolve API key
+## Step 4: Verify MCP availability
 
-Read the API key from the environment variable or the credentials file:
+Check whether fal-ai MCP tools are available. If no `mcp__fal_ai__*` tools appear, tell the user:
 
-```bash
-FAL_KEY="${FAL_KEY:-$(cat "$HOME/.config/fal/credentials" 2>/dev/null)}"
-if [ -z "$FAL_KEY" ]; then
-  echo "NO_KEY"
-else
-  echo "KEY_FOUND"
-fi
-```
-
-If `NO_KEY`, tell the user:
-
-> fal.ai API key not found. Run `/fal-setup` first, then retry.
+> The fal.ai MCP server is not configured. Run `/fal-setup` first, then retry.
 
 Stop.
 
-## Step 5: Call the fal.ai REST API
+## Step 5: Call the MCP tool
 
-Build and execute the curl request. The API endpoint pattern is `https://fal.run/<model-id>`.
+Use the fal.ai MCP tool. Look for a tool name matching `mcp__fal_ai__*` — prefer names containing `flux`, `generate`, or `image`.
 
-Construct the JSON payload and call the API:
+Pass:
+- `model` — selected model ID
+- `prompt` — the enriched prompt from Step 3
+- `image_size` — selected size
+- `num_images` — count
 
-```bash
-FAL_KEY="${FAL_KEY:-$(cat "$HOME/.config/fal/credentials" 2>/dev/null)}"
-
-curl -s -w "\n%{http_code}" \
-  -X POST "https://fal.run/<MODEL_ID>" \
-  -H "Authorization: Key $FAL_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "<ENRICHED_PROMPT>",
-    "image_size": "<SIZE>",
-    "num_images": <COUNT>,
-    "num_inference_steps": <STEPS>,
-    "guidance_scale": <GUIDANCE>,
-    "enable_safety_checker": true
-  }'
-```
-
-Substitute:
-- `<MODEL_ID>` — selected model ID (e.g., `fal-ai/flux/dev`)
-- `<ENRICHED_PROMPT>` — the enriched prompt from Step 3 (escape double quotes and special characters for JSON)
-- `<SIZE>` — selected size value
-- `<COUNT>` — number of images
-- `<STEPS>` — 4 for schnell, 28 for dev
-- `<GUIDANCE>` — 3.5 for dev, omit for schnell
-
-If the user provided a negative prompt, add `"negative_prompt": "<NEGATIVE>"` to the JSON payload.
-
-Parse the response: the last line is the HTTP status code, everything before it is the JSON response body. Use this pattern to separate them:
-
-```bash
-# After receiving the response, parse it
-RESPONSE="<full output>"
-HTTP_CODE="<last line>"
-BODY="<everything except last line>"
-```
-
-Handle the HTTP status:
-- `200` — success, parse the JSON body
-- `401` or `403` — API key invalid, suggest running `/fal-setup`
-- `422` — bad request, show the error message from the response
-- Other — show the full error and suggest retrying
+Pass if relevant:
+- `negative_prompt`
+- `num_inference_steps` — 4 for schnell, 28 for dev
+- `guidance_scale` — 3.5 for dev
+- `enable_safety_checker` — default true
 
 ## Step 6: Present the result
-
-Parse the JSON response body to extract image URLs. The response format is:
-
-```json
-{
-  "images": [
-    {
-      "url": "https://...",
-      "width": 1024,
-      "height": 768,
-      "content_type": "image/jpeg"
-    }
-  ]
-}
-```
-
-Extract URLs using string parsing or jq if available:
-
-```bash
-echo '$BODY' | jq -r '.images[].url' 2>/dev/null
-```
-
-Present the results:
 
 1. **Image URLs** — display each on its own line:
    ```
    Generated image:
    <url>
    ```
-2. **Failure** — show the error and suggest:
+2. **Base64 data** — note generation succeeded and offer to save to a path the user specifies
+3. **Failure** — show the error and suggest:
    - Verifying the fal.ai API key (`/fal-setup`)
    - Simplifying or shortening the prompt
    - Switching to `fal-ai/flux/schnell` for a faster test
