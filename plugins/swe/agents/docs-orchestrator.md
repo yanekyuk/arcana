@@ -1,7 +1,7 @@
 ---
 name: docs-orchestrator
 description: "Autonomous documentation pipeline — reads handoff, loads project config, fetches docs, writes/updates documentation, runs clash-check, arch check, sync docs, opens PR"
-model: sonnet
+model: claude-sonnet-4-6
 effort: medium
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 maxTurns: 60

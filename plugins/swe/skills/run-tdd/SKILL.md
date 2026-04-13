@@ -1,7 +1,7 @@
 ---
 name: run-tdd
 description: "Use for test-driven development — write failing test, implement until green, repeat per unit of work"
-model: sonnet
+model: claude-sonnet-4-6
 effort: high
 user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob

@@ -1,7 +1,7 @@
 ---
 name: run-spec
 description: "Use to create or update specification docs in docs/specs/ — checks alignment with parent domain knowledge and design decisions"
-model: sonnet
+model: claude-sonnet-4-6
 effort: medium
 user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent

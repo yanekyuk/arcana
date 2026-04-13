@@ -1,7 +1,7 @@
 ---
 name: run-finish
 description: "Use after a PR is opened — reviews the PR, suggests changes or merges to main, then cleans up worktree and branches"
-model: sonnet
+model: claude-sonnet-4-6
 effort: medium
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep
