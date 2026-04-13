@@ -48,9 +48,15 @@ If push fails, retry once. If still failing, report the error and stop.
 
 ## Step 3: Determine PR content
 
-Read `.claude/handoff.md` for trigger and scope context. Extract the `base-branch` field from the frontmatter — this is the branch the PR should target. If `base-branch` is not present, default to `main`.
+Determine the worktree folder name from the current directory:
 
-**If `.claude/handoff.md` does not exist** (e.g., it was already `git rm`'d by the orchestrator pipeline), derive context from git instead:
+```bash
+basename "$PWD"
+```
+
+Read `docs/handoffs/<folder-name>.md` for trigger and scope context. Extract the `base-branch` field from the frontmatter — this is the branch the PR should target. If `base-branch` is not present, default to `main`.
+
+**If the handoff file does not exist** (e.g., it was already `git rm`'d by the orchestrator pipeline), derive context from git instead:
 - Run `git log --oneline main..HEAD` to understand the commit history
 - Run `git diff main...HEAD --stat` to see which files changed
 - Infer the work type from commit prefixes (feat/fix/refactor/docs)
