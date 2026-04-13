@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# setup-worktree.sh — Create branch, worktree, and committed handoff artifact
-#                      in a single invocation.
+# setup-worktree.sh — Create branch, worktree, copy gitignored files, and commit
+#                      a handoff artifact in a single invocation.
 #
 # Usage:
 #   echo "<handoff content>" | bash setup-worktree.sh <branch> <folder> <commit-msg>
@@ -31,10 +31,21 @@ git branch "$branch"
 mkdir -p .worktrees
 git worktree add "$worktree_dir" "$branch"
 
-# 3. Write handoff from stdin
+# 3. Copy gitignored files into the worktree (preserving directory structure)
+#    This ensures environment files (.env, .claude/, etc.) are available in the
+#    worktree. Excludes .worktrees/ itself to avoid recursive copies.
+ignored_files=$(git ls-files --others --ignored --exclude-standard \
+  | grep -v '^\.worktrees/' || true)
+
+if [ -n "$ignored_files" ]; then
+  echo "$ignored_files" | rsync -a --files-from=- . "$worktree_dir/"
+fi
+
+# 4. Write handoff from stdin (mkdir -p as safety fallback; .claude/ may already
+#    exist from the gitignore copy above)
 mkdir -p "${worktree_dir}/.claude"
 cat > "${worktree_dir}/.claude/handoff.md"
 
-# 4. Stage and commit inside the worktree
+# 5. Stage and commit inside the worktree
 git -C "$worktree_dir" add -f .claude/handoff.md
 git -C "$worktree_dir" commit -m "$commit_msg"
