@@ -17,7 +17,7 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 
 1. **Read handoff**
    - `activeForm`: "Reading handoff artifact"
-   - `description`: "Parse .claude/handoff.md frontmatter and all sections — source of truth for what to build."
+   - `description`: "Parse docs/handoffs/<folder>.md frontmatter and all sections — source of truth for what to build."
 
 2. **Load project config**
    - `activeForm`: "Loading project config"
@@ -53,7 +53,7 @@ Before doing anything else, create all pipeline tasks so the user can see progre
 
 10. **Clean up handoff**
     - `activeForm`: "Cleaning up handoff"
-    - `description`: "Remove .claude/handoff.md so it doesn't appear in the final PR."
+    - `description`: "Remove docs/handoffs/<folder>.md so it doesn't appear in the final PR."
 
 11. **Open PR**
     - `activeForm`: "Opening pull request"
@@ -71,7 +71,13 @@ Each step below includes a TaskUpdate reminder. Follow it exactly — mark the t
 
 > **TaskUpdate:** Mark "Read handoff" (task 1) as `in_progress` now. Mark `completed` when done.
 
-Read `.claude/handoff.md` in the current directory. Parse the frontmatter and all sections. This is your source of truth for what to build.
+Determine the worktree folder name from the current directory:
+
+```bash
+basename "$PWD"
+```
+
+Read `docs/handoffs/<folder-name>.md`. Parse the frontmatter and all sections. This is your source of truth for what to build.
 
 ## Step 2: Load project config
 
@@ -288,10 +294,11 @@ If violations are found:
 
 > **TaskUpdate:** Mark "Clean up handoff" (task 10) as `in_progress` now. Mark `completed` when done.
 
-Remove the triage handoff artifact so it doesn't appear in the final PR:
+Remove the triage handoff artifact so it doesn't appear in the final PR. Determine the folder name from the current directory:
 
 ```bash
-git rm .claude/handoff.md && git commit -m "chore: remove handoff artifact"
+FOLDER=$(basename "$PWD")
+git rm "docs/handoffs/${FOLDER}.md" && git commit -m "chore: remove handoff artifact"
 ```
 
 ## Step 10b: Update Linear status to "In Review"
