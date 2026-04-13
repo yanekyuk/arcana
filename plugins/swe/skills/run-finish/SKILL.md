@@ -218,18 +218,22 @@ Bump categories:
 
 **4. Apply the bump**
 
-For each matching rule:
+A single rule may reference multiple manifest files that must be bumped in sync (joined by "and", e.g. "Bump X **and** Y in sync"). Parse the rule for all manifest paths mentioned and collect them as a list — each must be bumped to the same new version.
 
-1. Read the version manifest file specified in the rule
+For each manifest file collected from matching rules:
+
+1. Read the version manifest file
 2. Parse the current version string based on the manifest format:
    - `package.json` -- `"version": "X.Y.Z"`
+   - `plugin.json` -- `"version": "X.Y.Z"` (same JSON key as package.json)
+   - `marketplace.json` -- each plugin entry contains `"version": "X.Y.Z"` nested under its plugin key; update the entry whose path corresponds to the plugin being changed
    - `Cargo.toml` -- `version = "X.Y.Z"` under `[package]`
    - `pyproject.toml` -- `version = "X.Y.Z"` under `[project]` or `[tool.poetry]`
    - `setup.cfg` -- `version = X.Y.Z` under `[metadata]`
    - `build.gradle` / `build.gradle.kts` -- `version = "X.Y.Z"`
    - `version.txt` -- entire file content is the version string
-3. Apply the bump. Reset lower components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
-4. Write the updated version back to the manifest file.
+3. Apply the same bump to every collected manifest. Reset lower components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
+4. Write the updated version back to each manifest file.
 
 **5. Commit**
 
@@ -238,7 +242,7 @@ git add <all-bumped-manifest-files>
 git commit -m "chore: bump version to <new-version>"
 ```
 
-If multiple manifests were bumped, list all versions in the commit message:
+If multiple manifests were bumped, list all in the commit message:
 
 ```bash
 git add <manifest-1> <manifest-2>
