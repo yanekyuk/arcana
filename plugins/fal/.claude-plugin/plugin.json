@@ -1,7 +1,7 @@
 {
   "name": "fal",
   "description": "fal.ai image generation — setup MCP server and generate images from natural language prompts.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "yanek"
   },
