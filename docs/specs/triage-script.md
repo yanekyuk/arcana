@@ -15,7 +15,7 @@ A shell script at `plugins/ritual/scripts/setup-worktree.sh` consolidates triage
 3. Creates the git branch
 4. Creates the `.worktrees/` directory and adds the worktree
 5. Copies all gitignored files from the main repo into the worktree (preserving directory structure), excluding `.worktrees/` itself
-6. Writes the handoff content to `.worktrees/<folder>/.claude/handoff.md`
+6. Writes the handoff content to `docs/handoffs/<folder>.md` inside the worktree
 7. Stages and commits the handoff artifact inside the worktree
 
 Step 5 uses `git ls-files --others --ignored --exclude-standard` to enumerate gitignored files, filters out `.worktrees/` entries, then uses `rsync --files-from` to copy them into the worktree. This ensures environment files (`.env`, `.claude/`, etc.) are available in the worktree session. If no gitignored files exist, the step is a no-op.
