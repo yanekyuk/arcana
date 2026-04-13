@@ -2,7 +2,7 @@
 name: fal-image
 description: "Generate an image with fal.ai — reads project context to enrich the prompt, picks the right model, calls the fal MCP tool, and returns the result"
 model: sonnet
-effort: medium
+effort: low
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash
 ---
