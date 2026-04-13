@@ -23,7 +23,15 @@ If NOT_WORKTREE (`.git` is a directory, not a file), tell the user: "This skill 
 
 ## Step 2: Read handoff
 
-Read `.claude/handoff.md` in the current directory. If it doesn't exist, tell the user: "No handoff artifact found. Run /run-triage in the project root first."
+Determine the worktree folder name from the current directory name:
+
+```bash
+basename "$PWD"
+```
+
+The handoff artifact lives at `docs/handoffs/<folder-name>.md` in the current worktree's working tree (it was committed on this branch by the triage script).
+
+Read `docs/handoffs/<folder-name>.md`. If it doesn't exist, tell the user: "No handoff artifact found. Run /run-triage in the project root first."
 
 ## Step 3: Dispatch orchestrator
 

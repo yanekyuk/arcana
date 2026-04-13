@@ -25,7 +25,13 @@ git diff $BASE...HEAD
 
 ## Step 2: Load context
 
-Read the handoff artifact (`.claude/handoff.md`) to understand the original scope.
+Determine the worktree folder name from the current directory:
+
+```bash
+basename "$PWD"
+```
+
+Read the handoff artifact (`docs/handoffs/<folder-name>.md`) to understand the original scope.
 
 Read any specs or domain docs referenced in the handoff's "Relevant Docs" section.
 

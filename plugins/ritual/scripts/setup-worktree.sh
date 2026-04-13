@@ -12,7 +12,7 @@
 #   commit-msg  — Commit message for the handoff artifact
 #
 # Stdin:
-#   The full content of the handoff markdown file (.claude/handoff.md)
+#   The full content of the handoff markdown file (docs/handoffs/<folder>.md)
 #
 # The script must be run from the project root (main repo, not a worktree).
 
@@ -23,6 +23,7 @@ folder="${2:?Usage: setup-worktree.sh <branch> <folder> <commit-msg>}"
 commit_msg="${3:?Usage: setup-worktree.sh <branch> <folder> <commit-msg>}"
 
 worktree_dir=".worktrees/${folder}"
+handoff_path="docs/handoffs/${folder}.md"
 
 # 1. Create the branch
 git branch "$branch"
@@ -41,11 +42,10 @@ if [ -n "$ignored_files" ]; then
   echo "$ignored_files" | rsync -a --files-from=- . "$worktree_dir/"
 fi
 
-# 4. Write handoff from stdin (mkdir -p as safety fallback; .claude/ may already
-#    exist from the gitignore copy above)
-mkdir -p "${worktree_dir}/.claude"
-cat > "${worktree_dir}/.claude/handoff.md"
+# 4. Write handoff from stdin into the worktree
+mkdir -p "${worktree_dir}/docs/handoffs"
+cat > "${worktree_dir}/${handoff_path}"
 
 # 5. Stage and commit inside the worktree
-git -C "$worktree_dir" add -f .claude/handoff.md
+git -C "$worktree_dir" add "$handoff_path"
 git -C "$worktree_dir" commit -m "$commit_msg"

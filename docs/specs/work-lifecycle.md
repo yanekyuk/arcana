@@ -28,7 +28,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 6. Propose classification: feat, fix, refactor, or docs
 7. Wait for user confirmation or override
 8. Create branch (`<type>/<short-description>`) and worktree (`.worktrees/<type>-<short-description>`)
-9. Write `.claude/handoff.md` into the worktree and commit
+9. Write `docs/handoffs/<folder>.md` into the worktree and commit
 
 **Exit conditions:**
 - Branch and worktree exist
@@ -41,12 +41,13 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 
 **Entry conditions:**
 - Current directory is a git worktree (`.git` is a file, not a directory)
-- `.claude/handoff.md` exists
+- `docs/handoffs/<folder>.md` exists (where `<folder>` is the worktree directory name)
 
 **Actions:**
 1. Validate worktree context
-2. Read handoff artifact
-3. Dispatch the matching orchestrator agent based on the `type` field
+2. Determine worktree folder name via `basename "$PWD"`
+3. Read handoff artifact from `docs/handoffs/<folder>.md`
+4. Dispatch the matching orchestrator agent based on the `type` field
 
 **Exit conditions:**
 - Orchestrator agent is dispatched and running autonomously
@@ -68,7 +69,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 6. Self-review (feat/fix/refactor only)
 7. Arch check -- validate architecture rules against diff (after sync-docs for docs orchestrator)
 8. Sync docs
-9. Remove handoff artifact (`git rm .claude/handoff.md`)
+9. Remove handoff artifact (`git rm docs/handoffs/<folder>.md`)
 10. Push and open PR via `gh pr create`
 
 **Exit conditions:**

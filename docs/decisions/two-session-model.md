@@ -27,4 +27,4 @@ Claude Code sessions have limited context windows and token budgets. A single se
 
 - The main session must never `cd` into a worktree (per project convention).
 - The worktree session must validate it is in a worktree before proceeding.
-- The handoff artifact (`.claude/handoff.md`) is the sole contract between sessions.
+- The handoff artifact (`docs/handoffs/<worktree-folder>.md`) is the sole contract between sessions.
