@@ -21,14 +21,14 @@
     },
     {
       "name": "fal",
-      "description": "fal.ai image generation — setup MCP server and generate images from natural language prompts via FLUX models.",
-      "version": "0.1.2",
+      "description": "fal.ai image generation — configure API access and generate images from natural language prompts via FLUX models.",
+      "version": "0.1.3",
       "author": {
         "name": "yanek"
       },
       "source": "./plugins/fal",
       "category": "media",
-      "tags": ["fal", "image-generation", "flux", "ai-art", "mcp"]
+      "tags": ["fal", "image-generation", "flux", "ai-art"]
     }
   ]
 }
