@@ -1,0 +1,62 @@
+{
+  "stack": {
+    "language": "markdown/json",
+    "runtime": "none",
+    "packageManager": "none",
+    "test": "none",
+    "lint": "none",
+    "format": "none",
+    "typecheck": "none"
+  },
+  "sourceRoot": ".",
+  "integrations": {
+    "coderabbit": false,
+    "linear": false,
+    "githubIssues": true,
+    "autoDocs": true,
+    "context7": false
+  },
+  "architecture": {
+    "rules": [
+      "Marketplace manifest (.claude-plugin/marketplace.json) version must match each plugin's own plugin.json version",
+      "Skills must live at plugins/<name>/skills/<skill-name>/SKILL.md with valid YAML frontmatter (name, description, user-invocable, allowed-tools)",
+      "Agents must live at plugins/<name>/agents/<agent-name>.md with valid YAML frontmatter (name, description, model, tools, maxTurns)",
+      "Plugin manifest (plugin.json) must use './skills' with ./ prefix for the skills path — bare names cause validation errors",
+      "Knowledge docs must live in docs/ with YAML frontmatter (title, type, tags, created, updated) and follow the tier hierarchy: domain > decisions > specs",
+      "Skills and agents must not contain executable code — they are pure markdown instructions with YAML frontmatter",
+      "Each plugin is self-contained under plugins/<name>/ — no cross-plugin imports or shared files between plugins"
+    ]
+  },
+  "versioning": [
+    "Bump plugins/ritual/.claude-plugin/plugin.json version and .claude-plugin/marketplace.json ritual entry version in sync for all changes"
+  ],
+  "directives": {
+    "implementation": [
+      "All markdown files must have valid YAML frontmatter matching the required schema for their type (skill vs agent)",
+      "Keep agent instructions concise — prefer structured steps over prose",
+      "When adding new skills, ensure allowed-tools is the minimal set needed",
+      "Prefer explicit tool lists over wildcards in agent frontmatter"
+    ],
+    "review": [
+      "Verify marketplace.json version matches plugin.json version on every change",
+      "Check that skill/agent frontmatter fields are complete and well-formed",
+      "Flag any cross-plugin dependencies — plugins must be self-contained",
+      "Ensure new skills have user-invocable and disable-model-invocation set explicitly"
+    ],
+    "documentation": [
+      "Knowledge docs must use YAML frontmatter with title, type, tags, created, updated",
+      "Use lowercase hyphen-separated tags matching module/directory names",
+      "Keep specs actionable — each spec should map to implementable work"
+    ],
+    "delivery": [
+      "Use Conventional Commits: <type>: <description>",
+      "Always bump version in both plugin.json and marketplace.json together",
+      "PR titles should match the conventional commit type of the primary change"
+    ],
+    "triage": [
+      "Default classification is docs unless structural changes to manifests or new skills/agents are involved",
+      "New skills or agents are feat, manifest fixes are fix, reorganization is refactor",
+      "Scope branches as <type>/<short-description> (e.g., feat/new-skill-name)"
+    ]
+  }
+}

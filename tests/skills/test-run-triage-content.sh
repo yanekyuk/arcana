@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SKILL="$SCRIPT_DIR/../../plugins/swe/skills/run-triage/SKILL.md"
+SKILL="$SCRIPT_DIR/../../plugins/ritual/skills/run-triage/SKILL.md"
 PASS=0
 FAIL=0
 

@@ -2,22 +2,22 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "arcana",
   "metadata": {
-    "description": "Personal Claude Code marketplace — custom skills, MCP servers, and agents across SWE, game development, and research domains."
+    "description": "Personal Claude Code marketplace — custom skills, MCP servers, and agents across software engineering, game development, and research domains."
   },
   "owner": {
     "name": "yanek"
   },
   "plugins": [
     {
-      "name": "swe",
+      "name": "ritual",
       "description": "Software engineering workflow — triage, TDD, self-review, docs sync, and autonomous orchestrators for feat/fix/refactor/docs pipelines.",
-      "version": "0.17.0",
+      "version": "0.17.1",
       "author": {
         "name": "yanek"
       },
-      "source": "./plugins/swe",
+      "source": "./plugins/ritual",
       "category": "development",
-      "tags": ["swe", "tdd", "triage", "refactor", "orchestrator"]
+      "tags": ["ritual", "tdd", "triage", "refactor", "orchestrator"]
     },
     {
       "name": "fal",

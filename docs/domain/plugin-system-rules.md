@@ -13,7 +13,7 @@ The marketplace index at `.claude-plugin/marketplace.json` lists all available p
 - `name` -- unique plugin identifier
 - `description` -- one-line summary
 - `version` -- semver string that must match the plugin's own `plugin.json` version
-- `source` -- relative path to the plugin directory (e.g., `./plugins/swe`)
+- `source` -- relative path to the plugin directory (e.g., `./plugins/ritual`)
 
 The marketplace file also carries top-level `name`, `metadata.description`, and `owner.name` fields identifying the marketplace itself.
 

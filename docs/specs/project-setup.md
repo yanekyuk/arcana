@@ -18,13 +18,13 @@ Interactive project configuration wizard that:
 5. Allows custom directives per skill group (implementation, review, documentation, delivery, triage)
 6. Offers integration toggles: CodeRabbit, Linear, GitHub Issues, auto-docs, Context7
 6b. Verifies prerequisites for each enabled integration (advisory, not blocking)
-7. Writes config to `docs/swe-config.json` in the target project
+7. Writes config to `docs/ritual-config.json` in the target project
 8. Supports updating an existing config -- loads current values (including versioning rules) as defaults when editing
 
 ### run-arch-check skill
 
 Architecture enforcement gate that:
-1. Reads `docs/swe-config.json` architecture rules
+1. Reads `docs/ritual-config.json` architecture rules
 2. Reads the diff about to be PR'd
 3. Validates each rule against the changes
 4. Returns pass/fail with violation details
@@ -33,7 +33,7 @@ Architecture enforcement gate that:
 ### Orchestrator modifications
 
 All four orchestrators gain:
-1. **Config gate** after "Read handoff": reads `docs/swe-config.json`. If missing, aborts with: "No project config found. Run `/run-setup` in the target project first."
+1. **Config gate** after "Read handoff": reads `docs/ritual-config.json`. If missing, aborts with: "No project config found. Run `/run-setup` in the target project first."
 2. **Config-driven tooling** replaces dynamic tooling discovery with `stack.*` values from config
 3. **Arch check step** after self-review (after sync-docs for docs orchestrator): dispatches `run-arch-check`. Violations trigger fix attempt; failed fix proceeds as draft PR.
 4. **Integration wiring** reads `integrations.*` flags and applies them:
@@ -115,8 +115,8 @@ If the `versioning` array is empty or absent, the orchestrator skips the version
 
 ## Acceptance Criteria
 
-1. `run-setup` SKILL.md exists at `plugins/swe/skills/run-setup/SKILL.md` with correct frontmatter
-2. `run-arch-check` SKILL.md exists at `plugins/swe/skills/run-arch-check/SKILL.md` with correct frontmatter
+1. `run-setup` SKILL.md exists at `plugins/ritual/skills/run-setup/SKILL.md` with correct frontmatter
+2. `run-arch-check` SKILL.md exists at `plugins/ritual/skills/run-arch-check/SKILL.md` with correct frontmatter
 3. All four orchestrators include a config gate step after reading the handoff
 4. All four orchestrators use config values for tooling instead of dynamic discovery
 5. feat, fix, refactor orchestrators include arch-check step after self-review

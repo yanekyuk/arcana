@@ -8,8 +8,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$SCRIPT_DIR/../.."
-HOOKS_JSON="$ROOT/plugins/swe/hooks/hooks.json"
-PLUGIN_JSON="$ROOT/plugins/swe/.claude-plugin/plugin.json"
+HOOKS_JSON="$ROOT/plugins/ritual/hooks/hooks.json"
+PLUGIN_JSON="$ROOT/plugins/ritual/.claude-plugin/plugin.json"
 PASS=0
 FAIL=0
 
@@ -81,7 +81,7 @@ for EVENT in PreToolUse PostToolUse SubagentStop SessionEnd; do
       assert_true "hooks.$EVENT[$i].hooks[$j].command is non-empty" [ -n "$H_CMD" ]
 
       # Script file exists and is executable
-      SCRIPT_PATH="$ROOT/plugins/swe/hooks/$H_CMD"
+      SCRIPT_PATH="$ROOT/plugins/ritual/hooks/$H_CMD"
       assert_true "script exists: $H_CMD" [ -f "$SCRIPT_PATH" ]
       assert_true "script is executable: $H_CMD" [ -x "$SCRIPT_PATH" ]
 

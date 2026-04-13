@@ -8,7 +8,7 @@ updated: 2026-04-14
 
 ## Behavior
 
-A shell script at `plugins/swe/scripts/setup-worktree.sh` consolidates triage steps 7-9 (branch creation, worktree setup, handoff write, commit) into a single invocation. The script:
+A shell script at `plugins/ritual/scripts/setup-worktree.sh` consolidates triage steps 7-9 (branch creation, worktree setup, handoff write, commit) into a single invocation. The script:
 
 1. Accepts three positional arguments: branch name, worktree folder name, and commit message
 2. Reads handoff content from stdin
@@ -28,7 +28,7 @@ The `run-triage` skill calls this script instead of issuing separate tool calls 
 - The script must work from the project root (the main repo, not a worktree)
 - The skill must resolve the script path for both development (arcana repo) and installed-plugin contexts (cache path)
 - The skill's `allowed-tools` must include Bash to invoke the script
-- No cross-plugin imports: the script lives within `plugins/swe/`
+- No cross-plugin imports: the script lives within `plugins/ritual/`
 
 ## Acceptance Criteria
 

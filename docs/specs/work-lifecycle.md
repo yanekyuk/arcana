@@ -17,11 +17,11 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 **Entry conditions:**
 - User provides a ticket, idea, or bug report
 - Working tree is clean on the main branch
-- `docs/swe-config.json` exists (checked at step 2 -- aborts if missing)
+- `docs/ritual-config.json` exists (checked at step 2 -- aborts if missing)
 
 **Actions:**
 1. Validate context (must be main repo, not a worktree)
-2. Load project config (`docs/swe-config.json`) -- abort if missing
+2. Load project config (`docs/ritual-config.json`) -- abort if missing
 3. Read the user's request (no clarifying questions)
 4. Explore related code via Grep/Glob (read max 5 files)
 5. Fetch relevant knowledge docs from `docs/` if they exist (top 5 by tag match)
@@ -62,7 +62,7 @@ The complete work lifecycle flows through four phases across two sessions. Each 
 **Actions:** (vary by orchestrator type, but shared structure)
 1. Initialize progress tracking (TaskCreate for all steps)
 2. Read handoff
-3. Load project config (`docs/swe-config.json`) -- abort if missing
+3. Load project config (`docs/ritual-config.json`) -- abort if missing
 4. Fetch relevant knowledge docs
 5. Type-specific work (spec drafting, TDD, investigation, doc writing)
 6. Self-review (feat/fix/refactor only)

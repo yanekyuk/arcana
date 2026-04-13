@@ -1,6 +1,6 @@
 {
   "enabledPlugins": {
     "superpowers@claude-plugins-official": false,
-    "swe@arcana": true
+    "ritual@arcana": true
   }
 }

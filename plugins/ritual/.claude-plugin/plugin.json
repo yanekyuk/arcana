@@ -1,0 +1,10 @@
+{
+  "name": "ritual",
+  "description": "Software engineering workflow — triage, TDD, self-review, docs sync, and orchestrators for feat/fix/refactor/docs pipelines.",
+  "version": "0.17.1",
+  "author": {
+    "name": "yanek"
+  },
+  "skills": "./skills",
+  "keywords": ["ritual", "tdd", "triage", "refactor", "orchestrator", "hooks"]
+}

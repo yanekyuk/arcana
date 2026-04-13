@@ -19,7 +19,7 @@ plugins/<name>/
 docs/                                # Reference documentation
 ```
 
-Currently one plugin exists: `swe` (software engineering workflows).
+Currently one plugin exists: `ritual` (software engineering workflows).
 
 ## Plugin Manifests
 
@@ -59,7 +59,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 
 Skills are composable building blocks invoked via slash commands (e.g., `/run-tdd`). They can also be dispatched by orchestrator agents.
 
-## SWE Plugin Workflow
+## Ritual Plugin Workflow
 
 Two-session model:
 1. **Session 1** (project root): `/run-triage` classifies work, creates branch + worktree + handoff artifact (`.claude/handoff.md`). After the orchestrator opens a PR, `/run-finish` reviews and merges it.

@@ -19,7 +19,7 @@ Skills, agents, and MCP servers that encode domain-specific processes — from t
 
 ## Domains
 
-### `swe` — Software Engineering
+### `ritual` — Software Engineering
 
 Autonomous pipelines that take work from triage to PR.
 
@@ -66,7 +66,7 @@ Autonomous pipelines that take work from triage to PR.
 /run-setup
 ```
 
-Interactive wizard that auto-detects your tech stack, lets you pick architecture presets (Layered, Hexagonal, Vertical Slices, or custom), toggle integrations, and add custom directives. Writes `docs/swe-config.json` — required before any other skill will run.
+Interactive wizard that auto-detects your tech stack, lets you pick architecture presets (Layered, Hexagonal, Vertical Slices, or custom), toggle integrations, and add custom directives. Writes `docs/ritual-config.json` — required before any other skill will run.
 
 ### 2. Start work
 
@@ -135,7 +135,7 @@ Two-session model: **Session 1** (project root) runs `/run-setup` (once), `/run-
 
 ## Knowledge Hierarchy
 
-The SWE domain maintains a three-tier knowledge base in `docs/`:
+The ritual plugin maintains a three-tier knowledge base in `docs/`:
 
 ```
 domain/     ← business rules, invariants (highest authority)

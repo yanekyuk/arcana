@@ -3,8 +3,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PRE_HOOK="$SCRIPT_DIR/../../plugins/swe/hooks/scripts/tdd-test-first.sh"
-POST_HOOK="$SCRIPT_DIR/../../plugins/swe/hooks/scripts/tdd-test-tracker.sh"
+PRE_HOOK="$SCRIPT_DIR/../../plugins/ritual/hooks/scripts/tdd-test-first.sh"
+POST_HOOK="$SCRIPT_DIR/../../plugins/ritual/hooks/scripts/tdd-test-tracker.sh"
 PASS=0
 FAIL=0
 
