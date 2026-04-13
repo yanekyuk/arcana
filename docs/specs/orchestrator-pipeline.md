@@ -18,7 +18,7 @@ Every orchestrator executes these phases in order:
 |---|---|---|
 | Setup | Initialize progress tracking | Create all pipeline tasks via TaskCreate. Result reporting mandate: when marking any task `completed`, update its `description` with what happened. |
 | Setup | Read handoff | Parse `.claude/handoff.md` frontmatter and body |
-| Setup | Load project config | Read `docs/swe-config.json` -- abort if missing |
+| Setup | Load project config | Read `docs/ritual-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
 | Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming via `AskUserQuestion` on conflict (skipped by docs) |
 | Work | Type-specific implementation | See per-type sections below. **When `integrations.context7` is true**, Context7 MCP tools are available for library doc lookups. |
@@ -30,7 +30,7 @@ Every orchestrator executes these phases in order:
 
 ## Config Gate
 
-All orchestrators require `docs/swe-config.json` to exist. This file is created by the `/run-setup` skill and contains:
+All orchestrators require `docs/ritual-config.json` to exist. This file is created by the `/run-setup` skill and contains:
 
 - **`stack.*`** -- Tech stack configuration (language, runtime, test command, lint/format/typecheck commands). Replaces dynamic tooling discovery.
 - **`architecture.rules`** -- Flat list of architecture rules enforced by `run-arch-check` as a hard gate.
@@ -47,7 +47,7 @@ If the config file is missing, the orchestrator stops immediately with: "No proj
 
 Version bumping is **not** performed by orchestrators. It is handled by the `run-finish` skill after PR review passes but before merge. See the [Work Lifecycle](work-lifecycle.md) spec for details.
 
-The bump type is derived from the branch prefix (`feat/`→MINOR, `fix/`→PATCH, `refactor/`→PATCH, `docs/`→none) and can be overridden via a `version-bump:` directive in the PR body or commit messages. The semver bump procedure is inlined directly in the `run-finish` skill (Step 5c) to ensure it is available when the plugin is served from cache. The `versioning` array in `docs/swe-config.json` remains unchanged.
+The bump type is derived from the branch prefix (`feat/`→MINOR, `fix/`→PATCH, `refactor/`→PATCH, `docs/`→none) and can be overridden via a `version-bump:` directive in the PR body or commit messages. The semver bump procedure is inlined directly in the `run-finish` skill (Step 5c) to ensure it is available when the plugin is served from cache. The `versioning` array in `docs/ritual-config.json` remains unchanged.
 
 ## Per-Type Variations
 

@@ -12,7 +12,7 @@ Each skill is a composable building block with defined inputs, outputs, and tool
 
 ### Directive Groups
 
-Skills that consume directives declare a `directive group` mapping. The group determines which key from `directives` in `docs/swe-config.json` they read:
+Skills that consume directives declare a `directive group` mapping. The group determines which key from `directives` in `docs/ritual-config.json` they read:
 
 | Group | Skills |
 |---|---|
@@ -29,15 +29,15 @@ Skills not listed (run-setup, run-start, run-arch-check, run-clash-check) do not
 ### run-setup
 
 - **Input:** Project files for auto-detection; user responses for overrides and selections
-- **Output:** `docs/swe-config.json` written to the target project
+- **Output:** `docs/ritual-config.json` written to the target project
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
 - **Invocation:** User-invoked or model-invoked in the target project (interactive -- asks questions and waits for responses)
-- **Side effects:** Creates `docs/swe-config.json` with tech stack, architecture rules, integration toggles, and categorized directives (per skill group: implementation, review, documentation, delivery, triage)
+- **Side effects:** Creates `docs/ritual-config.json` with tech stack, architecture rules, integration toggles, and categorized directives (per skill group: implementation, review, documentation, delivery, triage)
 - **Note:** This is the only interactive skill -- all others are non-interactive when dispatched by orchestrators
 
 ### run-arch-check
 
-- **Input:** `docs/swe-config.json` architecture rules, diff against base branch
+- **Input:** `docs/ritual-config.json` architecture rules, diff against base branch
 - **Output:** Pass/fail report with violation details
 - **Tools:** Read, Bash, Grep, Glob
 - **Invocation:** Model-invoked or dispatched by orchestrators after self-review (or after sync-docs for docs orchestrator)
@@ -95,7 +95,7 @@ Skills not listed (run-setup, run-start, run-arch-check, run-clash-check) do not
 
 ### run-tdd
 
-- **Input:** Test command from `docs/swe-config.json` (`stack.test`) or user input when standalone
+- **Input:** Test command from `docs/ritual-config.json` (`stack.test`) or user input when standalone
 - **Output:** Committed test + implementation pairs
 - **Tools:** Read, Write, Edit, Bash, Grep, Glob
 - **Invocation:** Model-invoked or dispatched by orchestrators

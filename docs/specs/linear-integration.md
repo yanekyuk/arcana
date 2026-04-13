@@ -8,7 +8,7 @@ updated: 2026-03-27
 
 ## Behavior
 
-Deep Linear integration across the SWE plugin pipeline: graceful degradation when Linear MCP is unavailable, issue status management through orchestrator lifecycle, completion on merge, and a new skill for creating and routing issues.
+Deep Linear integration across the ritual plugin pipeline: graceful degradation when Linear MCP is unavailable, issue status management through orchestrator lifecycle, completion on merge, and a new skill for creating and routing issues.
 
 ### 1. Graceful Degradation in run-triage
 

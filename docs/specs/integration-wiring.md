@@ -8,7 +8,7 @@ updated: 2026-03-27
 
 ## Behavior
 
-Integration toggles in `docs/swe-config.json` control optional pipeline behaviors across skills and orchestrators. Each toggle gates specific functionality that is skipped when the integration is disabled.
+Integration toggles in `docs/ritual-config.json` control optional pipeline behaviors across skills and orchestrators. Each toggle gates specific functionality that is skipped when the integration is disabled.
 
 ### Integration Toggles
 

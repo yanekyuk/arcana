@@ -48,7 +48,7 @@ When collecting directives, run-setup walks through each group in order:
 
 ### Skill Consumption
 
-Each skill reads only its group's directives from `docs/swe-config.json`:
+Each skill reads only its group's directives from `docs/ritual-config.json`:
 - Read config at startup
 - Extract `directives.<group>` array
 - Apply as soft guidance during execution
@@ -68,7 +68,7 @@ Orchestrators read the full directives object and:
 
 ## Acceptance Criteria
 
-1. `docs/swe-config.json` schema uses categorized directives object instead of flat array
+1. `docs/ritual-config.json` schema uses categorized directives object instead of flat array
 2. `run-setup` collects directives per group with explanations
 3. `run-setup` handles updating existing categorized directives
 4. Each skill reads only its group's directives
