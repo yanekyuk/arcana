@@ -153,7 +153,7 @@ Format: "- #<number> <title> (<state>)" for GitHub Issues, "- <ID> <title> (<sta
 <summary of what needs to be done and why>
 ```
 
-Then pipe the handoff content into the setup-worktree script via a **single Bash call**. The script creates the branch, worktree, writes the handoff, and commits it in one operation. This reduces 3 permission prompts (branch, write, commit) to 1.
+Then pipe the handoff content into the setup-worktree script via a **single Bash call**. The script creates the branch, worktree, writes the handoff to `docs/handoffs/<folder>.md`, and commits it in one operation. This reduces 3 permission prompts (branch, write, commit) to 1.
 
 Combine path resolution and invocation into one command:
 
