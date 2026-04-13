@@ -28,7 +28,7 @@
     ]
   },
   "versioning": [
-    "Bump plugins/swe/.claude-plugin/plugin.json version and .claude-plugin/marketplace.json swe entry version in sync for all changes"
+    "Bump plugins/ritual/.claude-plugin/plugin.json version and .claude-plugin/marketplace.json ritual entry version in sync for all changes"
   ],
   "directives": {
     "implementation": [
