@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-HOOK="$SCRIPT_DIR/../../plugins/swe/hooks/scripts/sensitive-file-blocker.sh"
+HOOK="$SCRIPT_DIR/../../plugins/ritual/hooks/scripts/sensitive-file-blocker.sh"
 PASS=0
 FAIL=0
 
