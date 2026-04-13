@@ -1,7 +1,7 @@
 ---
 name: run-sync-docs
 description: "Use after implementation to detect if docs/ need updating based on changes made — updates docs, triggers clash-check"
-model: claude-sonnet-4-6
+model: sonnet
 effort: medium
 user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent

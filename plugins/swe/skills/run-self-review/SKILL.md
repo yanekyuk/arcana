@@ -1,7 +1,7 @@
 ---
 name: run-self-review
 description: "Use to review your own changes — diffs against base branch, checks alignment with spec and domain knowledge"
-model: claude-sonnet-4-6
+model: sonnet
 effort: medium
 user-invocable: false
 allowed-tools: Read, Bash, Grep, Glob

@@ -1,7 +1,7 @@
 ---
 name: run-domain-knowledge
 description: "Use to create or update domain knowledge docs (business rules, invariants, constraints) in docs/domain/ — triggers clash-check on decisions and specs"
-model: claude-sonnet-4-6
+model: sonnet
 effort: medium
 user-invocable: false
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent

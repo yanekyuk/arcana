@@ -1,7 +1,7 @@
 ---
 name: run-clash-check
 description: "Use to scan knowledge docs for contradictions, overlaps, and misalignments — dispatched as subagent to isolate token cost"
-model: claude-sonnet-4-6
+model: sonnet
 effort: medium
 user-invocable: false
 context: fork
