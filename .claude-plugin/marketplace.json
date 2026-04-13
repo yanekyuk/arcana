@@ -18,6 +18,17 @@
       "source": "./plugins/swe",
       "category": "development",
       "tags": ["swe", "tdd", "triage", "refactor", "orchestrator"]
+    },
+    {
+      "name": "fal",
+      "description": "fal.ai image generation — setup MCP server and generate images from natural language prompts via FLUX models.",
+      "version": "0.1.0",
+      "author": {
+        "name": "yanek"
+      },
+      "source": "./plugins/fal",
+      "category": "media",
+      "tags": ["fal", "image-generation", "flux", "ai-art", "mcp"]
     }
   ]
 }
