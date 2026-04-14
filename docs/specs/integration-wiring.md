@@ -3,7 +3,7 @@ title: "Integration Wiring"
 type: spec
 tags: [integrations, coderabbit, linear, github-issues, auto-docs, context7, orchestrator, triage, open-pr, finish, setup, create-triage, graceful-degradation]
 created: 2026-03-27
-updated: 2026-03-27
+updated: 2026-04-14
 ---
 
 ## Behavior
@@ -38,7 +38,16 @@ When an integration is enabled during setup, `run-setup` verifies prerequisites:
 
 **Sync-docs gating:** The sync-docs step is gated on `integrations.autoDocs`. When false, the step is skipped entirely with a log message.
 
-**Context7 tool guidance:** When `integrations.context7` is true, implementation steps include guidance to use Context7 MCP tools (`mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs`) for looking up library documentation during coding.
+**Context7 tool guidance (eager):** When `integrations.context7` is true, orchestrators and the `run-tdd` skill MUST proactively use Context7 MCP tools (`mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs`) to fetch documentation for any language, library, or framework encountered in the work. The guidance is directive, not advisory. Specific requirements:
+
+- **Proactive, not reactive** -- Resolve and fetch docs for detected dependencies at the start of relevant steps, not only when an attempt has already failed.
+- **Multi-stage coverage** -- Eager lookups apply across pipeline stages where library or framework knowledge matters: fetching knowledge docs (when fetched docs reference external libraries), knowledge alignment (when specs mention specific versions), investigation (for fix orchestrator), implementation/TDD, refactoring, and documentation writing.
+- **Version-aware** -- When a project pins a language, runtime, or package manager version (e.g., via `stack.*` in `docs/ritual-config.json` or lockfiles), pass version information to `mcp__context7__get-library-docs` via the `topic` parameter or select version-specific library IDs from `mcp__context7__resolve-library-id` results.
+- **Broad scope** -- Covers not just third-party libraries but also languages (e.g., TypeScript syntax), frameworks (e.g., Next.js, Django), runtimes (e.g., Node.js, Bun), and CLI tools relevant to the work.
+- **Prefer Context7 over web search** -- When a library, framework, or language is involved, prefer Context7 lookups over web search or training-data recall.
+- **Directive language** -- Skill and agent prompts use "MUST look up" rather than "you may use" to reinforce the eager behavior.
+
+When `integrations.context7` is false, Context7 guidance is omitted and orchestrators rely on training data and other references.
 
 **Linear status management:** When `integrations.linear` is true and the handoff contains a `linear-issue` frontmatter field, orchestrators update the Linear issue status at two pipeline stages:
 - **After config load:** Set to "In Progress" via `mcp__linear__updateIssue`
@@ -95,7 +104,7 @@ A user-invocable skill that creates issues and routes to the correct backend:
 1. `run-setup` offers 5 integration toggles including context7
 2. `run-setup` verifies prerequisites for each enabled integration
 3. All 4 orchestrators gate sync-docs on `integrations.autoDocs`
-4. All 4 orchestrators include Context7 tool guidance when `integrations.context7` is true
+4. All 4 orchestrators and the `run-tdd` skill include eager, directive Context7 tool guidance when `integrations.context7` is true, covering languages, libraries, frameworks, and runtimes at all relevant pipeline stages
 5. `run-triage` searches GitHub Issues and/or Linear when enabled
 6. `run-triage` handoff template includes "Related Issues" section
 7. `run-open-pr` adds issue closing refs and CodeRabbit notes when enabled

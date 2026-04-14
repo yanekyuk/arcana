@@ -100,7 +100,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `directives.documentation` → soft guidance for sync-docs (Step 9)
 - `directives.delivery` → soft guidance for open-pr (Step 11)
 - `integrations.autoDocs` → gates the sync-docs step (Step 9)
-- `integrations.context7` → enables Context7 MCP tool guidance during implementation (Step 6)
+- `integrations.context7` → enables eager, directive Context7 MCP tool usage across multiple pipeline stages (Steps 3, 5, 6). When true, you MUST proactively fetch library/framework/language docs whenever relevant — do not rely on training-data recall.
 - `integrations.githubIssues` → used by run-open-pr for issue linking
 - `integrations.linear` → used by run-open-pr for Linear issue refs; also gates Linear status management (see below)
 - `integrations.coderabbit` → used by run-open-pr for review-requested notes
@@ -125,6 +125,13 @@ If `docs/` exists:
 5. Rank by match count, read top 5. If more than 5 match, log the skipped doc paths for transparency.
 
 Remember the content of these docs — they inform your implementation.
+
+**Context7 eager lookup (when `integrations.context7` is true):** While reading the fetched docs and the handoff, identify every language, library, framework, runtime, or CLI tool mentioned. For each, you MUST:
+
+1. Call `mcp__context7__resolve-library-id` to obtain a Context7 library ID (prefer version-matched IDs when the project pins versions via `stack.*` in `docs/ritual-config.json` or lockfiles).
+2. Call `mcp__context7__get-library-docs` with that ID and a `topic` narrowing the fetch to the feature area relevant to the handoff scope.
+
+Do this proactively at this stage so later steps (spec, TDD, self-review) operate on authoritative docs rather than recall. Prefer Context7 over web search for any library, framework, SDK, API, CLI tool, or cloud service — even well-known ones.
 
 ## Step 4: Knowledge alignment check
 
@@ -190,17 +197,29 @@ updated: <today>
 
 Verify the spec doesn't contradict domain knowledge or design decisions.
 
+**Context7 eager lookup (when `integrations.context7` is true):** If the spec references specific library or framework behavior (API contracts, configuration shapes, version-specific features), you MUST fetch the corresponding Context7 docs via `mcp__context7__get-library-docs` before finalizing the spec. This ensures constraints and acceptance criteria match authoritative upstream behavior.
+
 Commit: `git add docs/specs/<file>.md && git commit -m "docs: add spec — <title>"`
 
 ## Step 6: TDD cycle
 
 > **TaskUpdate:** Mark "TDD cycle" (task 6) as `in_progress` now. Mark `completed` when done.
 
-**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools during implementation to look up library documentation when working with external dependencies:
-1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
-2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+**Context7 eager library lookups (when `integrations.context7` is true):** You MUST proactively use Context7 MCP tools throughout the TDD cycle. Do NOT treat these tools as a fallback for when you get stuck — use them at the start of each unit of work and whenever a new dependency enters the diff.
 
-Use these tools when you need to understand API signatures, configuration options, or usage patterns for third-party libraries referenced in the codebase. This replaces guesswork with authoritative documentation.
+Tools:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID (prefer version-matched IDs)
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID (use the `topic` parameter to narrow the fetch)
+
+Required behavior per unit of work:
+
+- **Before writing the failing test:** Identify every language, library, framework, runtime, or CLI tool the unit touches. Resolve + fetch Context7 docs for each. Assertions in the test must match the real API described in those docs, not guesses.
+- **Before writing the implementation:** Fetch Context7 docs for any API call, configuration option, or usage pattern you are about to write. Even well-known libraries (React, Next.js, Prisma, Express, Tailwind, Django, Spring Boot, etc.) — your training data may not reflect recent changes.
+- **When a test fails unexpectedly:** Fetch fresher Context7 docs with a more specific `topic` before attempting another fix.
+
+This applies to languages (syntax/standard library), frameworks (Next.js, Django, Rails, etc.), runtimes (Node.js, Bun, Deno, Python), ORMs/clients, CLI tools, and cloud SDKs. Version-awareness: when `stack.*` in the config pins a version, or a lockfile is present, pass that version information through Context7's `topic` parameter or select a version-matched library ID.
+
+Prefer Context7 over web search. This replaces guesswork with authoritative, up-to-date documentation.
 
 For each unit of work in the feature:
 

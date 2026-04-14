@@ -1,9 +1,9 @@
 ---
 title: "Orchestrator Pipeline"
 type: spec
-tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup, knowledge-alignment]
+tags: [orchestrator, pipeline, feat, fix, refactor, docs, agent, config, arch-check, setup, knowledge-alignment, context7]
 created: 2026-03-26
-updated: 2026-03-30
+updated: 2026-04-14
 ---
 
 ## Behavior
@@ -21,7 +21,7 @@ Every orchestrator executes these phases in order:
 | Setup | Load project config | Read `docs/ritual-config.json` -- abort if missing |
 | Context | Fetch docs | Grep `docs/` for tag matches, read top 5 |
 | Context | Knowledge alignment check | Validate planned work against knowledge base -- pause for brainstorming via `AskUserQuestion` on conflict (skipped by docs) |
-| Work | Type-specific implementation | See per-type sections below. **When `integrations.context7` is true**, Context7 MCP tools are available for library doc lookups. |
+| Work | Type-specific implementation | See per-type sections below. **When `integrations.context7` is true**, orchestrators MUST eagerly use Context7 MCP tools to look up documentation for any language, library, or framework encountered -- proactively at the start of relevant steps, not only when stuck. See [Integration Wiring](integration-wiring.md) for the full eager-Context7 contract. |
 | Quality | Self-review | Diff against main, check scope/spec/domain/tests (skipped by docs) |
 | Quality | Arch check | Validate architecture rules against diff -- hard gate (after sync-docs for docs) |
 | Knowledge | Sync docs | Detect implicit knowledge, update `docs/`, clash-check. **Gated on `integrations.autoDocs`** -- skipped when false. |
@@ -37,7 +37,7 @@ All orchestrators require `docs/ritual-config.json` to exist. This file is creat
 - **`directives`** -- Categorized soft guidance object keyed by skill group (`implementation`, `review`, `documentation`, `delivery`, `triage`). Each group is an array of strings. Orchestrators read the relevant groups and pass them to dispatched skills.
 - **`integrations`** -- Integration toggles (CodeRabbit, Linear, GitHub Issues, auto-docs, Context7). These flags gate specific pipeline behaviors:
   - `autoDocs`: gates the sync-docs phase (skipped when false)
-  - `context7`: enables Context7 MCP tool guidance during implementation phases
+  - `context7`: enables eager, directive Context7 MCP tool guidance across all pipeline stages where language/library/framework knowledge is relevant (fetching docs, knowledge alignment, investigation, implementation, refactoring, documentation writing). Orchestrators and skills MUST proactively look up docs rather than passively mentioning the tools.
   - `linear`: when true and `linear-issue` is present in handoff, orchestrators update Linear issue status at pipeline stages ("In Progress" after config load, "In Review" before PR). All MCP calls use graceful degradation.
   - `githubIssues`, `coderabbit`: passed through to `run-open-pr` and `run-finish` skills
 

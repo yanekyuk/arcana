@@ -88,7 +88,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `directives.documentation` → soft guidance for writing/updating docs (Step 4) and sync-docs (Step 6)
 - `directives.delivery` → soft guidance for open-pr (Step 9)
 - `integrations.autoDocs` → gates the sync-docs step (Step 6)
-- `integrations.context7` → enables Context7 MCP tool guidance during documentation (Step 4)
+- `integrations.context7` → enables eager, directive Context7 MCP tool usage across multiple pipeline stages (Steps 3, 4, 6). When true, you MUST proactively fetch library/framework/language docs whenever the documentation being written describes them — do not rely on training-data recall.
 - `integrations.githubIssues` → used by run-open-pr for issue linking
 - `integrations.linear` → used by run-open-pr for Linear issue refs; also gates Linear status management (see below)
 - `integrations.coderabbit` → used by run-open-pr for review-requested notes
@@ -111,15 +111,30 @@ If `docs/` exists:
 3. Grep all tiers (domain, decisions, specs) for tag matches
 4. Rank by match count, read top 5 total across all tiers (not per tier — cap prevents token bloat). If more than 5 match, log skipped doc paths for transparency.
 
+**Context7 eager lookup (when `integrations.context7` is true):** Identify every language, library, framework, runtime, or CLI tool that the planned documentation describes. For each, you MUST:
+
+1. Call `mcp__context7__resolve-library-id` to obtain a Context7 library ID (prefer version-matched IDs when versions are pinned).
+2. Call `mcp__context7__get-library-docs` with that ID and a `topic` narrowing the fetch to the feature area the documentation will cover.
+
+Do this proactively here so the documentation written in Step 4 reflects authoritative upstream behavior, not training-data recall. Documentation that misrepresents a library's API is worse than no documentation — it misleads future readers and passes clash-check silently.
+
 ## Step 4: Write/update documentation
 
 > **TaskUpdate:** Mark "Write/update documentation" (task 4) as `in_progress` now. Mark `completed` when done.
 
-**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools when documenting code that uses external libraries:
-1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
-2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+**Context7 eager library lookups (when `integrations.context7` is true):** You MUST proactively use Context7 MCP tools whenever the documentation describes external behavior. Do NOT write library, framework, or API documentation from memory — fetch the real docs first.
 
-Use these tools to verify accuracy when writing documentation about third-party library usage, API references, or configuration.
+Tools:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID (prefer version-matched IDs)
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID (use `topic` to narrow)
+
+Required behavior:
+
+- **Before writing each doc:** If the doc references a language feature, library API, framework pattern, runtime behavior, or CLI tool, fetch Context7 docs for that topic first. Cite the authoritative behavior, not a remembered approximation.
+- **Version awareness:** When `stack.*` pins a version or the project targets a specific release, pass that version through Context7's `topic` parameter or select a version-matched library ID. Documentation written against the wrong version causes downstream bugs.
+- **Scope:** Applies to domain docs that codify library-mediated rules, decision docs that justify tool choices, and spec docs that describe integration contracts.
+
+Prefer Context7 over web search for any library, framework, SDK, API, CLI tool, or cloud service — even well-known ones. Your training data may not reflect recent changes.
 
 Based on the handoff scope:
 
@@ -163,6 +178,8 @@ Check if the documentation changes affect other tiers:
 - An updated spec may need its parent decision reviewed
 
 Update any affected docs. If docs were changed, dispatch another clash-check subagent. Note: this second clash-check is dispatched by the orchestrator directly, not by a cascaded skill, so it does not violate the depth-1 cascade rule.
+
+**Context7 eager lookup (when `integrations.context7` is true):** When cascading updates into new doc tiers (for example, a new domain doc prompts a spec update), you MUST re-run Context7 lookups for any external behavior the cascaded docs describe. Do not copy content forward from memory — re-fetch via `mcp__context7__get-library-docs` so each tier reflects authoritative upstream docs.
 
 Check if `CLAUDE.md` needs updating. Do NOT modify it — note suggestions for the PR.
 

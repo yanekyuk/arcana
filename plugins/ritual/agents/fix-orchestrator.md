@@ -100,7 +100,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `directives.documentation` → soft guidance for sync-docs (Step 9)
 - `directives.delivery` → soft guidance for open-pr (Step 11)
 - `integrations.autoDocs` → gates the sync-docs step (Step 9)
-- `integrations.context7` → enables Context7 MCP tool guidance during implementation (Step 6)
+- `integrations.context7` → enables eager, directive Context7 MCP tool usage across multiple pipeline stages (Steps 3, 5, 6). When true, you MUST proactively fetch library/framework/language docs at each stage where they are relevant — do not rely on training-data recall.
 - `integrations.githubIssues` → used by run-open-pr for issue linking
 - `integrations.linear` → used by run-open-pr for Linear issue refs; also gates Linear status management (see below)
 - `integrations.coderabbit` → used by run-open-pr for review-requested notes
@@ -125,6 +125,13 @@ If `docs/` exists:
 5. Read top 5 matches. If more than 5 match, log skipped doc paths for transparency.
 
 Fixes don't draft new specs — the bug is a deviation from existing expected behavior.
+
+**Context7 eager lookup (when `integrations.context7` is true):** Scan the handoff, fetched docs, and suspected-buggy files for every language, library, framework, runtime, or CLI tool involved. For each, you MUST:
+
+1. Call `mcp__context7__resolve-library-id` to obtain a Context7 library ID (prefer version-matched IDs when versions are pinned).
+2. Call `mcp__context7__get-library-docs` with that ID and a `topic` narrowing the fetch to the feature area where the bug appears (error handling, concurrency, API semantics, etc.).
+
+Do this proactively here so root-cause investigation (Step 5) can compare observed behavior against authoritative, version-correct documentation. Many bugs come from version mismatches, deprecated APIs, or misread docs — skipping Context7 wastes re-investigation cycles.
 
 ## Step 4: Knowledge alignment check
 
@@ -183,15 +190,25 @@ Before writing any fix, understand *why* the bug exists.
 
 Record the hypothesis as a code comment in the test file (above the reproducing test) so it persists across turns and is revisited if fix attempts fail.
 
+**Context7 eager lookup (when `integrations.context7` is true):** Before committing to a hypothesis, you MUST fetch authoritative Context7 docs (`mcp__context7__get-library-docs` with a `topic` describing the buggy behavior) for every library, framework, or language feature in the suspected code path. Compare observed behavior to the documented behavior. If the hypothesis depends on how a library is supposed to work, Context7 is the source of truth — not memory.
+
 ## Step 6: TDD — reproduce the bug
 
 > **TaskUpdate:** Mark "TDD reproduce" (task 6) as `in_progress` now. Mark `completed` when done.
 
-**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools during implementation to look up library documentation when working with external dependencies:
-1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
-2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+**Context7 eager library lookups (when `integrations.context7` is true):** You MUST proactively use Context7 MCP tools throughout the TDD reproduce cycle. Do NOT wait until a fix attempt fails — use them at the start of the reproducing test and again for each fix attempt.
 
-Use these tools when you need to verify API behavior, check for known issues, or understand correct usage patterns for third-party libraries involved in the bug.
+Tools:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID (prefer version-matched IDs)
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID (use `topic` to narrow)
+
+Required behavior:
+
+- **Before writing the reproducing test:** Fetch Context7 docs for any library, framework, language feature, or runtime behavior involved in the bug. The test must assert the correct, documented behavior — not a guess at what the library does.
+- **Before writing each fix attempt:** Fetch Context7 docs for the exact API or configuration you are about to change. Version-specific behavior changes frequently and training data drifts.
+- **Between re-investigations:** If a hypothesis fails, fetch fresher Context7 docs with a more specific `topic` before forming the new hypothesis.
+
+This applies to languages, frameworks, runtimes, ORMs, CLI tools, and cloud SDKs. When `stack.*` pins a version, pass that version to Context7 via the `topic` parameter or select a version-matched library ID. Prefer Context7 over web search.
 
 ### 6a. Write a failing test that reproduces the bug
 - The test should demonstrate the incorrect behavior described in the handoff
