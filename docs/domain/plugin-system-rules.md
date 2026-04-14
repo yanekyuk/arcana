@@ -1,9 +1,9 @@
 ---
 title: "Plugin System Rules"
 type: domain
-tags: [plugin, marketplace, manifest, cache, versioning]
+tags: [plugin, marketplace, manifest, cache, versioning, mcp]
 created: 2026-03-26
-updated: 2026-03-26
+updated: 2026-04-14
 ---
 
 ## Marketplace Manifest
@@ -34,6 +34,35 @@ The version string must be identical in two places:
 2. `.claude-plugin/marketplace.json` plugin entry `"version"` field
 
 A mismatch between these two values is an error. Any version bump must update both files atomically.
+
+## MCP Server Declaration
+
+Plugins that bundle MCP servers declare them at the plugin level via a `.mcp.json` file at `plugins/<name>/.mcp.json`. Declaring the server here (rather than relying on runtime `claude mcp add`) ensures the MCP server appears nested under the plugin in the `/plugin` list and installs automatically for any user of the plugin.
+
+Supported transports:
+
+- **HTTP** -- `type: "http"`, with `url` and optional `headers`
+- **Local stdio** -- `command` and `args` for launching a local process
+
+Format for HTTP transport with authentication:
+
+```json
+{
+  "<server-name>": {
+    "type": "http",
+    "url": "https://<mcp-endpoint>",
+    "headers": {
+      "Authorization": "Bearer ${ENV_VAR_NAME}"
+    }
+  }
+}
+```
+
+Rules:
+
+- Headers support `${ENV_VAR_NAME}` interpolation -- secrets must never be hardcoded in `.mcp.json`
+- Skills that depend on a plugin-declared MCP server must not run `claude mcp add` -- they guide the user to set the required environment variable instead, then rely on the plugin manifest for registration
+- Multiple server definitions may live in one file; the top-level keys are the server names
 
 ## Cache Behavior
 
