@@ -1,40 +1,56 @@
 ---
-name: fal-setup
-description: "Configure the fal.ai MCP server — checks for the FAL_KEY environment variable and guides the user to set it in their shell profile so the plugin-declared MCP server can authenticate"
+name: run-imagine-setup
+description: "Configure the active image provider's MCP server — resolves the provider from imagine-config.json, checks for its API key environment variable, and guides the user to set it in their shell profile so the plugin-declared MCP server can authenticate"
 model: haiku
 effort: low
 user-invocable: true
-allowed-tools: Bash, Read
+allowed-tools: Bash, Read, Edit, Write
 ---
 
-# fal.ai MCP Setup
+# Image Provider MCP Setup
 
-You are configuring access to the fal.ai MCP server for Claude Code. The MCP server itself is declared at the plugin level in `plugins/fal/.mcp.json` — your job is to ensure the `FAL_KEY` environment variable is set so the plugin can authenticate.
+You are configuring access to the image provider's MCP server for Claude Code. The MCP server itself is declared at the plugin level in `plugins/imagine/.mcp.json`; the active provider and its API key env var are declared in `plugins/imagine/imagine-config.json`. Your job is to ensure the correct env var is set so the plugin can authenticate.
 
 Follow every step exactly.
 
-## Step 1: Check whether FAL_KEY is already set
+## Step 1: Resolve the active provider
 
-Run:
+Read `plugins/imagine/imagine-config.json` and extract:
+
+- `activeProvider` — the provider key
+- `providers[activeProvider].apiKeyEnvVar` — the env var name (e.g., `FAL_KEY`)
+- `providers[activeProvider].apiKeyUrl` — where the user creates an API key
+
+If the file is missing or the active provider has no `apiKeyEnvVar`, tell the user the config is incomplete and stop.
+
+## Step 2: Switch providers (optional)
+
+If the user's intent is to switch the active provider rather than configure the current one, ask which provider they want to activate. Valid options are the keys under `providers` in `imagine-config.json`. Update `activeProvider` in that file with the chosen value, then continue with the newly active provider's settings.
+
+If the user did not ask to switch, skip this step.
+
+## Step 3: Check whether the API key is already set
+
+Run, substituting the resolved env var name:
 
 ```bash
-[ -n "$FAL_KEY" ] && echo "FAL_KEY is set" || echo "FAL_KEY is NOT set"
+[ -n "$<API_KEY_ENV_VAR>" ] && echo "<API_KEY_ENV_VAR> is set" || echo "<API_KEY_ENV_VAR> is NOT set"
 ```
 
-If the output says `FAL_KEY is set`, tell the user it is already configured and skip to Step 4.
+If the output says the variable is set, tell the user it is already configured and skip to Step 6.
 
-## Step 2: Prompt for the API key
+## Step 4: Prompt for the API key
 
-Tell the user:
+Tell the user, substituting the resolved `apiKeyUrl` and `apiKeyEnvVar`:
 
-> To authenticate with the fal.ai MCP server, you need a fal.ai API key.
-> You can create one at https://fal.ai/dashboard/keys
+> To authenticate with the `<activeProvider>` MCP server, you need an API key.
+> You can create one at `<apiKeyUrl>`
 >
-> Please paste your fal.ai API key now (it will not be stored in any file by this skill — you will add it to your shell profile yourself in the next step):
+> Please paste your API key now (it will not be stored in any file by this skill — you will add it to your shell profile yourself in the next step):
 
 Wait for the user to provide the key. Accept it from their next message.
 
-## Step 3: Guide the user to persist FAL_KEY
+## Step 5: Guide the user to persist the API key
 
 Detect the user's shell by running:
 
@@ -44,23 +60,23 @@ echo "$SHELL"
 
 Based on the result, tell the user the appropriate shell profile file:
 
-- `/bin/zsh` or `/usr/bin/zsh` → `~/.zshrc`
-- `/bin/bash` or `/usr/bin/bash` → `~/.bashrc` (or `~/.bash_profile` on macOS)
-- `/bin/fish` or `/usr/bin/fish` → `~/.config/fish/config.fish`
-- Anything else → advise the user to add it to their shell's startup file
+- `/bin/zsh` or `/usr/bin/zsh` -> `~/.zshrc`
+- `/bin/bash` or `/usr/bin/bash` -> `~/.bashrc` (or `~/.bash_profile` on macOS)
+- `/bin/fish` or `/usr/bin/fish` -> `~/.config/fish/config.fish`
+- Anything else -> advise the user to add it to their shell's startup file
 
-Then instruct them:
+Then instruct them, substituting the resolved env var name:
 
 > Add the following line to `<detected-profile-file>`:
 >
 > **For bash/zsh:**
 > ```bash
-> export FAL_KEY="<the key you pasted>"
+> export <API_KEY_ENV_VAR>="<the key you pasted>"
 > ```
 >
 > **For fish:**
 > ```fish
-> set -gx FAL_KEY "<the key you pasted>"
+> set -gx <API_KEY_ENV_VAR> "<the key you pasted>"
 > ```
 >
 > After saving, reload your shell or run:
@@ -73,18 +89,18 @@ Then instruct them:
 
 Do NOT write to the user's shell profile yourself — they must do it to keep the key out of any conversation log or repo history.
 
-## Step 4: Confirm and show next steps
+## Step 6: Confirm and show next steps
 
-Tell the user:
+Tell the user, substituting the active provider name:
 
-> The fal.ai MCP server is declared by the fal plugin itself (see `plugins/fal/.mcp.json`). Once `FAL_KEY` is exported in your shell environment and Claude Code has been restarted, the MCP tools will authenticate automatically.
+> The `<activeProvider>` MCP server is declared by the imagine plugin itself (see `plugins/imagine/.mcp.json`). Once `<API_KEY_ENV_VAR>` is exported in your shell environment and Claude Code has been restarted, the MCP tools will authenticate automatically.
 >
 > You can invoke image generation with:
 >
->   `/fal-image <your prompt>`
+>   `/run-imagine <your prompt>`
 >
 > Example:
 >
->   `/fal-image a photorealistic fox sitting in a neon-lit alley, cinematic`
+>   `/run-imagine a photorealistic fox sitting in a neon-lit alley, cinematic`
 >
-> If tools are not yet visible after restart, verify `FAL_KEY` is set in the new session with `echo $FAL_KEY`.
+> If tools are not yet visible after restart, verify `<API_KEY_ENV_VAR>` is set in the new session with `echo $<API_KEY_ENV_VAR>`.
