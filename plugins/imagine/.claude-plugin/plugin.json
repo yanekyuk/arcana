@@ -1,10 +1,10 @@
 {
-  "name": "fal",
-  "description": "fal.ai image generation — setup MCP server and generate images from natural language prompts.",
-  "version": "0.1.5",
+  "name": "imagine",
+  "description": "Provider-agnostic image generation — configure an active provider (fal.ai by default), then generate images from natural language prompts enriched with project context.",
+  "version": "0.2.0",
   "author": {
     "name": "yanek"
   },
   "skills": "./skills",
-  "keywords": ["fal", "image-generation", "flux", "ai-art", "mcp"]
+  "keywords": ["image-generation", "imagine", "ai-art", "mcp", "fal", "flux"]
 }
