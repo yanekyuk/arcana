@@ -19,7 +19,7 @@ plugins/<name>/
 docs/                                # Reference documentation
 ```
 
-Currently one plugin exists: `ritual` (software engineering workflows).
+Current plugins: `ritual` (software engineering workflows) and `imagine` (provider-agnostic image generation).
 
 ## Plugin Manifests
 
