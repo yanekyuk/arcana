@@ -19,6 +19,17 @@ Determine the test command:
 
 **Directives:** If `docs/ritual-config.json` exists, read `directives.implementation` from the config. These are soft guidelines that influence your coding style and implementation choices. Apply them throughout the TDD cycle. If the field is missing or empty, proceed without directives.
 
+**Context7 eager documentation lookups:** If `docs/ritual-config.json` exists and `integrations.context7` is true, you MUST proactively use Context7 MCP tools to fetch authoritative documentation for any language, library, framework, runtime, or CLI tool involved in the work. Do NOT rely on training-data recall for version-specific behavior.
+
+Before writing the first failing test, and again whenever a new dependency enters the diff:
+
+1. Identify the languages, libraries, frameworks, and runtimes involved in the unit of work. Check `stack.*` in `docs/ritual-config.json` (language, runtime, packageManager, test runner) and the files you are about to modify for imports, require calls, package names, or framework markers.
+2. For each identified library or framework, call `mcp__context7__resolve-library-id` to obtain its Context7 ID. Prefer version-matched IDs when a version is pinned in lockfiles, `stack.*`, or package manifests.
+3. Call `mcp__context7__get-library-docs` with the resolved ID. Use the `topic` parameter to narrow the fetch to the specific API, configuration, or feature you are about to use. Pass version information via the `topic` parameter when relevant (for example, "v15 app router" or "3.12 type hints").
+4. Apply the fetched documentation when writing the test and the implementation. Prefer Context7 output over assumptions.
+
+These lookups MUST happen proactively, not only when a test fails or you get stuck. When `integrations.context7` is false or no config is present, proceed without Context7 lookups.
+
 ## The Cycle
 
 For each unit of work:
@@ -32,12 +43,14 @@ For each unit of work:
   <test-command> <specific-test-file-or-filter>
   ```
 - If the test passes without implementation, your test isn't testing anything new — revise it
+- **Context7 eager lookup (when `integrations.context7` is true):** Before writing the test, if the unit under test touches an external library, framework, or language feature whose API you have not just fetched, MUST resolve and fetch its docs via Context7 (`mcp__context7__resolve-library-id` then `mcp__context7__get-library-docs`) so assertions match real API behavior.
 
 ### 2. Implement minimally
 
 - Write the minimum code to make the failing test pass
 - Do NOT write code for behavior that isn't tested yet
 - Run the test to confirm it passes
+- **Context7 eager lookup (when `integrations.context7` is true):** Before calling any library/framework API in the implementation, MUST consult Context7 docs (via `mcp__context7__get-library-docs`) for the specific API, configuration option, or usage pattern. Do this even for well-known libraries -- version-specific behavior changes frequently.
 
 ### 3. Refactor (if needed)
 
