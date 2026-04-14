@@ -99,7 +99,7 @@ Do NOT proceed with any further steps. Mark all remaining tasks as completed and
 - `directives.documentation` → soft guidance for sync-docs (Step 9)
 - `directives.delivery` → soft guidance for open-pr (Step 11)
 - `integrations.autoDocs` → gates the sync-docs step (Step 9)
-- `integrations.context7` → enables Context7 MCP tool guidance during refactoring (Step 6)
+- `integrations.context7` → enables eager, directive Context7 MCP tool usage across multiple pipeline stages (Steps 3, 6). When true, you MUST proactively fetch library/framework/language docs whenever the refactor touches code that uses them — do not rely on training-data recall.
 - `integrations.githubIssues` → used by run-open-pr for issue linking
 - `integrations.linear` → used by run-open-pr for Linear issue refs; also gates Linear status management (see below)
 - `integrations.coderabbit` → used by run-open-pr for review-requested notes
@@ -122,6 +122,13 @@ If `docs/` exists:
 3. Read top 5 — focus on design decisions (`docs/decisions/`). If more than 5 match, log skipped doc paths for transparency.
 
 Refactors don't write new tests or draft specs — they preserve existing behavior under existing tests.
+
+**Context7 eager lookup (when `integrations.context7` is true):** While surveying the refactor target, identify every language, library, framework, runtime, or CLI tool the target code uses. For each, you MUST:
+
+1. Call `mcp__context7__resolve-library-id` to obtain a Context7 library ID (prefer version-matched IDs when versions are pinned via `stack.*` or lockfiles).
+2. Call `mcp__context7__get-library-docs` with that ID and a `topic` narrowing the fetch to the APIs and patterns involved in the refactor.
+
+Do this proactively at this stage so the refactor preserves documented behavior exactly. Many refactors break subtle invariants documented in upstream APIs (argument ordering, default values, error shapes). Skipping Context7 risks silent behavior changes that escape the test safety net.
 
 ## Step 4: Knowledge alignment check
 
@@ -175,11 +182,19 @@ If all green, proceed.
 
 > **TaskUpdate:** Mark "Refactor incrementally" (task 6) as `in_progress` now. Mark `completed` when done.
 
-**Context7 library lookups:** If `integrations.context7` is true, use Context7 MCP tools during refactoring to look up library documentation when restructuring code that uses external dependencies:
-1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID
-2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID
+**Context7 eager library lookups (when `integrations.context7` is true):** You MUST proactively use Context7 MCP tools throughout the refactor. Do NOT wait until tests break — use them before each change that touches library/framework code.
 
-Use these tools when refactoring code that interacts with third-party libraries, to verify that the refactored usage remains correct.
+Tools:
+1. `mcp__context7__resolve-library-id` — resolve a library name to its Context7 ID (prefer version-matched IDs)
+2. `mcp__context7__get-library-docs` — fetch documentation for a resolved library ID (use `topic` to narrow)
+
+Required behavior:
+
+- **Before each refactoring change:** If the change touches any language, library, framework, runtime, or CLI tool API, fetch Context7 docs for that API. The refactor must preserve documented behavior — verify the new code uses the API exactly as documented (argument order, defaults, error shapes, deprecation status).
+- **When a test fails after a change:** Before reverting or retrying, fetch fresher Context7 docs with a more specific `topic`. The test may be catching a real upstream behavior you missed.
+- **When choosing replacements:** If the refactor swaps one API for another (e.g., deprecated → recommended), fetch Context7 docs for both to verify equivalence.
+
+This applies to languages, frameworks, runtimes, ORMs, CLI tools, and cloud SDKs. When `stack.*` pins a version, pass that version to Context7 via the `topic` parameter or select a version-matched library ID. Prefer Context7 over web search.
 
 For each refactoring change:
 
