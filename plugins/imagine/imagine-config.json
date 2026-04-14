@@ -1,0 +1,50 @@
+{
+  "$schema": "./imagine-config.schema.json",
+  "activeProvider": "fal",
+  "providers": {
+    "fal": {
+      "mcpToolPrefix": "mcp__fal_ai__",
+      "apiKeyEnvVar": "FAL_KEY",
+      "apiKeyUrl": "https://fal.ai/dashboard/keys",
+      "defaultModel": "fal-ai/flux/dev",
+      "defaultSize": "landscape_4_3",
+      "sizes": [
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9"
+      ],
+      "models": {
+        "fal-ai/flux/dev": {
+          "bestFor": "High quality, default choice",
+          "numInferenceSteps": 28,
+          "guidanceScale": 3.5
+        },
+        "fal-ai/flux/schnell": {
+          "bestFor": "Fast drafts, 4-step",
+          "numInferenceSteps": 4
+        },
+        "fal-ai/flux-pro": {
+          "bestFor": "Production quality"
+        },
+        "fal-ai/flux-realism": {
+          "bestFor": "Photorealistic output"
+        }
+      },
+      "modelAliases": {
+        "fast": "fal-ai/flux/schnell",
+        "quick": "fal-ai/flux/schnell",
+        "draft": "fal-ai/flux/schnell",
+        "default": "fal-ai/flux/dev",
+        "pro": "fal-ai/flux-pro",
+        "realistic": "fal-ai/flux-realism"
+      },
+      "defaults": {
+        "numImages": 1,
+        "enableSafetyChecker": true
+      }
+    }
+  }
+}
