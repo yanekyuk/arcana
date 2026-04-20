@@ -3,7 +3,7 @@ title: "Handoff Artifact Pattern"
 type: decision
 tags: [handoff, triage, orchestrator, contract, artifact]
 created: 2026-03-26
-updated: 2026-04-14
+updated: 2026-04-20
 ---
 
 ## Decision
@@ -47,10 +47,13 @@ base-branch: <branch worktree was derived from>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional override
 linear-issue: <LINEAR-ID>              # optional — set when a Linear issue is matched during triage
+milestone: <milestone-title>           # optional — set when user assigns work to a GitHub milestone during triage
 ---
 ```
 
 The `base-branch` field records the branch that was current when triage created the worktree. Orchestrators and `run-open-pr` use this value for the `--base` flag when creating PRs, ensuring the PR targets the correct branch instead of hardcoding `main`.
+
+The `milestone` field records the GitHub milestone title assigned during triage. When present, `run-open-pr` assigns the PR to this milestone, and `run-finish` uses the milestone's title as a target version for version bumping (if the title is a valid semver string). This enables multiple features within the same milestone to converge to a single target version instead of auto-incrementing independently.
 
 ## Body Sections
 
