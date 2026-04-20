@@ -94,6 +94,29 @@ Attempt Linear MCP call:
 
 Store discovered issues for inclusion in the handoff artifact (Step 8).
 
+## Step 5c: Search for milestones
+
+**If `integrations.githubIssues` is true:**
+
+Search for open GitHub milestones that could be associated with this work:
+
+```bash
+gh api repos/:owner/:repo/milestones --jq '.[] | select(.state=="open") | "\(.number)\t\(.title)\t\(.description // "no description")"'
+```
+
+If milestones exist, present them to the user and ask:
+
+> The following milestones are open:
+> <list of milestones with number, title, and description>
+>
+> Would you like to assign this work to a milestone? If so, which one? (Enter the milestone title, or "none" to skip)
+
+If the user selects a milestone, record its title for inclusion in the handoff frontmatter as the `milestone` field.
+
+If no milestones exist or the user declines, proceed without a milestone.
+
+**If `integrations.githubIssues` is false**, skip this step.
+
 ## Step 6: Propose classification
 
 Based on your exploration, propose one of:
@@ -137,6 +160,7 @@ base-branch: <base-branch>
 created: <YYYY-MM-DD>
 version-bump: <major|minor|patch|none>  # optional — overrides the orchestrator's default semver bump
 linear-issue: <LINEAR-ID>              # optional — set when a Linear issue is matched in Step 5b
+milestone: <milestone-title>           # optional — set when user assigns work to a GitHub milestone in Step 5c
 ---
 
 ## Related Files
