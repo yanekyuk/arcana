@@ -122,4 +122,23 @@ If this is a WIP (pipeline stopped early), use:
 gh pr create --title "[WIP] <title>" --body "<body>" --base <base-branch> --draft
 ```
 
+### Step 4b: Assign milestone to PR
+
+If the handoff frontmatter contains a `milestone` field, assign the PR to that milestone after creation.
+
+1. Get the PR number from the `gh pr create` output.
+2. Find the milestone number by title:
+
+```bash
+gh api repos/:owner/:repo/milestones --jq '.[] | select(.title=="<milestone-title>") | .number'
+```
+
+3. Assign the milestone to the PR:
+
+```bash
+gh api repos/:owner/:repo/issues/<pr-number> -X PATCH -F milestone=<milestone-number>
+```
+
+If the milestone is not found (e.g., it was closed or deleted), log a warning and continue without assignment. Do not block PR creation.
+
 Report the PR URL when done.

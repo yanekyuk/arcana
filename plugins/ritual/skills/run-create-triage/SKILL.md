@@ -85,6 +85,37 @@ Use Linear MCP tools to create the issue. **Wrap all Linear MCP calls in error h
 
 Graceful degradation: if the Linear MCP call fails and `githubIssues` is also enabled, ask the user: "Linear MCP is unavailable. Would you like to create the issue via GitHub Issues instead?" If yes, fall back to the GitHub Issues path above.
 
+## Step 5b: Offer milestone creation
+
+**If `integrations.githubIssues` is true:**
+
+After creating the issue, check for open milestones:
+
+```bash
+gh api repos/:owner/:repo/milestones --jq '.[] | select(.state=="open") | "\(.number)\t\(.title)\t\(.description // "no description")"'
+```
+
+Ask the user:
+
+> Would you like to assign this issue to a milestone?
+> 1. **Assign to an existing milestone** — <list open milestones if any>
+> 2. **Create a new milestone** — provide a title (typically a target version like "0.10.0") and optional description
+> 3. **Skip** — no milestone assignment
+
+If the user wants to create a new milestone:
+
+```bash
+gh api repos/:owner/:repo/milestones -X POST -f title="<title>" -f description="<description>"
+```
+
+If the user wants to assign the issue to a milestone (existing or newly created):
+
+```bash
+gh api repos/:owner/:repo/issues/<issue-number> -X PATCH -F milestone=<milestone-number>
+```
+
+**If `integrations.githubIssues` is false**, skip this step.
+
 ## Step 6: Confirm and hand off
 
 Tell the user the issue was created:

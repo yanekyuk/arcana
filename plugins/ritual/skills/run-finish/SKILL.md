@@ -159,13 +159,31 @@ gh pr view <number> --json headRefName --jq '.headRefName'
 
 Extract the prefix (everything before the first `/`). If the prefix does not match any row above, default to PATCH.
 
-### 5b. Check for explicit override
+### 5b. Check for milestone target version
 
-Read the PR body and commit messages for an explicit `version-bump:` directive (e.g., `version-bump: major`). If found, use that instead of the branch-derived default.
+Check if the PR has a milestone assigned:
+
+```bash
+gh pr view <number> --json milestone --jq '.milestone.title // empty'
+```
+
+If a milestone is present and its title is a valid semver string (e.g., `0.10.0`, `1.0.0`):
+
+1. Parse the milestone title as the **target version**.
+2. This target version will override the standard bump logic in Step 5c — instead of incrementing, the version will be set directly to the milestone's target version.
+3. Store the target version for use in Step 5c.
+
+If the milestone title is not a valid semver string (e.g., "Q2 Release", "Sprint 5"), treat it as informational only and fall through to the standard bump logic.
+
+If no milestone is assigned, proceed to the standard bump logic.
+
+### 5b2. Check for explicit override
+
+Read the PR body and commit messages for an explicit `version-bump:` directive (e.g., `version-bump: major`). If found, use that instead of the branch-derived default. Note: milestone target version (Step 5b) takes precedence over explicit overrides.
 
 ### 5c. Apply the bump
 
-If the bump type is `none`, skip this step.
+If the bump type is `none` and no milestone target version is set, skip this step.
 
 Otherwise, check out the PR branch locally and apply the semver bump:
 
@@ -202,7 +220,14 @@ If no rules match the current change, skip the version bump.
 
 **3. Determine bump type**
 
-For each matching rule, apply [Semantic Versioning 2.0.0](https://semver.org) rules:
+**Milestone-aware path (highest priority):** If a milestone target version was found in Step 5b:
+
+1. Read the current version from the first matching manifest file.
+2. Compare the current version against the milestone target version using semver comparison.
+3. **If current version < target version:** Skip the standard bump logic entirely. The target version from the milestone will be used as the new version in Step 4. This ensures all features within the same milestone converge to the same target version.
+4. **If current version >= target version:** The milestone target has already been reached (by a previously merged PR in the same milestone). Fall through to the standard bump logic below — the version may still need incrementing if the branch type warrants it.
+
+**Standard bump path:** If no milestone target version applies, determine the bump type for each matching rule using [Semantic Versioning 2.0.0](https://semver.org) rules:
 
 1. **Check handoff for explicit directive** -- if the handoff frontmatter contains `version-bump: major|minor|patch|none`, use that.
 2. **Otherwise use the default** derived from the branch prefix in Step 5a.
@@ -232,8 +257,9 @@ For each manifest file collected from matching rules:
    - `setup.cfg` -- `version = X.Y.Z` under `[metadata]`
    - `build.gradle` / `build.gradle.kts` -- `version = "X.Y.Z"`
    - `version.txt` -- entire file content is the version string
-3. Apply the same bump to every collected manifest. Reset lower components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
-4. Write the updated version back to each manifest file.
+3. **If milestone target version applies:** Set the version to the milestone target version directly (do not increment). Apply this same target version to every collected manifest.
+4. **If standard bump:** Apply the computed bump to every collected manifest. Reset lower components (MAJOR resets minor and patch to 0; MINOR resets patch to 0).
+5. Write the updated version back to each manifest file.
 
 **5. Commit**
 
