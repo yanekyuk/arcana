@@ -37,9 +37,16 @@ Do NOT proceed with any further steps.
 
 If the config exists, also read `directives.triage` from the config. These are soft guidelines that influence classification preferences, branch naming, and scope boundaries. Apply them throughout the triage process. If the field is missing or empty, proceed without directives.
 
+Also read `brainstorm` from the config and store it:
+- `brainstorm.enabled` (default: `false`) — whether to run the brainstorm phase before classification
+- `brainstorm.specPath` (default: `"docs/specs"`) — where to write the design doc
+
 ## Step 3: Understand the trigger
 
-The user has provided a ticket, idea, or bug report. Read it carefully. Ask NO clarifying questions — work with what you have.
+The user has provided a ticket, idea, or bug report. Read it carefully.
+
+- **If `brainstorm.enabled` is false**: Ask NO clarifying questions — work with what you have.
+- **If `brainstorm.enabled` is true**: Proceed through the exploration steps (4, 5, 5b, 5c) before asking questions — Step 5d will handle the dialogue.
 
 ## Step 4: Explore related code
 
@@ -117,6 +124,52 @@ If no milestones exist or the user declines, proceed without a milestone.
 
 **If `integrations.githubIssues` is false**, skip this step.
 
+## Step 5d: Brainstorm (conditional)
+
+**If `brainstorm.enabled` is false (or absent), skip this step entirely.**
+
+You now have full project context from Steps 4–5. Use it to run a collaborative design dialogue with the user before classifying and handing off.
+
+### 1. Ask clarifying questions
+
+- One question per message. Do not bundle.
+- Prefer multiple choice when possible — open-ended is fine when the question is genuinely open.
+- Focus on: purpose, constraints, success criteria, scope boundaries.
+- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems, flag this immediately. Help the user decompose into sub-projects before refining details.
+- Stop asking when you have enough to propose approaches (typically 2–5 questions).
+
+### 2. Propose approaches
+
+- Present 2–3 different approaches with trade-offs.
+- Lead with your recommendation and explain why.
+- Wait for the user to pick one or suggest a hybrid.
+
+### 3. Present the design
+
+- Once the user picks an approach, present the design in sections scaled to complexity (a few sentences if straightforward, up to a paragraph if nuanced).
+- Ask after each section whether it looks right so far.
+- Cover what's relevant: architecture, components, data flow, error handling, testing strategy.
+- Be ready to revise — go back and clarify if something doesn't land.
+
+**Design principles:**
+- Break the system into units with one clear purpose and well-defined interfaces.
+- Follow existing patterns in the codebase. Where existing code has problems that affect the work, include targeted improvements — but don't propose unrelated refactoring.
+- YAGNI ruthlessly — remove anything the user hasn't asked for.
+
+### 4. Write and review the spec
+
+Once the user approves the full design:
+
+1. **Write the spec** to `<brainstorm.specPath>/YYYY-MM-DD-<topic>-design.md` and commit it.
+2. **Self-review** — scan for: placeholders/TODOs, internal contradictions, scope creep, ambiguous requirements. Fix inline.
+3. **User review gate** — tell the user:
+   > Spec written and committed to `<path>`. Review it and let me know if you want changes before we continue.
+4. Wait for approval. If changes are requested, apply them, re-run self-review, and ask again.
+
+**Only proceed to Step 6 after the user approves the spec.**
+
+The handoff's Scope section (Step 8) should reference the spec path and summarize the approved design rather than restating it.
+
 ## Step 6: Propose classification
 
 Based on your exploration, propose one of:
@@ -174,7 +227,7 @@ milestone: <milestone-title>           # optional — set when user assigns work
 Format: "- #<number> <title> (<state>)" for GitHub Issues, "- <ID> <title> (<state>)" for Linear issues.
 
 ## Scope
-<summary of what needs to be done and why>
+<If brainstorming was used: reference the spec path and summarize the approved design. Otherwise: summary of what needs to be done and why.>
 ```
 
 Then pipe the handoff content into the setup-worktree script via a **single Bash call**. The script creates the branch, worktree, writes the handoff to `docs/handoffs/<folder>.md`, and commits it in one operation. This reduces 3 permission prompts (branch, write, commit) to 1.

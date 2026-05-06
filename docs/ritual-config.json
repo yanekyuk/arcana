@@ -9,6 +9,10 @@
     "typecheck": "none"
   },
   "sourceRoot": ".",
+  "brainstorm": {
+    "enabled": false,
+    "specPath": "docs/specs"
+  },
   "integrations": {
     "coderabbit": false,
     "linear": false,
